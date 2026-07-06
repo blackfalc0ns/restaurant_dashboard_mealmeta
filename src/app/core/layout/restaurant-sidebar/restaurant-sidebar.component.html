@@ -1,0 +1,107 @@
+<aside class="mm-dual-sb" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
+  <!-- Rail -->
+  <div class="mm-dual-sb__rail">
+    <a
+      routerLink="/restaurant/orders/pending-confirmation"
+      class="mm-dual-sb__logo"
+      (click)="closeMobileNav()"
+      aria-label="MealMate"
+    >
+      <img [src]="brandMarkSrc" alt="" class="mm-dual-sb__logo-img" width="22" height="22" />
+    </a>
+
+    <nav class="mm-dual-sb__rail-nav" [attr.aria-label]="locale.isRtl() ? 'الأقسام' : 'Sections'">
+      @for (section of navSections; track section.id) {
+        <button
+          type="button"
+          class="mm-dual-sb__rail-btn"
+          [class.mm-dual-sb__rail-btn--active]="isSectionSelected(section)"
+          [attr.title]="sectionLabel(section)"
+          (click)="selectSection(section)"
+        >
+          <ng-icon [name]="sectionIcon(section)" class="size-[1.125rem]" />
+        </button>
+      }
+    </nav>
+
+    <div class="mm-dual-sb__rail-footer">
+      <a
+        [routerLink]="settingsItem.route!"
+        class="mm-dual-sb__rail-btn"
+        [class.mm-dual-sb__rail-btn--active]="isItemActive(settingsItem)"
+        [attr.title]="label(settingsItem)"
+        (click)="onItemClick(settingsItem)"
+      >
+        <ng-icon [name]="settingsItem.icon" class="size-[1.125rem]" />
+      </a>
+      <button
+        type="button"
+        class="mm-dual-sb__rail-btn mm-dual-sb__rail-btn--muted"
+        [attr.aria-label]="logoutLabel()"
+        (click)="logout()"
+      >
+        <ng-icon name="lucideLogOut" class="size-[1rem]" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Panel -->
+  @if (showPanel()) {
+    <div class="mm-dual-sb__panel">
+      <header class="mm-dual-sb__panel-head">
+        <div class="mm-dual-sb__brand-row">
+          <span class="mm-dual-sb__brand-mark">
+            <img [src]="brandMarkSrc" alt="" width="18" height="18" />
+          </span>
+          <span class="mm-dual-sb__brand-name">MealMate</span>
+        </div>
+        <h2 class="mm-dual-sb__panel-title">{{ sectionLabel(selectedSection()) }}</h2>
+      </header>
+
+      <nav class="mm-dual-sb__panel-nav">
+        @for (item of selectedSection().items; track item.id; let index = $index) {
+          @if (isNavGroup(item)) {
+            @if (index > 0) {
+              <div class="mm-dual-sb__divider"></div>
+            }
+            <p class="mm-dual-sb__group-label">{{ label(item) }}</p>
+            <ul class="mm-dual-sb__list" role="list">
+              @for (child of item.children; track child.id) {
+                <li>
+                  <a
+                    [routerLink]="child.route!"
+                    class="mm-dual-sb__item"
+                    [class.mm-dual-sb__item--active]="isItemActive(child)"
+                    (click)="onItemClick(child)"
+                  >
+                    <ng-icon [name]="child.icon" class="mm-dual-sb__item-icon" />
+                    <span class="mm-dual-sb__item-label">{{ label(child) }}</span>
+                    <span class="mm-dual-sb__item-count">{{ formatCount(child.badge) }}</span>
+                  </a>
+                </li>
+              }
+            </ul>
+            <button type="button" class="mm-dual-sb__add-btn">
+              <ng-icon name="lucidePlus" class="size-3.5" />
+              <span>{{ addActionLabel(item) }}</span>
+            </button>
+          } @else if (item.route) {
+            @if (index > 0) {
+              <div class="mm-dual-sb__divider mm-dual-sb__divider--soft"></div>
+            }
+            <a
+              [routerLink]="item.route"
+              class="mm-dual-sb__item"
+              [class.mm-dual-sb__item--active]="isItemActive(item)"
+              (click)="onItemClick(item)"
+            >
+              <ng-icon [name]="item.icon" class="mm-dual-sb__item-icon" />
+              <span class="mm-dual-sb__item-label">{{ label(item) }}</span>
+              <span class="mm-dual-sb__item-count">{{ formatCount(item.badge) }}</span>
+            </a>
+          }
+        }
+      </nav>
+    </div>
+  }
+</aside>

@@ -1,0 +1,42 @@
+<header class="mm-restaurant-header">
+  <div class="mm-restaurant-header-accent" aria-hidden="true"></div>
+  <div class="mm-restaurant-header-bar">
+    <div class="mm-restaurant-header-start">
+      @if (layout.isMobile()) {
+        <button
+          type="button"
+          class="mm-restaurant-header-btn"
+          (click)="openMobileNav()"
+          [attr.aria-label]="menuLabel()"
+        >
+          <ng-icon name="lucideMenu" class="size-5" />
+        </button>
+      }
+
+      <img
+        class="mm-restaurant-header-logo"
+        [src]="brandLogoSrc"
+        alt="MealMate"
+        width="120"
+        height="24"
+      />
+      <span class="mm-restaurant-header-sep" aria-hidden="true"></span>
+      <span class="mm-restaurant-header-context">{{ panelLabel() }}</span>
+    </div>
+
+    <div class="mm-restaurant-header-actions">
+      <button
+        type="button"
+        class="mm-restaurant-header-btn"
+        [attr.aria-label]="locale.isRtl() ? 'الإشعارات' : 'Notifications'"
+      >
+        <ng-icon name="lucideBell" class="size-[1.05rem]" />
+      </button>
+
+      <button type="button" class="mm-restaurant-header-lang" (click)="locale.toggle()">
+        <ng-icon name="lucideGlobe" class="size-3.5" />
+        <span>{{ langSwitchLabel() }}</span>
+      </button>
+    </div>
+  </div>
+</header>

@@ -21,10 +21,19 @@ export const APP_ROUTES: Routes = [
   },
   {
     path: 'restaurant/orders',
-    loadChildren: () =>
-      import('./features/restaurant/order-72h-rule/order-72h-rule.routes').then(
-        (m) => m.ORDER_72H_RULE_ROUTES
+    loadComponent: () =>
+      import('./core/layout/restaurant-shell/restaurant-shell.component').then(
+        (m) => m.RestaurantShellComponent
       ),
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./features/restaurant/order-72h-rule/order-72h-rule.routes').then(
+            (m) => m.ORDER_72H_RULE_ROUTES
+          ),
+      },
+    ],
   },
   { path: '**', redirectTo: 'restaurant/login' },
 ];

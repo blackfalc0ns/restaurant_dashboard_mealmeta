@@ -2,7 +2,7 @@
   "name": "mealmate-restaurant-dashboard",
   "version": "0.0.1",
   "scripts": {
-    "start": "ng serve --port 4201",
+    "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development"
   },

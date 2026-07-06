@@ -85,6 +85,49 @@
 }
 
 :root {
+  --mm-dual-rail-width: 3.5rem;
+  --mm-dual-panel-width: 13.5rem;
+  --mm-shell-pad: 0.625rem;
+  --mm-shell-gap: 0.5rem;
+  --mm-shell-radius: 1.25rem;
+  --mm-dual-sidebar-width: calc(var(--mm-dual-rail-width) + var(--mm-dual-panel-width));
+  --mm-sidebar-width: var(--mm-dual-sidebar-width);
+  --mm-sidebar-collapsed: var(--mm-dual-rail-width);
+  --mm-header-pad-x: 0.875rem;
+  --mm-header-pad-y: 0.625rem;
+  --mm-content-pad-x: 0.875rem;
+  --mm-content-pad-y: 0.875rem;
+
+  --mm-sidebar-brand: #04994e;
+  --mm-sidebar-bg: #04994e;
+  --mm-sidebar-border: rgba(255, 255, 255, 0.18);
+  --mm-sidebar-text: #ffffff;
+  --mm-sidebar-text-muted: #c5e8d4;
+  --mm-sidebar-hover: #038743;
+  --mm-sidebar-active: #ffffff;
+  --mm-sidebar-active-text: #04994e;
+  --mm-sidebar-input-bg: rgba(255, 255, 255, 0.96);
+  --mm-sidebar-input-border: rgba(255, 255, 255, 0.55);
+  --mm-sidebar-input-text: #065f30;
+  --mm-sidebar-input-placeholder: #6b9080;
+  --mm-sidebar-input-icon: #04994e;
+  --mm-sidebar-promo-bg: rgba(255, 255, 255, 0.97);
+  --mm-sidebar-promo-border: rgba(255, 255, 255, 0.85);
+  --mm-sidebar-promo-text: #065f30;
+  --mm-sidebar-promo-hint: #6b9080;
+  --mm-sidebar-promo-icon-bg: #04994e;
+  --mm-sidebar-promo-icon-text: #ffffff;
+  --mm-sidebar-promo-arrow: #04994e;
+  --mm-sidebar-account-bg: rgba(255, 255, 255, 0.97);
+  --mm-sidebar-account-border: rgba(255, 255, 255, 0.78);
+  --mm-sidebar-account-name: #065f30;
+  --mm-sidebar-account-role: #6b9080;
+  --mm-sidebar-account-avatar-bg: #04994e;
+  --mm-sidebar-account-avatar-text: #ffffff;
+  --mm-sidebar-account-logout: #e11d48;
+  --mm-sidebar-account-logout-hover-bg: rgba(225, 29, 72, 0.1);
+  --mm-sidebar-account-logout-hover-text: #be123c;
+
   --radius: 0.75rem;
   --background: oklch(0.99 0.002 247);
   --foreground: oklch(0.2 0.02 260);
@@ -104,6 +147,46 @@
   --border: oklch(0.91 0.008 260);
   --input: oklch(0.93 0.008 260);
   --ring: oklch(0.5 0.15 145);
+}
+
+@media (min-width: 640px) {
+  :root {
+    --mm-shell-pad: 0.75rem;
+    --mm-shell-gap: 0.625rem;
+    --mm-header-pad-x: 1.25rem;
+    --mm-header-pad-y: 0.75rem;
+    --mm-content-pad-x: 1.25rem;
+    --mm-content-pad-y: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --mm-shell-pad: 0.875rem;
+    --mm-shell-gap: 0.75rem;
+    --mm-shell-radius: 1.125rem;
+    --mm-content-pad-x: 1.5rem;
+    --mm-content-pad-y: 1.125rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --mm-shell-pad: 1rem;
+    --mm-shell-gap: 0.875rem;
+    --mm-header-pad-x: 1.5rem;
+    --mm-content-pad-x: 1.75rem;
+    --mm-content-pad-y: 1.25rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  :root {
+    --mm-sidebar-width: 16rem;
+    --mm-shell-pad: 1.25rem;
+    --mm-shell-gap: 1.125rem;
+    --mm-shell-radius: 1.35rem;
+  }
 }
 
 @layer base {
@@ -550,6 +633,253 @@
   .mm-onboarding-success__icon {
     @apply relative flex size-20 items-center justify-center rounded-full text-white shadow-[0_12px_40px_rgba(4,153,78,0.32)] ring-4 ring-[#6ac879]/25;
     background: linear-gradient(135deg, var(--color-mm-primary) 0%, var(--color-mm-secondary) 100%);
+  }
+
+  @keyframes mm-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* ─── Restaurant shell ─────────────────────────────────────────────── */
+
+  .mm-restaurant-shell-canvas {
+    @apply flex h-dvh min-h-0 gap-3 bg-mm-canvas p-3 md:gap-4 md:p-4;
+  }
+
+  .mm-restaurant-shell-backdrop {
+    @apply fixed inset-0 z-40 border-0 bg-mm-secondary/50 p-0 backdrop-blur-sm;
+  }
+
+  .mm-restaurant-shell-main {
+    @apply relative z-[1] flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[var(--mm-shell-radius)] border border-[rgba(4,153,78,0.1)] bg-white;
+    box-shadow: 0 10px 36px -14px rgba(1, 83, 41, 0.16);
+  }
+
+  .mm-restaurant-shell-content {
+    @apply min-h-0 flex-1 overflow-auto bg-mm-cream p-5 md:p-6;
+  }
+
+  .mm-restaurant-header {
+    @apply relative shrink-0 overflow-hidden border-b border-mm-field-border/80 bg-white;
+  }
+
+  .mm-restaurant-header-accent {
+    @apply absolute inset-x-0 top-0 h-0.5;
+    background: linear-gradient(90deg, #04994e 0%, #6ac879 50%, #f67e15 100%);
+  }
+
+  .mm-restaurant-header-bar {
+    @apply flex items-center justify-between gap-3 px-4 py-3 md:px-6;
+  }
+
+  .mm-restaurant-header-start {
+    @apply flex min-w-0 items-center gap-3;
+  }
+
+  .mm-restaurant-header-logo {
+    @apply h-5 w-auto max-w-[7rem] shrink-0 object-contain;
+    object-position: start;
+  }
+
+  .mm-restaurant-header-sep {
+    @apply hidden h-4 w-px shrink-0 bg-mm-field-border sm:block;
+  }
+
+  .mm-restaurant-header-context {
+    @apply hidden truncate text-xs font-semibold text-mm-secondary sm:block;
+  }
+
+  .mm-restaurant-header-actions {
+    @apply flex shrink-0 items-center gap-2;
+  }
+
+  .mm-restaurant-header-btn {
+    @apply flex size-9 items-center justify-center rounded-lg text-mm-icon transition-colors hover:bg-[#edf8f1] hover:text-mm-primary;
+  }
+
+  .mm-restaurant-header-lang {
+    @apply flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-mm-ink transition-colors hover:bg-[#edf8f1] hover:text-mm-secondary;
+  }
+
+  /* ─── Dual sidebar — single block ──────────────────────────────────── */
+
+  .mm-dual-sb {
+    @apply flex h-full min-h-0 w-full shrink-0 overflow-hidden rounded-[var(--mm-shell-radius)] border border-[rgba(4,153,78,0.14)];
+    box-shadow: 0 12px 40px -16px rgba(1, 83, 41, 0.3);
+  }
+
+  .mm-dual-sb__rail {
+    @apply flex w-[var(--mm-dual-rail-width)] shrink-0 flex-col items-center gap-1 py-4;
+    background: linear-gradient(180deg, #015329 0%, #04994e 100%);
+  }
+
+  .mm-dual-sb__logo {
+    @apply mb-4 flex size-10 items-center justify-center rounded-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.15)];
+  }
+
+  .mm-dual-sb__logo-img {
+    @apply size-[1.35rem] object-contain;
+  }
+
+  .mm-dual-sb__rail-nav {
+    @apply flex flex-1 flex-col items-center gap-1.5;
+  }
+
+  .mm-dual-sb__rail-btn {
+    @apply flex size-9 items-center justify-center rounded-full text-white/50 transition-all duration-200;
+  }
+
+  .mm-dual-sb__rail-btn:hover {
+    @apply bg-white/12 text-white;
+  }
+
+  .mm-dual-sb__rail-btn--active {
+    @apply bg-white text-mm-primary shadow-[0_4px_12px_rgba(0,0,0,0.12)] ring-2 ring-mm-primary/20;
+  }
+
+  .mm-dual-sb__rail-btn--muted:hover {
+    @apply bg-rose-500/15 text-rose-300;
+  }
+
+  .mm-dual-sb__rail-footer {
+    @apply flex flex-col items-center gap-1.5 pt-2;
+  }
+
+  .mm-dual-sb__panel {
+    @apply flex min-h-0 w-[var(--mm-dual-panel-width)] shrink-0 flex-col;
+    background: linear-gradient(180deg, #f4faf7 0%, #edf5f0 100%);
+  }
+
+  .mm-dual-sb__panel-head {
+    @apply shrink-0 px-4 pb-3 pt-4;
+  }
+
+  .mm-dual-sb__brand-row {
+    @apply mb-2 flex items-center gap-2;
+  }
+
+  .mm-dual-sb__brand-mark {
+    @apply flex size-7 items-center justify-center rounded-lg bg-white shadow-[0_2px_8px_rgba(4,153,78,0.12)] ring-1 ring-mm-primary/10;
+  }
+
+  .mm-dual-sb__brand-mark img {
+    @apply size-4 object-contain;
+  }
+
+  .mm-dual-sb__brand-name {
+    @apply text-sm font-extrabold tracking-tight text-mm-primary;
+  }
+
+  .mm-dual-sb__panel-title {
+    @apply m-0 text-[1.05rem] font-bold text-mm-secondary;
+  }
+
+  .mm-dual-sb__panel-nav {
+    @apply min-h-0 flex-1 overflow-y-auto px-2 pb-4;
+    scrollbar-width: none;
+  }
+
+  .mm-dual-sb__panel-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mm-dual-sb__divider {
+    @apply mx-2 my-2.5 h-px bg-mm-primary/10;
+  }
+
+  .mm-dual-sb__divider--soft {
+    @apply my-1.5;
+  }
+
+  .mm-dual-sb__group-label {
+    @apply mb-1 px-3 text-[0.65rem] font-bold uppercase tracking-wider text-mm-primary/55;
+  }
+
+  .mm-dual-sb__list {
+    @apply m-0 list-none space-y-0.5 p-0;
+  }
+
+  .mm-dual-sb__item {
+    @apply flex items-center gap-2.5 rounded-xl px-3 py-2 text-[0.8125rem] font-medium text-mm-ink no-underline transition-all duration-150;
+  }
+
+  .mm-dual-sb__item:hover {
+    @apply bg-white/70 text-mm-secondary;
+  }
+
+  .mm-dual-sb__item--active {
+    @apply bg-white font-semibold text-mm-secondary shadow-[0_2px_10px_rgba(4,153,78,0.1)] ring-1 ring-mm-primary/12;
+  }
+
+  .mm-dual-sb__item-icon {
+    @apply size-4 shrink-0 text-mm-icon;
+  }
+
+  .mm-dual-sb__item--active .mm-dual-sb__item-icon {
+    @apply text-mm-primary;
+  }
+
+  .mm-dual-sb__item-label {
+    @apply min-w-0 flex-1 truncate;
+  }
+
+  .mm-dual-sb__item-count {
+    @apply shrink-0 rounded-md bg-mm-field px-1.5 py-0.5 text-xs font-bold tabular-nums text-mm-ink-muted;
+  }
+
+  .mm-dual-sb__item--active .mm-dual-sb__item-count {
+    @apply bg-[#e8f7ee] text-mm-primary;
+  }
+
+  .mm-dual-sb__add-btn {
+    @apply mt-1 flex w-full items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-mm-primary/60 transition-colors hover:text-mm-primary;
+  }
+
+  .mm-dual-sb__add-btn ng-icon {
+    @apply text-mm-accent;
+  }
+
+  mm-restaurant-sidebar.mm-restaurant-sidebar-host {
+    @apply shrink-0 self-stretch overflow-visible;
+    height: calc(100dvh - 1.5rem);
+    transition: width 280ms ease;
+  }
+
+  @media (min-width: 768px) {
+    mm-restaurant-sidebar.mm-restaurant-sidebar-host {
+      height: calc(100dvh - 2rem);
+    }
+  }
+
+  mm-restaurant-sidebar.mm-restaurant-sidebar-host > .mm-dual-sb {
+    @apply h-full;
+  }
+
+  mm-restaurant-sidebar.mm-restaurant-sidebar-host--mobile {
+    @apply fixed z-50 overflow-visible;
+    inset-block: 0.75rem;
+    inset-inline-start: 0.75rem;
+    height: calc(100dvh - 1.5rem);
+    transform: translateX(calc(-100% - 1.25rem));
+    transition: transform 280ms ease;
+  }
+
+  [dir='rtl'] mm-restaurant-sidebar.mm-restaurant-sidebar-host--mobile {
+    inset-inline-start: auto;
+    inset-inline-end: 0.75rem;
+    transform: translateX(calc(100% + 1.25rem));
+  }
+
+  mm-restaurant-sidebar.mm-restaurant-sidebar-host--mobile.mm-restaurant-sidebar-host--overlay-open {
+    transform: translateX(0);
+  }
+
+  mm-restaurant-sidebar.mm-restaurant-sidebar-host--mobile:not(.mm-restaurant-sidebar-host--overlay-open) {
+    @apply pointer-events-none;
   }
 }
 

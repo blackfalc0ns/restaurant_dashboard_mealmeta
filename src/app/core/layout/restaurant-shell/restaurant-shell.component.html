@@ -1,0 +1,20 @@
+<div class="mm-restaurant-shell-canvas">
+  @if (layout.showBackdrop()) {
+    <button
+      type="button"
+      class="mm-restaurant-shell-backdrop"
+      [attr.aria-label]="'Close menu'"
+      (click)="closeMobileNav()"
+    ></button>
+  }
+
+  <mm-restaurant-sidebar />
+
+  <div class="mm-restaurant-shell-main">
+    <mm-restaurant-header />
+
+    <main class="mm-restaurant-shell-content">
+      <router-outlet />
+    </main>
+  </div>
+</div>
