@@ -1,0 +1,20 @@
+<section dir="rtl" class="mm-page">
+  <header class="mm-page__header">
+    <h1>طلبات بانتظار التأكيد</h1>
+    <p>استلام عند −72h — تأكيد إلزامي خلال 24 ساعة</p>
+  </header>
+
+  <mm-page-state
+    [viewState]="facade.state.page.viewState"
+    emptyMessage="لا توجد طلبات بانتظار التأكيد"
+    (retry)="onRetry()"
+  />
+
+  @if (facade.state.page.viewState === 'success') {
+    <mm-preparation-order-list
+      [rows]="facade.state.pendingRows"
+      mode="pending-confirmation"
+    />
+    <mm-confirm-order-dialog />
+  }
+</section>

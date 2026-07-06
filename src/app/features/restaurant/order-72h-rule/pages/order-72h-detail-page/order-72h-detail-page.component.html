@@ -1,0 +1,18 @@
+<section dir="rtl" class="mm-page">
+  <header class="mm-page__header">
+    <h1>تفاصيل الطلب</h1>
+  </header>
+
+  <mm-page-state
+    [viewState]="facade.state.page.viewState"
+    (retry)="onRetry()"
+  />
+
+  @if (facade.state.page.viewState === 'success' && facade.state.pendingRows[0]; as order) {
+    <mm-confirmation-countdown
+      [deadlineAt]="order.confirmationDeadlineAt"
+      [hoursRemaining]="order.hoursUntilConfirmationDeadline"
+      [state]="order.countdownState"
+    />
+  }
+</section>

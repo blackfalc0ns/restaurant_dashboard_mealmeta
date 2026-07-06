@@ -1,0 +1,25 @@
+<ul dir="rtl" class="mm-list">
+  @if (mode === 'pending-confirmation') {
+    @for (row of rows; track row.orderId) {
+      <li class="mm-list__item">
+        <span>{{ row.deliveryDate }} — {{ row.mealSummary }}</span>
+        <mm-confirmation-countdown
+          [deadlineAt]="row.confirmationDeadlineAt"
+          [hoursRemaining]="row.hoursUntilConfirmationDeadline"
+          [state]="row.countdownState"
+        />
+      </li>
+    }
+  } @else {
+    @for (row of upcomingRows; track row.orderId) {
+      <li class="mm-list__item">
+        <span>{{ row.deliveryDate }} — {{ row.mealSummary }}</span>
+        <span class="mm-list__meta">
+          @if (row.invoiceGenerated) { فاتورة }
+          @if (row.barcodeGenerated) { باركود }
+          @if (row.labelsGenerated) { ملصق }
+        </span>
+      </li>
+    }
+  }
+</ul>

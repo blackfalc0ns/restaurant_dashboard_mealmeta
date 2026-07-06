@@ -1,0 +1,8 @@
+.mm-page-state {
+  padding: 1rem;
+  text-align: center;
+}
+
+.mm-page-state--error {
+  color: var(--mm-color-error, #b00020);
+}
