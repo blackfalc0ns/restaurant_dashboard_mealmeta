@@ -12,23 +12,21 @@ import { RestaurantOnboardingFacade } from '../../state/onboarding.facade';
   imports: [ReactiveFormsModule, ZardInputDirective],
   template: `
     <div class="flex flex-col gap-4">
-      <div class="mm-onboarding__form-section">
-        <p class="mm-onboarding__label">{{ copy().fields.serviceRegions }}</p>
-        <div class="flex flex-wrap gap-2">
-          @for (area of areas; track area.id) {
-            <button
-              type="button"
-              class="mm-onboarding__chip"
-              [class.mm-onboarding__chip--active]="isSelected(area.id)"
-              (click)="facade.toggleServiceRegion(area.id)"
-            >
-              {{ facade.localeService.isRtl() ? area.ar : area.en }}
-            </button>
-          }
-        </div>
-      </div>
-
       <form class="mm-onboarding__form" [formGroup]="form">
+        <div class="mm-onboarding__field mm-onboarding__field--full">
+          <label class="mm-onboarding__label" for="serviceRegionId">{{ copy().fields.serviceRegions }}</label>
+          <select
+            id="serviceRegionId"
+            class="mm-onboarding__input mm-onboarding__select"
+            formControlName="serviceRegionId"
+          >
+            <option value="">{{ facade.localeService.isRtl() ? 'اختر المنطقة' : 'Select region' }}</option>
+            @for (area of areas; track area.id) {
+              <option [value]="area.id">{{ facade.localeService.isRtl() ? area.ar : area.en }}</option>
+            }
+          </select>
+        </div>
+
         <div class="mm-onboarding__field">
           <label class="mm-onboarding__label" for="bankName">{{ copy().fields.bankName }}</label>
           <input id="bankName" z-input class="mm-onboarding__input" formControlName="bankName" />
@@ -53,6 +51,7 @@ export class OnboardingRegionsStepComponent {
   readonly copy = computed(() => ONBOARDING_I18N[this.facade.localeService.locale()]);
 
   readonly form = this.fb.nonNullable.group({
+    serviceRegionId: [this.facade.draft().regions.serviceRegions[0] ?? ''],
     bankName: [this.facade.draft().regions.bankName],
     iban: [this.facade.draft().regions.iban],
     accountHolder: [this.facade.draft().regions.accountHolder],
@@ -61,15 +60,11 @@ export class OnboardingRegionsStepComponent {
   constructor() {
     this.form.valueChanges.subscribe((value) => {
       this.facade.updateDraft('regions', {
-        ...this.facade.draft().regions,
+        serviceRegions: value.serviceRegionId ? [value.serviceRegionId] : [],
         bankName: value.bankName ?? '',
         iban: value.iban ?? '',
         accountHolder: value.accountHolder ?? '',
       });
     });
-  }
-
-  isSelected(areaId: string): boolean {
-    return this.facade.draft().regions.serviceRegions.includes(areaId);
   }
 }

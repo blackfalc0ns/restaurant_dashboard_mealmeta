@@ -103,6 +103,7 @@ export class RestaurantOnboardingFacade {
     setTimeout(() => {
       this.viewState.set('submitted');
       this.markStepComplete('review');
+      void this.router.navigateByUrl('/restaurant/under-review');
     }, AUTH_DESIGN_MODE ? 600 : 1200);
   }
 

@@ -1,0 +1,166 @@
+<section class="mm-under-review">
+  <!-- Animated background blobs -->
+  <div class="mm-under-review__blob mm-under-review__blob--1" aria-hidden="true"></div>
+  <div class="mm-under-review__blob mm-under-review__blob--2" aria-hidden="true"></div>
+  <div class="mm-under-review__blob mm-under-review__blob--3" aria-hidden="true"></div>
+  <div class="mm-under-review__grid-overlay" aria-hidden="true"></div>
+
+  <header class="mm-under-review__topbar">
+    <img class="mm-under-review__logo" [src]="brandLogoSrc" alt="MealMate" width="140" height="32" />
+    <button type="button" class="mm-under-review__lang" (click)="toggleLocale()">
+      <span class="mm-under-review__lang-icon">🌐</span>
+      <span>{{ locale.locale() === 'ar' ? 'English' : 'العربية' }}</span>
+    </button>
+  </header>
+
+  <div class="mm-under-review__card">
+    <!-- Top glowing accent line -->
+    <div class="mm-under-review__card-glow"></div>
+
+    <!-- Pulsing Radar and Icon -->
+    <div class="mm-under-review__radar-container" aria-hidden="true">
+      <div class="mm-under-review__radar-ring mm-under-review__radar-ring--1"></div>
+      <div class="mm-under-review__radar-ring mm-under-review__radar-ring--2"></div>
+      <div class="mm-under-review__radar-ring mm-under-review__radar-ring--3"></div>
+      <div class="mm-under-review__center-icon">
+        <ng-icon name="lucideShieldCheck" class="size-10 text-white" />
+      </div>
+    </div>
+
+    <!-- Status Badge -->
+    <div class="flex justify-center">
+      <span class="mm-under-review__badge">
+        <span class="mm-under-review__badge-dot" aria-hidden="true"></span>
+        {{ copy().statusBadge }}
+      </span>
+    </div>
+
+    <!-- Title & Description -->
+    <h1 class="mm-under-review__title">{{ copy().title }}</h1>
+    <p class="mm-under-review__desc">{{ copy().description }}</p>
+
+    <!-- Reference & ETA Cards -->
+    <div class="mm-under-review__meta">
+      <div class="mm-under-review__meta-item">
+        <span class="mm-under-review__meta-label">
+          <ng-icon name="lucideBuilding2" class="size-4 opacity-70" />
+          {{ copy().referenceLabel }}
+        </span>
+        <strong dir="ltr" class="mm-under-review__meta-value mm-under-review__meta-value--code text-mm-primary">{{ referenceCode }}</strong>
+      </div>
+      <div class="mm-under-review__meta-item">
+        <span class="mm-under-review__meta-label">
+          <ng-icon name="lucideClock3" class="size-4 opacity-70" />
+          {{ copy().etaLabel }}
+        </span>
+        <strong class="mm-under-review__meta-value text-mm-accent">{{ copy().etaValue }}</strong>
+      </div>
+    </div>
+
+    <!-- Live Progress Bar -->
+    <div class="mm-under-review__progress-section">
+      <div class="flex justify-between text-xs font-bold mb-2">
+        <span class="text-mm-secondary flex items-center gap-1.5">
+          <ng-icon name="lucideRefreshCw" class="size-3.5 animate-spin text-mm-primary" />
+          {{ copy().liveTracker }}
+        </span>
+        <span class="text-mm-primary">65%</span>
+      </div>
+      <div class="mm-under-review__progress-track">
+        <div class="mm-under-review__progress-bar" style="width: 65%">
+          <div class="mm-under-review__progress-shimmer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Two-Column Layout for Desktop -->
+    <div class="mm-under-review__columns">
+      <!-- Column 1: Review Stages -->
+      <div class="mm-under-review__column">
+        <div class="mm-under-review__section-card">
+          <h2 class="mm-under-review__section-title">
+            <span class="mm-under-review__title-dot"></span>
+            {{ copy().nextTitle }}
+          </h2>
+          <ol class="mm-under-review__steps">
+            @for (step of copy().steps; track step.title; let last = $last) {
+              <li
+                class="mm-under-review__step"
+                [class.mm-under-review__step--done]="step.status === 'done'"
+                [class.mm-under-review__step--active]="step.status === 'active'"
+                [class.mm-under-review__step--last]="last"
+              >
+                <span class="mm-under-review__step-marker">
+                  @if (step.status === 'done') {
+                    <ng-icon name="lucideCheck" class="size-4" />
+                  } @else if (step.status === 'active') {
+                    <ng-icon name="lucideRefreshCw" class="size-3.5 animate-spin" />
+                  } @else {
+                    <ng-icon [name]="step.icon" class="size-4" />
+                  }
+                </span>
+                <div class="mm-under-review__step-body">
+                  <strong>{{ step.title }}</strong>
+                  <small>{{ step.detail }}</small>
+                </div>
+              </li>
+            }
+          </ol>
+        </div>
+      </div>
+
+      <!-- Column 2: Document Checklist -->
+      <div class="mm-under-review__column">
+        <div class="mm-under-review__section-card">
+          <h2 class="mm-under-review__section-title">
+            <span class="mm-under-review__title-dot mm-under-review__title-dot--orange"></span>
+            {{ copy().docChecklistTitle }}
+          </h2>
+          <ul class="mm-under-review__docs-list">
+            @for (doc of copy().documents; track doc.name) {
+              <li class="mm-under-review__doc-item">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <span class="mm-under-review__doc-bullet" [class.mm-under-review__doc-bullet--verified]="doc.status === 'verified'">
+                    @if (doc.status === 'verified') {
+                      <ng-icon name="lucideCheck" class="size-3" />
+                    }
+                  </span>
+                  <span class="mm-under-review__doc-name truncate">{{ doc.name }}</span>
+                </div>
+                <span
+                  class="mm-under-review__doc-status"
+                  [class.mm-under-review__doc-status--verified]="doc.status === 'verified'"
+                >
+                  {{ doc.statusLabel }}
+                </span>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Important Tip -->
+    <div class="mm-under-review__tip">
+      <div class="mm-under-review__tip-icon-container">
+        <ng-icon name="lucideMail" class="size-5 text-mm-accent" />
+      </div>
+      <div class="mm-under-review__tip-content">
+        <strong>{{ copy().tipTitle }}</strong>
+        <p>{{ copy().tipBody }}</p>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mm-under-review__actions">
+      <button type="button" class="mm-under-review__btn-primary" (click)="goToLogin()">
+        <span>{{ copy().primaryCta }}</span>
+        <ng-icon [name]="directionIcon()" class="size-4" />
+      </button>
+      <a class="mm-under-review__btn-secondary" [href]="'mailto:' + copy().supportMail">
+        <ng-icon name="lucideMail" class="size-4 opacity-80" />
+        <span>{{ copy().secondaryCta }}</span>
+      </a>
+    </div>
+  </div>
+</section>

@@ -1,242 +1,219 @@
-@if (facade.isSubmitted()) {
-  <section class="mm-onboarding-success relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-12 text-center">
-    <div class="mm-onboarding-success__glow" aria-hidden="true"></div>
-    <div class="relative z-10">
-      <div class="mm-onboarding-success__rings" aria-hidden="true">
-        <div class="mm-onboarding-success__icon">
-          <svg class="size-10 text-white" viewBox="0 0 24 24" fill="none">
-            <path d="M5 12l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
+<div class="mm-onboarding min-h-dvh xl:grid xl:grid-cols-[minmax(22rem,30rem)_1fr]">
+  <aside class="mm-onboarding__sidebar relative hidden overflow-hidden xl:flex xl:flex-col">
+    <img
+      class="mm-onboarding__sidebar-image absolute inset-0 size-full object-cover object-center"
+      [src]="authHeroSrc"
+      alt=""
+      width="960"
+      height="1080"
+      decoding="async"
+      aria-hidden="true"
+    />
+    <div class="mm-onboarding__sidebar-overlay" aria-hidden="true"></div>
+    <div class="mm-onboarding__sidebar-scrim" aria-hidden="true"></div>
+
+    <div class="mm-onboarding__sidebar-content relative z-10 flex flex-1 flex-col px-7 py-9 2xl:px-9">
+      <div class="mm-onboarding__sidebar-hero mb-8">
+        <img
+          class="mb-5 h-10 w-auto max-w-[12rem] object-contain"
+          [src]="brandLogoSrc"
+          alt="MealMate"
+          width="280"
+          height="48"
+          decoding="async"
+        />
+
+        <p
+          class="mm-onboarding__sidebar-eyebrow mb-3 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-bold"
+          [class.uppercase]="!localeService.isRtl()"
+          [class.tracking-widest]="!localeService.isRtl()"
+        >
+          <span class="text-[#04994E]">{{ brandTagline().lead }}</span>
+          <span class="text-[#F67E15]" aria-hidden="true">·</span>
+          <span class="text-[#04994E]">{{ brandTagline().accent }}</span>
+        </p>
+
+        <h1 class="mm-onboarding__sidebar-title mb-2 text-[1.65rem] font-extrabold leading-[1.15] 2xl:text-[1.85rem]">
+          {{ copy().pageTitle }}
+        </h1>
+        <p class="mm-onboarding__sidebar-subtitle m-0 max-w-xs text-sm font-semibold leading-relaxed">
+          {{ copy().pageSubtitle }}
+        </p>
+      </div>
+
+      <div class="mm-onboarding__progress-card mb-8">
+        <div class="mb-2.5 flex items-center justify-between text-xs font-bold text-[#015329]">
+          <span>{{ copy().progressLabel }}</span>
+          <span class="font-extrabold text-[#04994E]" dir="ltr">{{ facade.progressPercent() }}%</span>
+        </div>
+        <div class="h-2.5 overflow-hidden rounded-full bg-[#E4EEE8] ring-1 ring-[#6ac879]/20">
+          <div
+            class="mm-onboarding__progress-fill h-full rounded-full transition-all duration-700 ease-out"
+            [style.width.%]="facade.progressPercent()"
+          ></div>
         </div>
       </div>
-      <h1 class="mb-3 text-2xl font-extrabold text-mm-emerald sm:text-3xl">{{ copy().submittedTitle }}</h1>
-      <p class="mx-auto mb-8 max-w-md text-sm leading-relaxed text-stone-600 sm:text-base">{{ copy().submittedDesc }}</p>
-      <button type="button" class="mm-onboarding__btn-primary px-8" (click)="facade.goToLogin()">
-        {{ copy().goToLogin }}
-        <svg class="size-4 shrink-0 rtl:rotate-180" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </button>
-    </div>
-  </section>
-} @else {
-  <div class="mm-onboarding min-h-dvh xl:grid xl:grid-cols-[minmax(22rem,30rem)_1fr]">
-    <aside class="mm-onboarding__sidebar relative hidden overflow-hidden xl:flex xl:flex-col">
-      <img
-        class="mm-onboarding__sidebar-image absolute inset-0 size-full object-cover object-center"
-        [src]="authHeroSrc"
-        alt=""
-        width="960"
-        height="1080"
-        decoding="async"
-        aria-hidden="true"
-      />
-      <div class="mm-onboarding__sidebar-overlay" aria-hidden="true"></div>
-      <div class="mm-onboarding__sidebar-scrim" aria-hidden="true"></div>
 
-      <div class="mm-onboarding__sidebar-content relative z-10 flex flex-1 flex-col px-7 py-9 2xl:px-9">
-        <div class="mm-onboarding__sidebar-hero mb-8">
-          <img
-            class="mb-5 h-10 w-auto max-w-[12rem] object-contain"
-            [src]="brandLogoSrc"
-            alt="MealMate"
-            width="280"
-            height="48"
-            decoding="async"
-          />
+      <mm-onboarding-stepper class="flex-1" />
 
-          <p
-            class="mm-onboarding__sidebar-eyebrow mb-3 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-bold"
-            [class.uppercase]="!localeService.isRtl()"
-            [class.tracking-widest]="!localeService.isRtl()"
-          >
-            <span class="text-[#04994E]">{{ brandTagline().lead }}</span>
-            <span class="text-[#F67E15]" aria-hidden="true">·</span>
-            <span class="text-[#04994E]">{{ brandTagline().accent }}</span>
-          </p>
-
-          <h1 class="mm-onboarding__sidebar-title mb-2 text-[1.65rem] font-extrabold leading-[1.15] 2xl:text-[1.85rem]">
-            {{ copy().pageTitle }}
-          </h1>
-          <p class="mm-onboarding__sidebar-subtitle m-0 max-w-xs text-sm font-semibold leading-relaxed">
-            {{ copy().pageSubtitle }}
-          </p>
-        </div>
-
-        <div class="mm-onboarding__progress-card mb-8">
-          <div class="mb-2.5 flex items-center justify-between text-xs font-bold text-[#015329]">
-            <span>{{ copy().progressLabel }}</span>
-            <span class="font-extrabold text-[#04994E]" dir="ltr">{{ facade.progressPercent() }}%</span>
-          </div>
-          <div class="h-2.5 overflow-hidden rounded-full bg-[#E4EEE8] ring-1 ring-[#6ac879]/20">
-            <div
-              class="mm-onboarding__progress-fill h-full rounded-full transition-all duration-700 ease-out"
-              [style.width.%]="facade.progressPercent()"
-            ></div>
-          </div>
-        </div>
-
-        <mm-onboarding-stepper class="flex-1" />
-
-        <div class="mm-onboarding__tip-card mt-8">
-          <div class="mb-2 flex items-center gap-2">
-            <span class="mm-onboarding__tip-icon" aria-hidden="true">
-              <svg class="size-4" viewBox="0 0 24 24" fill="none">
-                <path d="M12 3a7 7 0 0 0-4 12.7V19a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3.3A7 7 0 0 0 12 3Z" stroke="currentColor" stroke-width="1.5" />
-                <path d="M10 22h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-              </svg>
-            </span>
-            <span class="text-xs font-extrabold text-[#F67E15]">{{ localeService.isRtl() ? 'نصيحة' : 'Tip' }}</span>
-          </div>
-          <p class="m-0 text-sm font-semibold leading-relaxed text-[#3d4f47]">{{ currentStepCopy().tip }}</p>
-        </div>
-      </div>
-    </aside>
-
-    <div class="mm-onboarding__main relative flex min-h-dvh flex-col">
-      <div class="mm-onboarding__pattern pointer-events-none absolute inset-0" aria-hidden="true"></div>
-
-      <header class="mm-onboarding__header relative z-20 flex items-center justify-between gap-4 px-4 py-4 sm:px-8">
-        <div class="flex min-w-0 items-center gap-3">
-          <img class="h-8 w-auto max-w-[9.5rem] object-contain xl:hidden" [src]="brandLogoSrc" alt="MealMate" decoding="async" />
-          <div class="hidden min-w-0 xl:block">
-            <p class="m-0 text-[0.65rem] font-bold uppercase tracking-[0.18em] text-mm-emerald/60">{{ copy().eyebrow }}</p>
-            <p class="m-0 truncate text-base font-extrabold text-mm-emerald">{{ currentStepCopy().title }}</p>
-          </div>
-        </div>
-
-        <div class="flex shrink-0 items-center gap-2">
-          <button
-            type="button"
-            z-button
-            zType="outline"
-            zSize="sm"
-            class="mm-onboarding__header-btn hidden sm:inline-flex"
-            (click)="facade.saveDraft()"
-          >
-            {{ copy().saveDraft }}
-          </button>
-          <button
-            type="button"
-            z-button
-            zType="outline"
-            zSize="sm"
-            class="mm-onboarding__header-btn gap-1.5"
-            (click)="localeService.toggle()"
-          >
-            <svg class="size-4 opacity-80" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" />
-              <path d="M3 12h18M12 3c2.5 2.8 4 6 4 9s-1.5 6.2-4 9M12 3c-2.5 2.8-4 6-4 9s1.5 6.2 4 9" stroke="currentColor" stroke-width="1.5" />
+      <div class="mm-onboarding__tip-card mt-8">
+        <div class="mb-2 flex items-center gap-2">
+          <span class="mm-onboarding__tip-icon" aria-hidden="true">
+            <svg class="size-4" viewBox="0 0 24 24" fill="none">
+              <path d="M12 3a7 7 0 0 0-4 12.7V19a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3.3A7 7 0 0 0 12 3Z" stroke="currentColor" stroke-width="1.5" />
+              <path d="M10 22h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
-            <span class="text-xs font-semibold sm:text-sm">{{ localeService.locale() === 'ar' ? 'English' : 'العربية' }}</span>
-          </button>
+          </span>
+          <span class="text-xs font-extrabold text-[#F67E15]">{{ localeService.isRtl() ? 'نصيحة' : 'Tip' }}</span>
         </div>
-      </header>
+        <p class="m-0 text-sm font-semibold leading-relaxed text-[#3d4f47]">{{ currentStepCopy().tip }}</p>
+      </div>
+    </div>
+  </aside>
 
-      <div class="relative z-10 px-4 pb-3 xl:hidden">
-        <div class="mm-onboarding__mobile-progress mb-3 flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          @for (step of facade.steps; track step.id; let i = $index) {
-            <button
-              type="button"
-              class="mm-onboarding__mobile-pill shrink-0"
-              [class.mm-onboarding__mobile-pill--active]="facade.currentStep() === step.id"
-              [class.mm-onboarding__mobile-pill--done]="facade.isStepComplete(step.id)"
-              (click)="facade.goToStep(step.id)"
-            >
-              <span dir="ltr">{{ i + 1 }}</span>
-              <span>{{ copy().steps[step.id].title }}</span>
-            </button>
+  <div class="mm-onboarding__main relative flex min-h-dvh flex-col">
+    <div class="mm-onboarding__pattern pointer-events-none absolute inset-0" aria-hidden="true"></div>
+
+    <header class="mm-onboarding__header relative z-20 flex items-center justify-between gap-4 px-4 py-4 sm:px-8">
+      <div class="flex min-w-0 items-center gap-3">
+        <img class="h-8 w-auto max-w-[9.5rem] object-contain xl:hidden" [src]="brandLogoSrc" alt="MealMate" decoding="async" />
+        <div class="hidden min-w-0 xl:block">
+          <p class="m-0 text-[0.65rem] font-bold uppercase tracking-[0.18em] text-mm-emerald/60">{{ copy().eyebrow }}</p>
+          <p class="m-0 truncate text-base font-extrabold text-mm-emerald">{{ currentStepCopy().title }}</p>
+        </div>
+      </div>
+
+      <div class="flex shrink-0 items-center gap-2">
+        <button
+          type="button"
+          z-button
+          zType="outline"
+          zSize="sm"
+          class="mm-onboarding__header-btn hidden sm:inline-flex"
+          (click)="facade.saveDraft()"
+        >
+          {{ copy().saveDraft }}
+        </button>
+        <button
+          type="button"
+          z-button
+          zType="outline"
+          zSize="sm"
+          class="mm-onboarding__header-btn gap-1.5"
+          (click)="localeService.toggle()"
+        >
+          <svg class="size-4 opacity-80" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" />
+            <path d="M3 12h18M12 3c2.5 2.8 4 6 4 9s-1.5 6.2-4 9M12 3c-2.5 2.8-4 6-4 9s1.5 6.2 4 9" stroke="currentColor" stroke-width="1.5" />
+          </svg>
+          <span class="text-xs font-semibold sm:text-sm">{{ localeService.locale() === 'ar' ? 'English' : 'العربية' }}</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="relative z-10 px-4 pb-3 xl:hidden">
+      <div class="mm-onboarding__mobile-progress mb-3 flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        @for (step of facade.steps; track step.id; let i = $index) {
+          <button
+            type="button"
+            class="mm-onboarding__mobile-pill shrink-0"
+            [class.mm-onboarding__mobile-pill--active]="facade.currentStep() === step.id"
+            [class.mm-onboarding__mobile-pill--done]="facade.isStepComplete(step.id)"
+            (click)="facade.goToStep(step.id)"
+          >
+            <span dir="ltr">{{ i + 1 }}</span>
+            <span>{{ copy().steps[step.id].title }}</span>
+          </button>
+        }
+      </div>
+      <div class="h-1.5 overflow-hidden rounded-full bg-mm-field-border">
+        <div class="mm-onboarding__progress-fill h-full rounded-full transition-all duration-500" [style.width.%]="facade.progressPercent()"></div>
+      </div>
+    </div>
+
+    <main class="mm-onboarding__main-body relative z-10 flex flex-1 items-center justify-center px-4 pb-28 sm:px-8 xl:px-12 xl:pb-10">
+      <div class="mm-onboarding__card w-full max-w-2xl">
+
+        <div class="mm-onboarding__card-header">
+          <div class="mm-onboarding__step-icon" aria-hidden="true">
+            @switch (facade.currentStep()) {
+              @case ('account') {
+                <svg class="size-6" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              }
+              @case ('business') {
+                <svg class="size-6" viewBox="0 0 24 24" fill="none"><path d="M4 21V7l8-4 8 4v14" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="1.5"/></svg>
+              }
+              @case ('location') {
+                <svg class="size-6" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-4.5 7-10a7 7 0 1 0-14 0c0 5.5 7 10 7 10Z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="11" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg>
+              }
+              @case ('documents') {
+                <svg class="size-6" viewBox="0 0 24 24" fill="none"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7l-5-5Z" stroke="currentColor" stroke-width="1.5"/><path d="M14 2v5h5" stroke="currentColor" stroke-width="1.5"/></svg>
+              }
+              @case ('regions') {
+                <svg class="size-6" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M3 12h18M12 3c2.5 2.8 4 6 4 9s-1.5 6.2-4 9M12 3c-2.5 2.8-4 6-4 9s1.5 6.2 4 9" stroke="currentColor" stroke-width="1.5"/></svg>
+              }
+              @default {
+                <svg class="size-6" viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              }
+            }
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="mb-1 flex flex-wrap items-center gap-2">
+              <span class="mm-onboarding__step-pill" dir="ltr">{{ facade.currentStepIndex() + 1 }} / {{ facade.steps.length }}</span>
+              <span class="text-[0.65rem] font-semibold text-mm-ink-muted xl:hidden">{{ copy().progressLabel }} · <span dir="ltr">{{ facade.progressPercent() }}%</span></span>
+            </div>
+            <h2 class="mb-0.5 text-lg font-extrabold text-mm-emerald sm:text-xl">{{ currentStepCopy().title }}</h2>
+            <p class="m-0 text-sm leading-snug text-stone-600">{{ currentStepCopy().subtitle }}</p>
+          </div>
+        </div>
+
+        <div class="mm-onboarding__step-body">
+          @switch (facade.currentStep()) {
+            @case ('account') { <mm-onboarding-account-step /> }
+            @case ('business') { <mm-onboarding-business-step /> }
+            @case ('location') { <mm-onboarding-location-step /> }
+            @case ('documents') { <mm-onboarding-documents-step /> }
+            @case ('regions') { <mm-onboarding-regions-step /> }
+            @case ('review') { <mm-onboarding-review-step /> }
           }
         </div>
-        <div class="h-1.5 overflow-hidden rounded-full bg-mm-field-border">
-          <div class="mm-onboarding__progress-fill h-full rounded-full transition-all duration-500" [style.width.%]="facade.progressPercent()"></div>
+      </div>
+    </main>
+
+    <footer class="mm-onboarding__footer fixed inset-x-0 bottom-0 z-30 px-4 py-4 sm:px-8 xl:static xl:mt-auto xl:bg-transparent xl:px-12 xl:py-8 xl:shadow-none">
+      <div class="mx-auto flex w-full max-w-2xl flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <a class="mm-restaurant-auth__link text-center text-sm font-semibold sm:text-start" routerLink="/restaurant/login">
+          {{ copy().loginLink }}
+        </a>
+        <div class="flex gap-2.5 sm:gap-3">
+          @if (!facade.isFirstStep()) {
+            <button type="button" class="mm-onboarding__btn-secondary flex-1 sm:flex-none" (click)="facade.goBack()">
+              {{ copy().back }}
+            </button>
+          }
+          <button
+            type="button"
+            class="mm-onboarding__btn-primary min-w-[9rem] flex-1 sm:flex-none"
+            [disabled]="facade.isSubmitting()"
+            (click)="facade.goNext()"
+          >
+            @if (facade.isSubmitting()) {
+              <span class="mm-restaurant-auth__spinner" aria-hidden="true"></span>
+              {{ copy().submitting }}
+            } @else if (facade.isLastStep()) {
+              {{ copy().submit }}
+              <svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            } @else {
+              {{ copy().next }}
+              <svg class="size-4 shrink-0 rtl:rotate-180" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            }
+          </button>
         </div>
       </div>
-
-      <main class="mm-onboarding__main-body relative z-10 flex flex-1 items-center justify-center px-4 pb-28 sm:px-8 xl:px-12 xl:pb-10">
-        <div class="mm-onboarding__card w-full max-w-2xl">
-
-          <div class="mm-onboarding__card-header">
-            <div class="mm-onboarding__step-icon" aria-hidden="true">
-              @switch (facade.currentStep()) {
-                @case ('account') {
-                  <svg class="size-6" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                }
-                @case ('business') {
-                  <svg class="size-6" viewBox="0 0 24 24" fill="none"><path d="M4 21V7l8-4 8 4v14" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="1.5"/></svg>
-                }
-                @case ('location') {
-                  <svg class="size-6" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-4.5 7-10a7 7 0 1 0-14 0c0 5.5 7 10 7 10Z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="11" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg>
-                }
-                @case ('documents') {
-                  <svg class="size-6" viewBox="0 0 24 24" fill="none"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7l-5-5Z" stroke="currentColor" stroke-width="1.5"/><path d="M14 2v5h5" stroke="currentColor" stroke-width="1.5"/></svg>
-                }
-                @case ('regions') {
-                  <svg class="size-6" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M3 12h18M12 3c2.5 2.8 4 6 4 9s-1.5 6.2-4 9M12 3c-2.5 2.8-4 6-4 9s1.5 6.2 4 9" stroke="currentColor" stroke-width="1.5"/></svg>
-                }
-                @default {
-                  <svg class="size-6" viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                }
-              }
-            </div>
-            <div class="min-w-0 flex-1">
-              <div class="mb-1 flex flex-wrap items-center gap-2">
-                <span class="mm-onboarding__step-pill" dir="ltr">{{ facade.currentStepIndex() + 1 }} / {{ facade.steps.length }}</span>
-                <span class="text-[0.65rem] font-semibold text-mm-ink-muted xl:hidden">{{ copy().progressLabel }} · <span dir="ltr">{{ facade.progressPercent() }}%</span></span>
-              </div>
-              <h2 class="mb-0.5 text-lg font-extrabold text-mm-emerald sm:text-xl">{{ currentStepCopy().title }}</h2>
-              <p class="m-0 text-sm leading-snug text-stone-600">{{ currentStepCopy().subtitle }}</p>
-            </div>
-          </div>
-
-          <div class="mm-onboarding__step-body">
-            @switch (facade.currentStep()) {
-              @case ('account') { <mm-onboarding-account-step /> }
-              @case ('business') { <mm-onboarding-business-step /> }
-              @case ('location') { <mm-onboarding-location-step /> }
-              @case ('documents') { <mm-onboarding-documents-step /> }
-              @case ('regions') { <mm-onboarding-regions-step /> }
-              @case ('review') { <mm-onboarding-review-step /> }
-            }
-          </div>
-        </div>
-      </main>
-
-      <footer class="mm-onboarding__footer fixed inset-x-0 bottom-0 z-30 px-4 py-4 sm:px-8 xl:static xl:mt-auto xl:bg-transparent xl:px-12 xl:py-8 xl:shadow-none">
-        <div class="mx-auto flex w-full max-w-2xl flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <a class="mm-restaurant-auth__link text-center text-sm font-semibold sm:text-start" routerLink="/restaurant/login">
-            {{ copy().loginLink }}
-          </a>
-          <div class="flex gap-2.5 sm:gap-3">
-            @if (!facade.isFirstStep()) {
-              <button type="button" class="mm-onboarding__btn-secondary flex-1 sm:flex-none" (click)="facade.goBack()">
-                {{ copy().back }}
-              </button>
-            }
-            <button
-              type="button"
-              class="mm-onboarding__btn-primary min-w-[9rem] flex-1 sm:flex-none"
-              [disabled]="facade.isSubmitting()"
-              (click)="facade.goNext()"
-            >
-              @if (facade.isSubmitting()) {
-                <span class="mm-restaurant-auth__spinner" aria-hidden="true"></span>
-                {{ copy().submitting }}
-              } @else if (facade.isLastStep()) {
-                {{ copy().submit }}
-                <svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              } @else {
-                {{ copy().next }}
-                <svg class="size-4 shrink-0 rtl:rotate-180" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              }
-            </button>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </footer>
   </div>
-}
+</div>

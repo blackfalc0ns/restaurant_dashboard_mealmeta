@@ -1,5 +1,7 @@
 import { CanMatchFn, Routes } from '@angular/router';
 
+import { RestaurantAuthLocaleService } from './features/auth/state/auth-locale.service';
+
 const RESTAURANT_AUTH_PATHS = new Set(['login', 'forgot-password', 'verify-otp', 'register']);
 
 const matchesRestaurantAuth: CanMatchFn = (_route, segments) => {
@@ -20,6 +22,14 @@ export const APP_ROUTES: Routes = [
     path: 'restaurant/onboarding',
     loadChildren: () =>
       import('./features/restaurant/onboarding/onboarding.routes').then((m) => m.ONBOARDING_ROUTES),
+  },
+  {
+    path: 'restaurant/under-review',
+    loadComponent: () =>
+      import('./features/restaurant/under-review/restaurant-under-review-page.component').then(
+        (m) => m.RestaurantUnderReviewPageComponent
+      ),
+    providers: [RestaurantAuthLocaleService],
   },
   {
     path: 'restaurant/setup-wizard',
