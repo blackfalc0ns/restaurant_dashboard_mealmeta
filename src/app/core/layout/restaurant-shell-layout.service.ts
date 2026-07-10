@@ -55,6 +55,10 @@ export class RestaurantShellLayoutService {
     this.userCollapsed.set(collapsed);
   }
 
+  toggleUserCollapsed(): void {
+    this.userCollapsed.update((value) => !value);
+  }
+
   onRouteChange(): void {
     if (this.isMobile()) {
       this.closeMobileNav();

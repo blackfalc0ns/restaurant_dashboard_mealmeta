@@ -1,111 +1,78 @@
-<aside class="mm-dual-sb" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
-  <!-- Rail -->
-  <div class="mm-dual-sb__rail">
-    <a
-      routerLink="/restaurant/overview"
-      class="mm-dual-sb__logo"
-      (click)="closeMobileNav()"
-      aria-label="MealMate"
+<aside class="mm-thor" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'" [class.is-collapsed]="isCollapsed()">
+  <div class="mm-thor__brand">
+    <button
+      type="button"
+      class="mm-thor__logo"
+      [attr.aria-label]="collapseLabel()"
+      [attr.title]="collapseLabel()"
+      (click)="onLogoClick()"
     >
-      <img [src]="brandMarkSrc" alt="" class="mm-dual-sb__logo-img" width="22" height="22" />
-    </a>
-
-    <nav class="mm-dual-sb__rail-nav" [attr.aria-label]="locale.isRtl() ? 'الأقسام' : 'Sections'">
-      @for (section of navSections; track section.id) {
-        <button
-          type="button"
-          class="mm-dual-sb__rail-btn"
-          [class.mm-dual-sb__rail-btn--active]="isSectionSelected(section)"
-          [attr.title]="sectionLabel(section)"
-          (click)="selectSection(section)"
-        >
-          <ng-icon [name]="sectionIcon(section)" class="size-[1.125rem]" />
-        </button>
-      }
-    </nav>
-
-    <div class="mm-dual-sb__rail-footer">
-      <a
-        [routerLink]="settingsItem.route!"
-        class="mm-dual-sb__rail-btn"
-        [class.mm-dual-sb__rail-btn--active]="isItemActive(settingsItem)"
-        [attr.title]="label(settingsItem)"
-        (click)="onItemClick(settingsItem)"
-      >
-        <ng-icon [name]="settingsItem.icon" class="size-[1.125rem]" />
-      </a>
-      <button
-        type="button"
-        class="mm-dual-sb__rail-btn mm-dual-sb__rail-btn--muted"
-        [attr.aria-label]="logoutLabel()"
-        (click)="logout()"
-      >
-        <ng-icon name="lucideLogOut" class="size-[1rem]" />
-      </button>
-    </div>
+      <img [src]="brandMarkSrc" alt="" width="22" height="22" />
+    </button>
+    @if (!isCollapsed()) {
+      <button type="button" class="mm-thor__brand-name" (click)="onLogoClick()">MealMate</button>
+    }
   </div>
 
-  <!-- Panel -->
-  @if (showPanel()) {
-    <div class="mm-dual-sb__panel">
-      <header class="mm-dual-sb__panel-head">
-        <div class="mm-dual-sb__brand-row">
-          <span class="mm-dual-sb__brand-mark">
-            <img [src]="brandMarkSrc" alt="" width="18" height="18" />
-          </span>
-          <span class="mm-dual-sb__brand-name">MealMate</span>
-        </div>
-        <h2 class="mm-dual-sb__panel-title">{{ sectionLabel(selectedSection()) }}</h2>
-      </header>
+  <nav class="mm-thor__nav" [attr.aria-label]="locale.isRtl() ? 'التنقل' : 'Navigation'">
+    @for (section of navSections; track section.id; let first = $first) {
+      @if (!first) {
+        <div class="mm-thor__sep" aria-hidden="true"></div>
+      }
 
-      <nav class="mm-dual-sb__panel-nav">
-        @for (item of selectedSection().items; track item.id; let index = $index) {
-          @if (isNavGroup(item)) {
-            @if (index > 0) {
-              <div class="mm-dual-sb__divider"></div>
+      @if (!isCollapsed()) {
+        <p class="mm-thor__group">{{ sectionLabel(section) }}</p>
+      }
+
+      @for (item of sectionLinks(section); track item.id) {
+        <a
+          [routerLink]="item.route!"
+          class="mm-thor__link"
+          [class.is-active]="isItemActive(item)"
+          [class.is-orange]="linkTone(item) === 'orange' && isItemActive(item)"
+          [attr.data-tip]="label(item)"
+          (click)="onItemClick(item)"
+        >
+          <ng-icon [name]="item.icon" class="mm-thor__ico" />
+          @if (!isCollapsed()) {
+            <span class="mm-thor__txt">{{ label(item) }}</span>
+            @if (item.badge !== undefined) {
+              <em class="mm-thor__badge">{{ item.badge }}</em>
             }
-            <p class="mm-dual-sb__group-label">{{ label(item) }}</p>
-            <ul class="mm-dual-sb__list" role="list">
-              @for (child of item.children; track child.id) {
-                <li>
-                  <a
-                    [routerLink]="child.route!"
-                    class="mm-dual-sb__item"
-                    [class.mm-dual-sb__item--active]="isItemActive(child)"
-                    (click)="onItemClick(child)"
-                  >
-                    <ng-icon [name]="child.icon" class="mm-dual-sb__item-icon" />
-                    <span class="mm-dual-sb__item-label">{{ label(child) }}</span>
-                    @if (child.badge !== undefined) {
-                      <span class="mm-dual-sb__item-count">{{ formatCount(child.badge) }}</span>
-                    }
-                  </a>
-                </li>
-              }
-            </ul>
-            <button type="button" class="mm-dual-sb__add-btn">
-              <ng-icon name="lucidePlus" class="size-3.5" />
-              <span>{{ addActionLabel(item) }}</span>
-            </button>
-          } @else if (item.route) {
-            @if (index > 0) {
-              <div class="mm-dual-sb__divider mm-dual-sb__divider--soft"></div>
-            }
-            <a
-              [routerLink]="item.route"
-              class="mm-dual-sb__item"
-              [class.mm-dual-sb__item--active]="isItemActive(item)"
-              (click)="onItemClick(item)"
-            >
-              <ng-icon [name]="item.icon" class="mm-dual-sb__item-icon" />
-              <span class="mm-dual-sb__item-label">{{ label(item) }}</span>
-              @if (item.badge !== undefined) {
-                <span class="mm-dual-sb__item-count">{{ formatCount(item.badge) }}</span>
-              }
-            </a>
           }
-        }
-      </nav>
-    </div>
-  }
+        </a>
+      }
+    }
+
+    <div class="mm-thor__sep" aria-hidden="true"></div>
+
+    <a
+      [routerLink]="settingsItem.route!"
+      class="mm-thor__link"
+      [class.is-active]="isItemActive(settingsItem)"
+      [class.is-orange]="isItemActive(settingsItem)"
+      [attr.data-tip]="label(settingsItem)"
+      (click)="onItemClick(settingsItem)"
+    >
+      <ng-icon [name]="settingsItem.icon" class="mm-thor__ico" />
+      @if (!isCollapsed()) {
+        <span class="mm-thor__txt">{{ label(settingsItem) }}</span>
+      }
+    </a>
+  </nav>
+
+  <div class="mm-thor__foot">
+    <button
+      type="button"
+      class="mm-thor__logout"
+      [attr.data-tip]="logoutLabel()"
+      [attr.aria-label]="logoutLabel()"
+      (click)="logout()"
+    >
+      <ng-icon name="lucideLogOut" />
+      @if (!isCollapsed()) {
+        <span>{{ logoutLabel() }}</span>
+      }
+    </button>
+  </div>
 </aside>

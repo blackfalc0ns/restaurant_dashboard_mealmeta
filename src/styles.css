@@ -85,14 +85,15 @@
 }
 
 :root {
-  --mm-dual-rail-width: 3.5rem;
-  --mm-dual-panel-width: 13.5rem;
+  --mm-dual-rail-width: 4.25rem;
+  --mm-dual-panel-width: 15.5rem;
   --mm-shell-pad: 0.625rem;
   --mm-shell-gap: 0.5rem;
   --mm-shell-radius: 1.25rem;
-  --mm-dual-sidebar-width: calc(var(--mm-dual-rail-width) + var(--mm-dual-panel-width));
-  --mm-sidebar-width: var(--mm-dual-sidebar-width);
-  --mm-sidebar-collapsed: var(--mm-dual-rail-width);
+  --mm-sidebar-expanded: 16.75rem;
+  --mm-sidebar-collapsed: 5.25rem;
+  --mm-dual-sidebar-width: var(--mm-sidebar-expanded);
+  --mm-sidebar-width: var(--mm-sidebar-expanded);
   --mm-header-pad-x: 0.875rem;
   --mm-header-pad-y: 0.625rem;
   --mm-content-pad-x: 0.875rem;
@@ -647,7 +648,7 @@
   /* ─── Restaurant shell ─────────────────────────────────────────────── */
 
   .mm-restaurant-shell-canvas {
-    @apply flex h-dvh min-h-0 gap-3 bg-mm-canvas p-3 md:gap-4 md:p-4;
+    @apply flex h-dvh min-h-0 gap-3 bg-[#eef5f0] p-3 md:gap-4 md:p-4;
   }
 
   .mm-restaurant-shell-backdrop {
@@ -811,146 +812,291 @@
     }
   }
 
-  /* ─── Dual sidebar — single block ──────────────────────────────────── */
+  /* ─── Dark Thor-style sidebar (MealMate brand) ─────────────────────── */
 
-  .mm-dual-sb {
-    @apply flex h-full min-h-0 w-full shrink-0 overflow-hidden rounded-[var(--mm-shell-radius)] border border-[rgba(4,153,78,0.14)];
-    box-shadow: 0 12px 40px -16px rgba(1, 83, 41, 0.3);
+  .mm-thor {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 1.75rem;
+    background: #fff;
+    box-shadow:
+      0 24px 60px -28px rgba(4, 153, 78, 0.22),
+      0 0 0 1px rgba(4, 153, 78, 0.1);
   }
 
-  .mm-dual-sb__rail {
-    @apply flex w-[var(--mm-dual-rail-width)] shrink-0 flex-col items-center gap-1 py-4;
-    background: linear-gradient(180deg, #015329 0%, #04994e 100%);
+  .mm-thor__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.15rem 1rem 0.85rem;
   }
 
-  .mm-dual-sb__logo {
-    @apply mb-4 flex size-10 items-center justify-center rounded-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.15)];
+  .mm-thor.is-collapsed .mm-thor__brand {
+    justify-content: center;
+    padding-inline: 0.65rem;
   }
 
-  .mm-dual-sb__logo-img {
-    @apply size-[1.35rem] object-contain;
+  .mm-thor__logo {
+    display: grid;
+    place-items: center;
+    width: 2.55rem;
+    height: 2.55rem;
+    flex-shrink: 0;
+    border: 1px solid rgba(4, 153, 78, 0.12);
+    border-radius: 999px;
+    background: #edf8f1;
+    box-shadow: 0 4px 14px rgba(4, 153, 78, 0.12);
+    cursor: pointer;
+    transition: transform 160ms ease, box-shadow 160ms ease;
   }
 
-  .mm-dual-sb__rail-nav {
-    @apply flex flex-1 flex-col items-center gap-1.5;
+  .mm-thor__logo:hover {
+    transform: scale(1.04);
+    box-shadow: 0 6px 16px rgba(4, 153, 78, 0.18);
   }
 
-  .mm-dual-sb__rail-btn {
-    @apply flex size-9 items-center justify-center rounded-full text-white/50 transition-all duration-200;
+  .mm-thor__logo img {
+    width: 1.25rem;
+    height: 1.25rem;
+    object-fit: contain;
   }
 
-  .mm-dual-sb__rail-btn:hover {
-    @apply bg-white/12 text-white;
+  .mm-thor__brand-name {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: #04994e;
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    cursor: pointer;
   }
 
-  .mm-dual-sb__rail-btn--active {
-    @apply bg-white text-mm-primary shadow-[0_4px_12px_rgba(0,0,0,0.12)] ring-2 ring-mm-primary/20;
-  }
-
-  .mm-dual-sb__rail-btn--muted:hover {
-    @apply bg-rose-500/15 text-rose-300;
-  }
-
-  .mm-dual-sb__rail-footer {
-    @apply flex flex-col items-center gap-1.5 pt-2;
-  }
-
-  .mm-dual-sb__panel {
-    @apply flex min-h-0 w-[var(--mm-dual-panel-width)] shrink-0 flex-col;
-    background: linear-gradient(180deg, #f4faf7 0%, #edf5f0 100%);
-  }
-
-  .mm-dual-sb__panel-head {
-    @apply shrink-0 px-4 pb-3 pt-4;
-  }
-
-  .mm-dual-sb__brand-row {
-    @apply mb-2 flex items-center gap-2;
-  }
-
-  .mm-dual-sb__brand-mark {
-    @apply flex size-7 items-center justify-center rounded-lg bg-white shadow-[0_2px_8px_rgba(4,153,78,0.12)] ring-1 ring-mm-primary/10;
-  }
-
-  .mm-dual-sb__brand-mark img {
-    @apply size-4 object-contain;
-  }
-
-  .mm-dual-sb__brand-name {
-    @apply text-sm font-extrabold tracking-tight text-mm-primary;
-  }
-
-  .mm-dual-sb__panel-title {
-    @apply m-0 text-[1.05rem] font-bold text-mm-secondary;
-  }
-
-  .mm-dual-sb__panel-nav {
-    @apply min-h-0 flex-1 overflow-y-auto px-2 pb-4;
+  .mm-thor__nav {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    gap: 0.2rem;
+    overflow-y: auto;
+    padding: 0.35rem 0.7rem 0.75rem;
     scrollbar-width: none;
   }
 
-  .mm-dual-sb__panel-nav::-webkit-scrollbar {
+  .mm-thor__nav::-webkit-scrollbar {
     display: none;
   }
 
-  .mm-dual-sb__divider {
-    @apply mx-2 my-2.5 h-px bg-mm-primary/10;
+  .mm-thor.is-collapsed .mm-thor__nav {
+    align-items: center;
+    padding-inline: 0.55rem;
   }
 
-  .mm-dual-sb__divider--soft {
-    @apply my-1.5;
+  .mm-thor__group {
+    margin: 0.55rem 0.55rem 0.35rem;
+    color: #04994e;
+    opacity: 0.55;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
 
-  .mm-dual-sb__group-label {
-    @apply mb-1 px-3 text-[0.65rem] font-bold uppercase tracking-wider text-mm-primary/55;
+  .mm-thor__sep {
+    height: 1px;
+    margin: 0.55rem 0.55rem;
+    background: rgba(4, 153, 78, 0.12);
   }
 
-  .mm-dual-sb__list {
-    @apply m-0 list-none space-y-0.5 p-0;
+  .mm-thor.is-collapsed .mm-thor__sep {
+    width: 1.6rem;
+    margin-inline: auto;
   }
 
-  .mm-dual-sb__item {
-    @apply flex items-center gap-2.5 rounded-xl px-3 py-2 text-[0.8125rem] font-medium text-mm-ink no-underline transition-all duration-150;
+  .mm-thor__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 2.65rem;
+    border-radius: 999px;
+    padding: 0.55rem 0.9rem;
+    color: #64756c;
+    font-size: 0.84rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
   }
 
-  .mm-dual-sb__item:hover {
-    @apply bg-white/70 text-mm-secondary;
+  .mm-thor.is-collapsed .mm-thor__link {
+    width: 2.65rem;
+    height: 2.65rem;
+    min-height: 2.65rem;
+    justify-content: center;
+    padding: 0;
   }
 
-  .mm-dual-sb__item--active {
-    @apply bg-white font-semibold text-mm-secondary shadow-[0_2px_10px_rgba(4,153,78,0.1)] ring-1 ring-mm-primary/12;
+  .mm-thor__link:hover {
+    background: #edf8f1;
+    color: #015329;
   }
 
-  .mm-dual-sb__item-icon {
-    @apply size-4 shrink-0 text-mm-icon;
+  .mm-thor__link.is-active {
+    background: #04994e;
+    color: #fff;
+    font-weight: 800;
+    box-shadow: 0 10px 24px rgba(4, 153, 78, 0.22);
   }
 
-  .mm-dual-sb__item--active .mm-dual-sb__item-icon {
-    @apply text-mm-primary;
+  .mm-thor__link.is-active.is-orange {
+    background: #f67e15;
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(246, 126, 21, 0.28);
   }
 
-  .mm-dual-sb__item-label {
-    @apply min-w-0 flex-1 truncate;
+  .mm-thor__ico {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
   }
 
-  .mm-dual-sb__item-count {
-    @apply shrink-0 rounded-md bg-mm-field px-1.5 py-0.5 text-xs font-bold tabular-nums text-mm-ink-muted;
+  .mm-thor__txt {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .mm-dual-sb__item--active .mm-dual-sb__item-count {
-    @apply bg-[#e8f7ee] text-mm-primary;
+  .mm-thor__badge {
+    display: inline-flex;
+    min-width: 1.25rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #edf8f1;
+    padding: 0.1rem 0.4rem;
+    color: inherit;
+    font-size: 0.65rem;
+    font-style: normal;
+    font-weight: 800;
   }
 
-  .mm-dual-sb__add-btn {
-    @apply mt-1 flex w-full items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-mm-primary/60 transition-colors hover:text-mm-primary;
+  .mm-thor__link.is-active .mm-thor__badge {
+    background: rgba(255, 255, 255, 0.22);
+    color: #fff;
   }
 
-  .mm-dual-sb__add-btn ng-icon {
-    @apply text-mm-accent;
+  .mm-thor__link:not(.is-active) .mm-thor__badge {
+    background: #edf8f1;
+    color: #04994e;
+  }
+
+  .mm-thor__foot {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.65rem 0.7rem 1rem;
+    border-top: 1px solid rgba(4, 153, 78, 0.12);
+  }
+
+  .mm-thor.is-collapsed .mm-thor__foot {
+    align-items: center;
+  }
+
+  .mm-thor__collapse,
+  .mm-thor__logout {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    width: 100%;
+    min-height: 2.55rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    padding: 0.5rem 0.9rem;
+    color: #64756c;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease;
+  }
+
+  .mm-thor.is-collapsed .mm-thor__collapse,
+  .mm-thor.is-collapsed .mm-thor__logout {
+    width: 2.65rem;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .mm-thor__collapse:hover,
+  .mm-thor__logout:hover {
+    background: #edf8f1;
+    color: #015329;
+  }
+
+  .mm-thor__logout:hover {
+    background: #fff1f2;
+    color: #e11d48;
+  }
+
+  .mm-thor__collapse ng-icon,
+  .mm-thor__logout ng-icon {
+    width: 1.05rem;
+    height: 1.05rem;
+    flex-shrink: 0;
+  }
+
+  /* Collapsed tooltips */
+  .mm-thor.is-collapsed .mm-thor__link[data-tip]::after,
+  .mm-thor.is-collapsed .mm-thor__collapse[data-tip]::after,
+  .mm-thor.is-collapsed .mm-thor__logout[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    inset-inline-start: calc(100% + 0.7rem);
+    top: 50%;
+    z-index: 40;
+    transform: translateY(-50%);
+    border-radius: 0.7rem;
+    background: #04994e;
+    padding: 0.45rem 0.7rem;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 10px 24px rgba(4, 153, 78, 0.28);
+    transition: opacity 140ms ease;
+  }
+
+  [dir='rtl'] .mm-thor.is-collapsed .mm-thor__link[data-tip]::after,
+  [dir='rtl'] .mm-thor.is-collapsed .mm-thor__collapse[data-tip]::after,
+  [dir='rtl'] .mm-thor.is-collapsed .mm-thor__logout[data-tip]::after {
+    inset-inline-start: auto;
+    inset-inline-end: calc(100% + 0.7rem);
+  }
+
+  .mm-thor.is-collapsed .mm-thor__link,
+  .mm-thor.is-collapsed .mm-thor__collapse,
+  .mm-thor.is-collapsed .mm-thor__logout {
+    position: relative;
+  }
+
+  .mm-thor.is-collapsed .mm-thor__link:hover::after,
+  .mm-thor.is-collapsed .mm-thor__collapse:hover::after,
+  .mm-thor.is-collapsed .mm-thor__logout:hover::after {
+    opacity: 1;
   }
 
   mm-restaurant-sidebar.mm-restaurant-sidebar-host {
-    @apply shrink-0 self-stretch overflow-visible;
+    align-self: stretch;
+    flex-shrink: 0;
+    overflow: visible;
     height: calc(100dvh - 1.5rem);
     transition: width 280ms ease;
   }
@@ -961,12 +1107,14 @@
     }
   }
 
-  mm-restaurant-sidebar.mm-restaurant-sidebar-host > .mm-dual-sb {
-    @apply h-full;
+  mm-restaurant-sidebar.mm-restaurant-sidebar-host > .mm-thor {
+    height: 100%;
   }
 
-  mm-restaurant-sidebar.mm-restaurant-sidebar-host--mobile {
-    @apply fixed z-50 overflow-visible;
+  mm-restaurant-sidebar.mm-restaurant-sidebar-host.is-mobile {
+    position: fixed;
+    z-index: 50;
+    overflow: visible;
     inset-block: 0.75rem;
     inset-inline-start: 0.75rem;
     height: calc(100dvh - 1.5rem);
@@ -974,18 +1122,18 @@
     transition: transform 280ms ease;
   }
 
-  [dir='rtl'] mm-restaurant-sidebar.mm-restaurant-sidebar-host--mobile {
+  [dir='rtl'] mm-restaurant-sidebar.mm-restaurant-sidebar-host.is-mobile {
     inset-inline-start: auto;
     inset-inline-end: 0.75rem;
     transform: translateX(calc(100% + 1.25rem));
   }
 
-  mm-restaurant-sidebar.mm-restaurant-sidebar-host--mobile.mm-restaurant-sidebar-host--overlay-open {
+  mm-restaurant-sidebar.mm-restaurant-sidebar-host.is-mobile.is-open {
     transform: translateX(0);
   }
 
-  mm-restaurant-sidebar.mm-restaurant-sidebar-host--mobile:not(.mm-restaurant-sidebar-host--overlay-open) {
-    @apply pointer-events-none;
+  mm-restaurant-sidebar.mm-restaurant-sidebar-host.is-mobile:not(.is-open) {
+    pointer-events: none;
   }
 }
 
