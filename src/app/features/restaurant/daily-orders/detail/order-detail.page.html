@@ -12,34 +12,32 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <a routerLink="/restaurant/orders/daily" class="mm-od-back">
-      <ng-icon
-        [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
-        class="size-3.5"
-      />
-      {{ backLabel() }}
-    </a>
-
     <header class="mm-od-hero">
-      <div class="mm-od-hero__copy">
-        <p class="mm-od-hero__eyebrow">
-          {{ text(data.bundleLabel) }}
-          · {{ data.batchCode }}
-          · {{ data.customerMaskedId }}
-        </p>
-        <div class="mm-od-hero__title-row">
-          <h1>{{ data.orderCode }}</h1>
+      <div class="mm-od-hero__main">
+        <a routerLink="/restaurant/orders/daily" class="mm-od-back">
+          <ng-icon
+            [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+            class="size-3.5"
+          />
+          {{ backLabel() }}
+        </a>
+
+        <div class="mm-od-hero__top">
           <span class="mm-od-badge" [attr.data-status]="data.status">
             {{ statusLabel(data.status) }}
           </span>
+          <span class="mm-od-hero__batch">{{ data.batchCode }}</span>
         </div>
-        <p class="mm-od-hero__sub">{{ subtitle() }}</p>
-        <ul class="mm-od-hero__meta">
-          <li>{{ text(data.deliveryDateLabel) }}</li>
-          <li>{{ text(data.deliverySlotLabel) }}</li>
-          <li>{{ text(data.shiftLabel) }}</li>
-          <li>{{ text(data.programLabel) }} / {{ text(data.tierLabel) }}</li>
-        </ul>
+
+        <h1>{{ data.orderCode }}</h1>
+        <p>{{ subtitle() }}</p>
+
+        <div class="mm-od-hero__chips">
+          <span>{{ text(data.bundleLabel) }}</span>
+          <span>{{ text(data.programLabel) }} / {{ text(data.tierLabel) }}</span>
+          <span>{{ text(data.deliverySlotLabel) }}</span>
+          <span>{{ data.customerMaskedId }}</span>
+        </div>
       </div>
 
       @if (data.actions[0]; as primary) {
@@ -50,44 +48,122 @@
       }
     </header>
 
-    <section class="mm-od-strip" aria-label="{{ slotsTitle() }}">
-      <div class="mm-od-strip__head">
+    <section class="mm-od-panel">
+      <div class="mm-od-panel__head">
         <div>
           <h2>{{ mealTitle() }}</h2>
           <p>{{ text(data.boxCompositionLabel) }}</p>
         </div>
-        <span>{{ data.boxCount }} {{ locale.isRtl() ? 'بوكس' : 'box' }} · {{ data.meals.length }} {{ locale.isRtl() ? 'وجبة' : 'meals' }}</span>
+        <b class="mm-od-panel__count">{{ data.meals.length }}</b>
       </div>
 
-      <div class="mm-od-strip__slots">
-        @for (slot of data.slotSummary; track slot.slot) {
-          <div class="mm-od-strip__slot" [attr.data-slot]="slot.slot">
-            <strong>{{ slot.filled }}/{{ slot.expected }}</strong>
-            <span>{{ slotLabel(slot) }}</span>
-          </div>
+      <div class="mm-od-tabs" role="tablist">
+        @for (tab of tabs(); track tab.id) {
+          <button
+            type="button"
+            role="tab"
+            class="mm-od-tabs__btn"
+            [class.is-active]="activeTab() === tab.id"
+            [attr.aria-selected]="activeTab() === tab.id"
+            (click)="setTab(tab.id)"
+          >
+            <span>{{ tab.label }}</span>
+            <i>{{ tab.count }}</i>
+          </button>
         }
       </div>
-    </section>
 
-    <div class="mm-od-layout">
-      <div class="mm-od-main">
-        <section class="mm-od-box">
-          <div class="mm-od-box__grid">
-            @for (meal of data.meals; track meal.id) {
-              <article class="mm-od-card" [attr.data-slot]="meal.slot">
-                <div class="mm-od-card__top">
-                  <span class="mm-od-card__slot">{{ mealSlot(meal) }}</span>
-                  <div class="mm-od-card__macros">
-                    <span>{{ meal.calories }} kcal</span>
-                    <span>{{ meal.proteinGrams }}g P</span>
+      <div class="mm-od-meals">
+        @for (meal of filteredMeals(); track meal.id) {
+          <article
+            class="mm-od-meal"
+            [attr.data-slot]="meal.slot"
+            [class.is-open]="isOpen(meal.id)"
+          >
+            <button
+              type="button"
+              class="mm-od-meal__toggle"
+              (click)="toggleMeal(meal.id)"
+              [attr.aria-expanded]="isOpen(meal.id)"
+            >
+              <div class="mm-od-meal__lead">
+                <img
+                  class="mm-od-meal__img"
+                  [src]="meal.imageUrl"
+                  [alt]="mealName(meal)"
+                  loading="lazy"
+                />
+                <div class="mm-od-meal__copy">
+                  <span class="mm-od-meal__slot">{{ mealSlot(meal) }}</span>
+                  <strong>{{ mealName(meal) }}</strong>
+                  <small>{{ mealDescription(meal) }}</small>
+                </div>
+              </div>
+
+              <div class="mm-od-meal__aside">
+                <span>{{ meal.nutrition.calories }} kcal</span>
+                <span>{{ meal.nutrition.proteinGrams }}g P</span>
+                <ng-icon name="lucideChevronDown" class="size-4 mm-od-meal__chevron" />
+              </div>
+            </button>
+
+            @if (isOpen(meal.id)) {
+              <div class="mm-od-meal__body">
+                <div class="mm-od-nutrition">
+                  <div class="mm-od-nutrition__head">
+                    <strong>{{ nutritionTitle() }}</strong>
+                    <span>
+                      {{ locale.isRtl() ? 'حجم الحصة' : 'Serving' }}
+                      {{ meal.nutrition.servingWeightGrams }}g
+                    </span>
+                  </div>
+
+                  <div class="mm-od-nutrition__grid">
+                    <article>
+                      <small>{{ locale.isRtl() ? 'السعرات' : 'Calories' }}</small>
+                      <strong>{{ meal.nutrition.calories }}</strong>
+                      <span>kcal</span>
+                    </article>
+                    <article>
+                      <small>{{ locale.isRtl() ? 'البروتين' : 'Protein' }}</small>
+                      <strong>{{ meal.nutrition.proteinGrams }}g</strong>
+                      <span>{{ meal.nutrition.proteinDailyPercent }}% DV</span>
+                    </article>
+                    <article>
+                      <small>{{ locale.isRtl() ? 'الكربوهيدرات' : 'Carbs' }}</small>
+                      <strong>{{ meal.nutrition.carbsGrams }}g</strong>
+                      <span>{{ locale.isRtl() ? 'منها سكر' : 'of which sugar' }} {{ meal.nutrition.sugarGrams }}g</span>
+                    </article>
+                    <article>
+                      <small>{{ locale.isRtl() ? 'الدهون' : 'Fat' }}</small>
+                      <strong>{{ meal.nutrition.fatGrams }}g</strong>
+                      <span>{{ locale.isRtl() ? 'ألياف' : 'Fiber' }} {{ meal.nutrition.fiberGrams }}g</span>
+                    </article>
+                    <article class="mm-od-nutrition__sodium">
+                      <small>{{ locale.isRtl() ? 'الصوديوم' : 'Sodium' }}</small>
+                      <strong>{{ meal.nutrition.sodiumMg }}mg</strong>
+                      <span>{{ meal.nutrition.sodiumDailyPercent }}% DV</span>
+                      <i
+                        class="mm-od-nutrition__bar"
+                        [style.--mm-od-bar]="meal.nutrition.sodiumDailyPercent + '%'"
+                        aria-hidden="true"
+                      ></i>
+                    </article>
+                    <article class="mm-od-nutrition__protein-bar">
+                      <small>{{ locale.isRtl() ? 'نسبة البروتين اليومية' : 'Daily protein %' }}</small>
+                      <strong>{{ meal.nutrition.proteinDailyPercent }}%</strong>
+                      <span>{{ locale.isRtl() ? 'من الاحتياج اليومي' : 'of daily need' }}</span>
+                      <i
+                        class="mm-od-nutrition__bar"
+                        [style.--mm-od-bar]="meal.nutrition.proteinDailyPercent + '%'"
+                        aria-hidden="true"
+                      ></i>
+                    </article>
                   </div>
                 </div>
 
-                <h3>{{ mealName(meal) }}</h3>
-                <p class="mm-od-card__desc">{{ mealDescription(meal) }}</p>
-
                 @if (meal.allergyFlags.length) {
-                  <div class="mm-od-card__allergies">
+                  <div class="mm-od-meal__allergies">
                     <ng-icon name="lucideTriangleAlert" class="size-3.5" />
                     @for (flag of meal.allergyFlags; track $index) {
                       <span>{{ allergyLabel(flag) }}</span>
@@ -95,95 +171,228 @@
                   </div>
                 }
 
-                <div class="mm-od-card__ings">
-                  <small>{{ ingredientsTitle() }}</small>
+                <div class="mm-od-meal__ings">
+                  <p>{{ ingredientsTitle() }}</p>
                   <ul>
                     @for (ing of meal.ingredients; track ing.id) {
-                      <li [class.is-allergen]="ing.allergen">
-                        <em>{{ ingredientName(ing) }}</em>
-                        <span>{{ ingredientAmount(ing) }}</span>
+                      <li
+                        class="mm-od-ing"
+                        [class.is-allergen]="ing.allergen"
+                        [class.is-open]="isIngredientOpen(ing.id)"
+                      >
+                        <button
+                          type="button"
+                          class="mm-od-ing__toggle"
+                          (click)="toggleIngredient(ing.id)"
+                          [attr.aria-expanded]="isIngredientOpen(ing.id)"
+                        >
+                          <div class="mm-od-ing__lead">
+                            <span>{{ ingredientName(ing) }}</span>
+                            @if (ingredientNote(ing); as note) {
+                              <small>{{ note }}</small>
+                            }
+                          </div>
+                          <div class="mm-od-ing__meta">
+                            <b>{{ ingredientAmount(ing) }}</b>
+                            <em>{{ ing.calories }} kcal</em>
+                            <ng-icon name="lucideChevronDown" class="size-3.5 mm-od-ing__chevron" />
+                          </div>
+                        </button>
+
+                        @if (isIngredientOpen(ing.id)) {
+                          <div class="mm-od-ing__body">
+                            <p class="mm-od-ing__prep">
+                              {{ locale.isRtl() ? 'طريقة التجهيز' : 'Prep style' }}:
+                              {{ ingredientPrep(ing) }}
+                            </p>
+
+                            <div class="mm-od-ing__grid">
+                              <article>
+                                <small>{{ locale.isRtl() ? 'الوزن' : 'Weight' }}</small>
+                                <strong>{{ ing.weightGrams }}g</strong>
+                              </article>
+                              <article>
+                                <small>{{ locale.isRtl() ? 'السعرات' : 'Calories' }}</small>
+                                <strong>{{ ing.calories }}</strong>
+                                <span>kcal</span>
+                              </article>
+                              <article>
+                                <small>{{ locale.isRtl() ? 'البروتين' : 'Protein' }}</small>
+                                <strong>{{ ing.proteinGrams }}g</strong>
+                                <span>{{ ing.proteinDailyPercent }}% DV</span>
+                              </article>
+                              <article>
+                                <small>{{ locale.isRtl() ? 'الكربوهيدرات' : 'Carbs' }}</small>
+                                <strong>{{ ing.carbsGrams }}g</strong>
+                                <span>{{ locale.isRtl() ? 'سكر' : 'sugar' }} {{ ing.sugarGrams }}g</span>
+                              </article>
+                              <article>
+                                <small>{{ locale.isRtl() ? 'الدهون' : 'Fat' }}</small>
+                                <strong>{{ ing.fatGrams }}g</strong>
+                                <span>{{ locale.isRtl() ? 'ألياف' : 'fiber' }} {{ ing.fiberGrams }}g</span>
+                              </article>
+                              <article>
+                                <small>{{ locale.isRtl() ? 'الصوديوم' : 'Sodium' }}</small>
+                                <strong>{{ ing.sodiumMg }}mg</strong>
+                                <span>{{ ing.sodiumDailyPercent }}% DV</span>
+                                <i
+                                  class="mm-od-nutrition__bar"
+                                  [style.--mm-od-bar]="ing.sodiumDailyPercent + '%'"
+                                  aria-hidden="true"
+                                ></i>
+                              </article>
+                            </div>
+
+                            @if (ing.allergen) {
+                              <p class="mm-od-ing__warn">
+                                <ng-icon name="lucideTriangleAlert" class="size-3.5" />
+                                {{ locale.isRtl() ? 'مكوّن مسبب للحساسية' : 'Allergen ingredient' }}
+                              </p>
+                            }
+                          </div>
+                        }
                       </li>
                     }
                   </ul>
                 </div>
 
-                <footer class="mm-od-card__foot">{{ mealPrep(meal) }}</footer>
-              </article>
+                <p class="mm-od-meal__prep">{{ mealPrep(meal) }}</p>
+              </div>
             }
-          </div>
-        </section>
+          </article>
+        }
       </div>
+    </section>
 
-      <aside class="mm-od-rail">
-        <section class="mm-od-side">
+    <div class="mm-od-bottom">
+      <section class="mm-od-panel">
+        <div class="mm-od-panel__head">
           <h2>{{ metaTitle() }}</h2>
-          <dl>
-            <div>
-              <dt>{{ locale.isRtl() ? 'الباقة' : 'Bundle' }}</dt>
-              <dd>{{ text(data.bundleLabel) }}</dd>
-            </div>
-            <div>
-              <dt>{{ locale.isRtl() ? 'النافذة' : 'Window' }}</dt>
-              <dd>{{ text(data.windowLabel) }}</dd>
-            </div>
-            <div>
-              <dt>{{ locale.isRtl() ? 'السائق' : 'Driver' }}</dt>
-              <dd>{{ data.driverCode ?? (locale.isRtl() ? 'غير معيّن' : 'Unassigned') }}</dd>
-            </div>
-            <div>
-              <dt>{{ locale.isRtl() ? 'الباركود' : 'Barcode' }}</dt>
-              <dd>{{ data.barcodeCode ?? (locale.isRtl() ? 'غير جاهز' : 'Not ready') }}</dd>
-            </div>
-          </dl>
-        </section>
-
-        <section class="mm-od-side">
-          <h2>{{ checklistTitle() }}</h2>
-          <ul class="mm-od-check">
-            @for (item of data.checklist; track item.id) {
-              <li [class.is-done]="item.done">
-                <span class="mm-od-check__mark" aria-hidden="true">
-                  @if (item.done) {
-                    <ng-icon name="lucideCheck" class="size-3.5" />
-                  }
-                </span>
-                <div>
-                  <strong>{{ checkLabel(item) }}</strong>
-                  <span>{{ checkHint(item) }}</span>
-                </div>
-              </li>
-            }
-          </ul>
-        </section>
-
-        <section class="mm-od-side">
-          <h2>{{ timelineTitle() }}</h2>
-          <ol class="mm-od-timeline">
-            @for (item of data.timeline; track item.id) {
-              <li [attr.data-tone]="item.tone">
-                <i aria-hidden="true"></i>
-                <div>
-                  <strong>{{ timelineTitleText(item) }}</strong>
-                  <p>{{ timelineDetail(item) }}</p>
-                  <span>{{ timelineTime(item) }}</span>
-                </div>
-              </li>
-            }
-          </ol>
-        </section>
-
-        <section class="mm-od-side">
-          <h2>{{ actionsTitle() }}</h2>
-          <div class="mm-od-actions">
-            @for (action of data.actions; track action.id) {
-              <a [routerLink]="action.route" [class.is-primary]="action.primary">
-                <ng-icon [name]="action.icon" class="size-4" />
-                <span>{{ actionLabel(action) }}</span>
-              </a>
-            }
+        </div>
+        <dl class="mm-od-meta">
+          <div>
+            <dt>{{ locale.isRtl() ? 'الباقة' : 'Bundle' }}</dt>
+            <dd>{{ text(data.bundleLabel) }}</dd>
           </div>
-        </section>
-      </aside>
+          <div>
+            <dt>{{ locale.isRtl() ? 'البوكسات' : 'Boxes' }}</dt>
+            <dd>{{ data.boxCount }}</dd>
+          </div>
+          <div>
+            <dt>{{ locale.isRtl() ? 'النافذة' : 'Window' }}</dt>
+            <dd>{{ text(data.windowLabel) }}</dd>
+          </div>
+          <div>
+            <dt>{{ locale.isRtl() ? 'السائق' : 'Driver' }}</dt>
+            <dd>{{ data.driverCode ?? (locale.isRtl() ? 'غير معيّن' : 'Unassigned') }}</dd>
+          </div>
+          <div>
+            <dt>{{ locale.isRtl() ? 'الباركود' : 'Barcode' }}</dt>
+            <dd>{{ data.barcodeCode ?? (locale.isRtl() ? 'غير جاهز' : 'Not ready') }}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="mm-od-panel mm-od-ready">
+        <div class="mm-od-panel__head">
+          <div>
+            <h2>{{ checklistTitle() }}</h2>
+            <p>{{ checklistSubtitle() }}</p>
+          </div>
+          <span class="mm-od-ready__badge" [attr.data-state]="checklistState()">
+            {{ checklistDone() }}/{{ checklistTotal() }}
+          </span>
+        </div>
+
+        <div
+          class="mm-od-ready__progress"
+          role="progressbar"
+          [attr.aria-valuenow]="checklistDone()"
+          [attr.aria-valuemin]="0"
+          [attr.aria-valuemax]="checklistTotal()"
+          [attr.aria-label]="checklistTitle()"
+        >
+          <div
+            class="mm-od-ready__progress-fill"
+            [style.width.%]="checklistPercent()"
+          ></div>
+        </div>
+
+        <ul class="mm-od-check">
+          @for (item of data.checklist; track item.id; let i = $index) {
+            <li
+              [class.is-done]="item.done"
+              [class.is-current]="isCurrentCheck(item)"
+            >
+              <span class="mm-od-check__step" aria-hidden="true">{{ i + 1 }}</span>
+              <span class="mm-od-check__mark" aria-hidden="true">
+                @if (item.done) {
+                  <ng-icon name="lucideCheck" class="size-3.5" />
+                } @else if (isCurrentCheck(item)) {
+                  <ng-icon name="lucideCircleDashed" class="size-3.5" />
+                } @else {
+                  <ng-icon name="lucideCircle" class="size-3" />
+                }
+              </span>
+              <div class="mm-od-check__body">
+                <div class="mm-od-check__top">
+                  <strong>{{ checkLabel(item) }}</strong>
+                  <em>{{ checkStateLabel(item) }}</em>
+                </div>
+                <span>{{ checkHint(item) }}</span>
+              </div>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section class="mm-od-panel mm-od-timeline-panel">
+        <div class="mm-od-panel__head">
+          <div>
+            <h2>{{ timelineTitle() }}</h2>
+            <p>{{ timelineSubtitle() }}</p>
+          </div>
+          <span class="mm-od-panel__count">{{ timelineCount() }}</span>
+        </div>
+
+        <ol class="mm-od-timeline">
+          @for (item of data.timeline; track item.id; let i = $index) {
+            <li
+              [attr.data-tone]="item.tone"
+              [class.is-latest]="i === 0"
+            >
+              <span class="mm-od-timeline__rail" aria-hidden="true">
+                <span class="mm-od-timeline__dot">
+                  <ng-icon [name]="timelineIcon(item)" class="size-3.5" />
+                </span>
+              </span>
+
+              <div class="mm-od-timeline__card">
+                <div class="mm-od-timeline__top">
+                  <em [attr.data-tone]="item.tone">{{ timelineToneLabel(item) }}</em>
+                  <time>{{ timelineTime(item) }}</time>
+                </div>
+                <strong>{{ timelineTitleText(item) }}</strong>
+                <p>{{ timelineDetail(item) }}</p>
+              </div>
+            </li>
+          }
+        </ol>
+      </section>
+
+      <section class="mm-od-panel">
+        <div class="mm-od-panel__head">
+          <h2>{{ actionsTitle() }}</h2>
+        </div>
+        <div class="mm-od-actions">
+          @for (action of data.actions; track action.id) {
+            <a [routerLink]="action.route" [class.is-primary]="action.primary">
+              <ng-icon [name]="action.icon" class="size-4" />
+              <span>{{ actionLabel(action) }}</span>
+            </a>
+          }
+        </div>
+      </section>
     </div>
   }
 </div>

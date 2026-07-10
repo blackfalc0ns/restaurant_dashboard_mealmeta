@@ -1,5 +1,4 @@
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export type RestaurantViewport = 'mobile' | 'tablet' | 'desktop' | 'wide';
 

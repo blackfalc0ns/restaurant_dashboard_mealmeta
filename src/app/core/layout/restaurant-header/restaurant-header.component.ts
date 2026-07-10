@@ -65,10 +65,22 @@ export class RestaurantHeaderComponent {
     const url = this.currentUrl().split('?')[0];
     const rtl = this.locale.isRtl();
 
-    if (url === RESTAURANT_SETTINGS_ITEM.route || url.startsWith(`${RESTAURANT_SETTINGS_ITEM.route}/`)) {
+    if (
+      url === RESTAURANT_SETTINGS_ITEM.route ||
+      url.startsWith(`${RESTAURANT_SETTINGS_ITEM.route}/`)
+    ) {
       return {
         section: rtl ? 'الإعدادات' : 'Settings',
-        page: rtl ? RESTAURANT_SETTINGS_ITEM.labelAr : RESTAURANT_SETTINGS_ITEM.labelEn,
+        page: rtl
+          ? RESTAURANT_SETTINGS_ITEM.labelAr
+          : RESTAURANT_SETTINGS_ITEM.labelEn,
+      };
+    }
+
+    if (url.includes('/orders/detail/')) {
+      return {
+        section: rtl ? 'الطلبات' : 'Orders',
+        page: rtl ? 'تفاصيل الطلب' : 'Order details',
       };
     }
 
@@ -124,9 +136,7 @@ export class RestaurantHeaderComponent {
     this.locale.isRtl() ? 'مالك المطعم' : 'Restaurant owner',
   );
 
-  readonly avatarLetter = computed(() =>
-    this.locale.isRtl() ? 'م' : 'P',
-  );
+  readonly avatarLetter = computed(() => (this.locale.isRtl() ? 'م' : 'P'));
 
   readonly todayLabel = computed(() => {
     const date = new Date();

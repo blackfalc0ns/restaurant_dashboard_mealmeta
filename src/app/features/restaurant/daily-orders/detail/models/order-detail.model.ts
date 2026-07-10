@@ -23,7 +23,36 @@ export interface BoxMealIngredient {
   id: string;
   name: LocalizedText;
   amount: LocalizedText;
+  weightGrams: number;
+  calories: number;
+  proteinGrams: number;
+  carbsGrams: number;
+  fatGrams: number;
+  fiberGrams: number;
+  sugarGrams: number;
+  sodiumMg: number;
+  /** % of daily value (approx. 50g protein). */
+  proteinDailyPercent: number;
+  /** % of daily value (approx. 2300mg sodium). */
+  sodiumDailyPercent: number;
+  prepStyle: LocalizedText;
+  note?: LocalizedText;
   allergen?: boolean;
+}
+
+export interface BoxMealNutrition {
+  calories: number;
+  proteinGrams: number;
+  carbsGrams: number;
+  fatGrams: number;
+  fiberGrams: number;
+  sugarGrams: number;
+  sodiumMg: number;
+  /** % of daily value (approx. 50g protein). */
+  proteinDailyPercent: number;
+  /** % of daily value (approx. 2300mg sodium). */
+  sodiumDailyPercent: number;
+  servingWeightGrams: number;
 }
 
 export interface BoxMealItem {
@@ -33,8 +62,8 @@ export interface BoxMealItem {
   slotIndex: number;
   name: LocalizedText;
   description: LocalizedText;
-  calories: number;
-  proteinGrams: number;
+  imageUrl: string;
+  nutrition: BoxMealNutrition;
   ingredients: BoxMealIngredient[];
   allergyFlags: LocalizedText[];
   prepNote: LocalizedText;
