@@ -1,0 +1,167 @@
+<div class="mm-an-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-analytics-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <header class="mm-an-header">
+      <div>
+        <p class="mm-an-header__eyebrow">MealMate</p>
+        <h1 class="mm-an-header__title">{{ title() }}</h1>
+        <p class="mm-an-header__subtitle">{{ subtitle() }}</p>
+      </div>
+
+      <label class="mm-an-period">
+        <span>{{ periodLabel() }}</span>
+        <select [value]="facade.period()" (change)="onPeriodChange($event)">
+          @for (option of periods; track option.id) {
+            <option [value]="option.id">{{ periodOptionLabel(option) }}</option>
+          }
+        </select>
+      </label>
+    </header>
+
+    <section class="mm-an-metrics">
+      @for (metric of data.metrics; track metric.id) {
+        <article class="mm-an-metric" [attr.data-tone]="metric.tone">
+          <span class="mm-an-metric__icon">
+            <ng-icon [name]="metric.icon" class="size-4" />
+          </span>
+          <div class="mm-an-metric__copy">
+            <small>{{ metricLabel(metric) }}</small>
+            <strong>{{ metric.value }}</strong>
+          </div>
+          <b [attr.data-direction]="metric.direction">
+            <ng-icon [name]="trendIcon(metric)" class="size-3" />
+            {{ metricDelta(metric) }}
+          </b>
+        </article>
+      }
+    </section>
+
+    <section class="mm-an-grid mm-an-grid--wide">
+      <article class="mm-an-panel">
+        <div class="mm-an-panel__head">
+          <div>
+            <h2>{{ trendTitle() }}</h2>
+            <p>{{ trendSubtitle() }}</p>
+          </div>
+        </div>
+        <mm-apex-chart
+          [series]="series()"
+          [chart]="chart"
+          [colors]="colors"
+          [xaxis]="xaxis()"
+          [yaxis]="yaxis"
+          [grid]="grid"
+          [stroke]="stroke"
+          [tooltip]="tooltip"
+          [legend]="legend"
+          [plotOptions]="plotOptions"
+          [dataLabels]="{ enabled: false }"
+        />
+      </article>
+
+      <article class="mm-an-panel mm-an-quality">
+        <div class="mm-an-panel__head">
+          <div>
+            <h2>{{ qualityTitle() }}</h2>
+          </div>
+          <a routerLink="/restaurant/overview/quality" class="mm-an-link">
+            {{ locale.isRtl() ? 'التفاصيل' : 'Details' }}
+          </a>
+        </div>
+
+        <div class="mm-an-quality__score">
+          <strong>{{ data.quality.averageRating | number: '1.1-1' }}</strong>
+          <div class="mm-an-quality__stars" aria-hidden="true">
+            @for (filled of stars(); track $index) {
+              <ng-icon name="lucideStar" class="size-3.5" [class.is-filled]="filled" />
+            }
+          </div>
+          <small>{{ ratingsLabel() }}</small>
+        </div>
+
+        <ul class="mm-an-quality__list">
+          @for (row of data.quality.rows; track row.id) {
+            <li>
+              <span>{{ qualityRowLabel(row.label) }}</span>
+              <b>{{ row.value }}</b>
+            </li>
+          }
+        </ul>
+      </article>
+    </section>
+
+    <section class="mm-an-grid mm-an-grid--equal">
+      <article class="mm-an-panel">
+        <div class="mm-an-panel__head">
+          <div>
+            <h2>{{ topMealsTitle() }}</h2>
+          </div>
+          <a routerLink="/restaurant/operations/menu" class="mm-an-link">
+            {{ locale.isRtl() ? 'القائمة' : 'Menu' }}
+          </a>
+        </div>
+
+        <ul class="mm-an-rank">
+          @for (meal of data.topMeals; track meal.id; let i = $index) {
+            <li>
+              <b>{{ i + 1 }}</b>
+              <div>
+                <strong>{{ mealName(meal) }}</strong>
+                <span>{{ meal.orders }} {{ ordersLabel() }}</span>
+                <i><em [style.width.%]="meal.sharePercent"></em></i>
+              </div>
+            </li>
+          }
+        </ul>
+      </article>
+
+      <article class="mm-an-panel">
+        <div class="mm-an-panel__head">
+          <div>
+            <h2>{{ financeTitle() }}</h2>
+          </div>
+          <a routerLink="/restaurant/overview/finance" class="mm-an-link">
+            {{ locale.isRtl() ? 'المالية' : 'Finance' }}
+          </a>
+        </div>
+
+        <ul class="mm-an-finance">
+          @for (bar of data.financeBars; track bar.id) {
+            <li>
+              <span>{{ financeLabel(bar) }}</span>
+              <strong>{{ bar.amountKd | number: '1.3-3' }} {{ kd() }}</strong>
+              <i><em [style.width.%]="bar.percent"></em></i>
+            </li>
+          }
+        </ul>
+      </article>
+    </section>
+
+    <section class="mm-an-panel mm-an-insights">
+      <div class="mm-an-panel__head">
+        <div>
+          <h2>{{ insightsTitle() }}</h2>
+        </div>
+      </div>
+      <div class="mm-an-insights__grid">
+        @for (insight of data.insights; track insight.id) {
+          <article>
+            <strong>{{ insightTitle(insight.title) }}</strong>
+            <span>{{ insightDetail(insight.detail) }}</span>
+          </article>
+        }
+      </div>
+    </section>
+  }
+</div>

@@ -1,0 +1,247 @@
+<div class="mm-ac-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-activity-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <header class="mm-ac-header">
+      <div>
+        <p class="mm-ac-header__eyebrow">MealMate</p>
+        <h1 class="mm-ac-header__title">{{ title() }}</h1>
+        <p class="mm-ac-header__subtitle">{{ subtitle() }}</p>
+      </div>
+    </header>
+
+    <a class="mm-ac-attention" [routerLink]="data.attention.route">
+      <span class="mm-ac-attention__icon">
+        <ng-icon name="lucideSiren" class="size-5" />
+      </span>
+      <div class="mm-ac-attention__copy">
+        <strong>{{ attentionTitle() }}</strong>
+        <span>{{ attentionDetail() }}</span>
+      </div>
+      <span class="mm-ac-attention__cta">
+        {{ attentionAction() }}
+        <ng-icon name="lucideArrowRight" class="size-3.5" />
+      </span>
+    </a>
+
+    <section class="mm-ac-summary">
+      @for (card of data.summaries; track card.id) {
+        <article class="mm-ac-summary__card" [attr.data-tone]="card.tone">
+          <span class="mm-ac-summary__icon">
+            <ng-icon [name]="card.icon" class="size-4" />
+          </span>
+          <div class="mm-ac-summary__copy">
+            <small>{{ summaryLabel(card) }}</small>
+            <strong>{{ card.value }}</strong>
+            <span>{{ summaryHint(card) }}</span>
+          </div>
+        </article>
+      }
+    </section>
+
+    <div class="mm-ac-tabs" role="tablist">
+      @for (option of filters; track option.id) {
+        <button
+          type="button"
+          role="tab"
+          class="mm-ac-tabs__btn"
+          [class.is-active]="facade.filter() === option.id"
+          [attr.aria-selected]="facade.filter() === option.id"
+          (click)="setFilter(option.id)"
+        >
+          <span>{{ filterLabel(option) }}</span>
+          <b>{{ filterCount(option.id) }}</b>
+        </button>
+      }
+    </div>
+
+    <div class="mm-ac-layout">
+      <section class="mm-ac-panel">
+        <div class="mm-ac-panel__head">
+          <div>
+            <h2>{{ feedTitle() }}</h2>
+            <p>{{ feedSubtitle() }}</p>
+          </div>
+          <span class="mm-ac-count">{{ facade.filteredFeed().length }}</span>
+        </div>
+
+        @if (facade.filteredFeed().length === 0) {
+          <p class="mm-ac-empty">{{ emptyFeed() }}</p>
+        } @else {
+          <ul class="mm-ac-feed">
+            @for (item of facade.pagedFeed(); track item.id) {
+              <li>
+                <article class="mm-ac-item" [attr.data-tone]="item.severity">
+                  <span class="mm-ac-item__accent" aria-hidden="true"></span>
+
+                  <div class="mm-ac-item__head">
+                    <span class="mm-ac-item__icon">
+                      <ng-icon [name]="item.icon" class="size-4" />
+                    </span>
+                    <div class="mm-ac-item__titles">
+                      <div class="mm-ac-item__badges">
+                        <span class="mm-ac-pill" [attr.data-tone]="item.severity">
+                          {{ severityLabel(item.severity) }}
+                        </span>
+                        <code>{{ item.refCode }}</code>
+                        <time>{{ itemTime(item) }}</time>
+                      </div>
+                      <strong>{{ itemTitle(item) }}</strong>
+                      <p>{{ itemDetail(item) }}</p>
+                    </div>
+                  </div>
+
+                  <div class="mm-ac-item__chips">
+                    @for (chip of item.chips; track $index) {
+                      <span>{{ chipLabel(chip) }}</span>
+                    }
+                  </div>
+
+                  <div class="mm-ac-item__impact">
+                    <small>{{ impactLabel() }}</small>
+                    <p>{{ itemImpact(item) }}</p>
+                  </div>
+
+                  <div class="mm-ac-item__footer">
+                    <div class="mm-ac-item__meta">
+                      <span>
+                        <ng-icon name="lucideUserRound" class="size-3.5" />
+                        {{ ownerLabel() }}: {{ itemOwner(item) }}
+                      </span>
+                      @if (itemSla(item); as sla) {
+                        <span class="mm-ac-item__sla">
+                          <ng-icon name="lucideClock" class="size-3.5" />
+                          {{ sla }}
+                        </span>
+                      }
+                    </div>
+                    <a class="mm-ac-item__cta" [routerLink]="item.route">
+                      {{ itemAction(item) }}
+                      <ng-icon name="lucideArrowRight" class="size-3.5" />
+                    </a>
+                  </div>
+                </article>
+              </li>
+            }
+          </ul>
+
+          <nav class="mm-ac-pager" [attr.aria-label]="pageOfText()">
+            <p class="mm-ac-pager__range">{{ rangeText() }}</p>
+
+            <div class="mm-ac-pager__controls">
+              <button
+                type="button"
+                class="mm-ac-pager__nav"
+                [disabled]="facade.currentPage() <= 1"
+                (click)="prevPage()"
+                [attr.aria-label]="prevLabel()"
+              >
+                <ng-icon
+                  [name]="locale.isRtl() ? 'lucideChevronRight' : 'lucideChevronLeft'"
+                  class="size-4"
+                />
+                <span>{{ prevLabel() }}</span>
+              </button>
+
+              <div class="mm-ac-pager__pages">
+                @for (pageNum of facade.pageNumbers(); track pageNum) {
+                  <button
+                    type="button"
+                    class="mm-ac-pager__page"
+                    [class.is-active]="facade.currentPage() === pageNum"
+                    (click)="goToPage(pageNum)"
+                  >
+                    {{ pageNum }}
+                  </button>
+                }
+              </div>
+
+              <button
+                type="button"
+                class="mm-ac-pager__nav"
+                [disabled]="facade.currentPage() >= facade.totalPages()"
+                (click)="nextPage()"
+                [attr.aria-label]="nextLabel()"
+              >
+                <span>{{ nextLabel() }}</span>
+                <ng-icon
+                  [name]="locale.isRtl() ? 'lucideChevronLeft' : 'lucideChevronRight'"
+                  class="size-4"
+                />
+              </button>
+            </div>
+          </nav>
+        }
+      </section>
+
+      <aside class="mm-ac-rail">
+        <section class="mm-ac-panel">
+          <div class="mm-ac-panel__head">
+            <div>
+              <h2>{{ timelineTitle() }}</h2>
+            </div>
+          </div>
+
+          <ol class="mm-ac-timeline">
+            @for (item of data.timeline; track item.id) {
+              <li [attr.data-tone]="item.severity">
+                <i aria-hidden="true"></i>
+                <div>
+                  <strong>{{ timelineTitleText(item) }}</strong>
+                  <p>{{ timelineDetail(item) }}</p>
+                  <span>{{ timelineTime(item) }}</span>
+                </div>
+              </li>
+            }
+          </ol>
+        </section>
+
+        <section class="mm-ac-panel mm-ac-panel--links">
+          <div class="mm-ac-panel__head">
+            <div>
+              <h2>{{ linksTitle() }}</h2>
+              <p>{{ linksSubtitle() }}</p>
+            </div>
+          </div>
+
+          <div class="mm-ac-links">
+            @for (link of data.quickLinks; track link.id) {
+              <a class="mm-ac-link" [routerLink]="link.route" [attr.data-tone]="link.tone">
+                <span class="mm-ac-link__icon" aria-hidden="true">
+                  <ng-icon [name]="link.icon" class="size-4" />
+                </span>
+
+                <div class="mm-ac-link__copy">
+                  <strong>{{ linkLabel(link) }}</strong>
+                  <span>{{ linkHint(link) }}</span>
+                </div>
+
+                <div class="mm-ac-link__meta">
+                  @if (link.count) {
+                    <b class="mm-ac-link__count">{{ link.count }}</b>
+                  }
+                  <span class="mm-ac-link__arrow" aria-hidden="true">
+                    <ng-icon
+                      [name]="locale.isRtl() ? 'lucideChevronLeft' : 'lucideChevronRight'"
+                      class="size-3.5"
+                    />
+                  </span>
+                </div>
+              </a>
+            }
+          </div>
+        </section>
+      </aside>
+    </div>
+  }
+</div>

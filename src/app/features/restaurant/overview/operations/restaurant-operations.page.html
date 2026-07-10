@@ -1,0 +1,177 @@
+<div class="mm-op-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-operations-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <header class="mm-op-header">
+      <div>
+        <p class="mm-op-header__eyebrow">
+          <ng-icon name="lucideCalendarDays" class="size-3.5" />
+          {{ dateLabel() }}
+        </p>
+        <h1 class="mm-op-header__title">{{ title() }}</h1>
+        <p class="mm-op-header__subtitle">{{ subtitle() }}</p>
+      </div>
+
+      <div
+        class="mm-op-busy"
+        [class.is-busy]="data.busy"
+      >
+        <ng-icon name="lucideActivity" class="size-4" />
+        <span>{{ data.busy ? busyOn() : busyOff() }}</span>
+      </div>
+    </header>
+
+    <section class="mm-op-metrics">
+      @for (metric of data.metrics; track metric.id) {
+        <a class="mm-op-metric" [attr.data-tone]="metric.tone" [routerLink]="metric.route">
+          <span class="mm-op-metric__icon">
+            <ng-icon [name]="metric.icon" class="size-4" />
+          </span>
+          <div class="mm-op-metric__copy">
+            <small>{{ metricLabel(metric) }}</small>
+            <strong>{{ metric.value }}</strong>
+            <span>{{ metricHint(metric) }}</span>
+          </div>
+          <ng-icon name="lucideArrowRight" class="mm-op-metric__arrow size-3.5" />
+        </a>
+      }
+    </section>
+
+    <div class="mm-op-layout">
+      <div class="mm-op-main">
+        <article class="mm-op-panel">
+          <div class="mm-op-panel__head">
+            <div>
+              <h2>{{ flowTitle() }}</h2>
+            </div>
+          </div>
+          <mm-apex-chart
+            [series]="series()"
+            [chart]="chart"
+            [colors]="colors"
+            [xaxis]="xaxis()"
+            [yaxis]="yaxis"
+            [grid]="grid"
+            [stroke]="stroke"
+            [fill]="fill"
+            [tooltip]="tooltip"
+            [legend]="legend"
+            [dataLabels]="{ enabled: false }"
+          />
+        </article>
+
+        <article class="mm-op-panel">
+          <div class="mm-op-panel__head">
+            <div>
+              <h2>{{ queueTitle() }}</h2>
+              <p>{{ queueSubtitle() }}</p>
+            </div>
+            <span class="mm-op-queue-count">{{ data.queue.length }}</span>
+          </div>
+
+          <div class="mm-op-queue">
+            @for (item of data.queue; track item.id) {
+              <a class="mm-op-queue__item" [attr.data-tone]="item.tone" [routerLink]="item.route">
+                <i aria-hidden="true"></i>
+                <div>
+                  <strong>{{ queueTitleText(item) }}</strong>
+                  <span>{{ queueDetail(item) }}</span>
+                </div>
+                <b>{{ queueBadge(item) }}</b>
+                <ng-icon name="lucideArrowRight" class="size-3.5" />
+              </a>
+            }
+          </div>
+        </article>
+
+        <article class="mm-op-panel">
+          <div class="mm-op-panel__head">
+            <div>
+              <h2>{{ progressTitle() }}</h2>
+            </div>
+          </div>
+          <div class="mm-op-progress">
+            @for (item of data.progress; track item.id) {
+              <div [attr.data-tone]="item.tone">
+                <span>{{ progressLabel(item) }}</span>
+                <strong>{{ progressValue(item) }}</strong>
+                <i><em [style.width.%]="item.percent"></em></i>
+              </div>
+            }
+          </div>
+        </article>
+      </div>
+
+      <aside class="mm-op-rail">
+        <article class="mm-op-panel mm-op-health">
+          <div class="mm-op-panel__head">
+            <div>
+              <h2>{{ healthTitle() }}</h2>
+            </div>
+          </div>
+          <div class="mm-op-health__body">
+            <ng-icon name="lucideGauge" class="size-5" />
+            <div>
+              <span>{{ healthLabel() }}</span>
+              <strong>{{ data.healthPercent }}%</strong>
+            </div>
+            <i><em [style.width.%]="data.healthPercent"></em></i>
+          </div>
+        </article>
+
+        <article class="mm-op-panel">
+          <div class="mm-op-panel__head">
+            <div>
+              <h2>{{ briefTitle() }}</h2>
+            </div>
+          </div>
+          <div class="mm-op-brief">
+            @for (brief of data.briefs; track brief.id) {
+              <div>
+                <span>{{ briefLabel(brief.label) }}</span>
+                <strong>{{ brief.value }}</strong>
+                <small>{{ briefNote(brief.note) }}</small>
+              </div>
+            }
+          </div>
+          <a routerLink="/restaurant/operations/capacity" class="mm-op-link">
+            {{ locale.isRtl() ? 'إدارة الطاقة' : 'Manage capacity' }}
+            <ng-icon name="lucideArrowRight" class="size-3" />
+          </a>
+        </article>
+
+        <article class="mm-op-panel">
+          <div class="mm-op-panel__head">
+            <div>
+              <h2>{{ timelineTitle() }}</h2>
+            </div>
+            <a routerLink="/restaurant/overview/activity" class="mm-op-link">
+              {{ openLabel() }}
+            </a>
+          </div>
+          <ol class="mm-op-timeline">
+            @for (item of data.timeline; track item.id) {
+              <li>
+                <i aria-hidden="true"></i>
+                <div>
+                  <strong>{{ timelineTitleText(item) }}</strong>
+                  <span>{{ timelineTime(item) }}</span>
+                </div>
+              </li>
+            }
+          </ol>
+        </article>
+      </aside>
+    </div>
+  }
+</div>

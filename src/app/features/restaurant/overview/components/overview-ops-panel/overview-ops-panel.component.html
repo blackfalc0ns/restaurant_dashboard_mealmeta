@@ -1,0 +1,43 @@
+<div class="mm-ov-card__head">
+  <div>
+    <h2 class="mm-ov-card__title">{{ title() }}</h2>
+    <p class="mm-ov-card__subtitle">{{ subtitle() }}</p>
+  </div>
+  <a routerLink="/restaurant/orders/pending-confirmation" class="mm-ov-card__link">
+    {{ viewAll() }}
+  </a>
+</div>
+
+<ul class="mm-ov-ops__list">
+  @for (order of orders(); track order.id) {
+    <li>
+      <a
+        class="mm-ov-ops__row"
+        [class]="'is-' + order.countdownState"
+        [routerLink]="order.route"
+      >
+        <span class="mm-ov-ops__pulse" aria-hidden="true"></span>
+        <div class="mm-ov-ops__meta">
+          <strong>{{ orderDate(order) }}</strong>
+          <span>{{ program(order) }} · {{ order.mealCount }} {{ mealsLabel() }}</span>
+        </div>
+        <div class="mm-ov-ops__countdown">
+          <ng-icon name="lucideTimer" class="size-3.5" />
+          <span>{{ order.countdownHours }} {{ hoursLeft() }}</span>
+        </div>
+      </a>
+    </li>
+  }
+</ul>
+
+<div class="mm-ov-ops__actions">
+  <p class="mm-ov-ops__actions-title">{{ actionsTitle() }}</p>
+  <div class="mm-ov-ops__actions-grid">
+    @for (action of quickActions(); track action.id) {
+      <a class="mm-ov-ops__action" [routerLink]="action.route">
+        <ng-icon [name]="action.icon" class="size-4" />
+        <span>{{ actionLabel(action) }}</span>
+      </a>
+    }
+  </div>
+</div>

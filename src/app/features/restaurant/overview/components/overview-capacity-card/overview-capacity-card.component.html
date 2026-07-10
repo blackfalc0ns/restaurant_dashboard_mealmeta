@@ -1,0 +1,47 @@
+<div class="mm-ov-card__head">
+  <div>
+    <h2 class="mm-ov-card__title">{{ title() }}</h2>
+    <p class="mm-ov-card__subtitle">{{ subtitle() }}</p>
+  </div>
+  <a routerLink="/restaurant/operations/capacity" class="mm-ov-card__link">
+    {{ manageLabel() }}
+  </a>
+</div>
+
+<div class="mm-ov-capacity__stats">
+  <div>
+    <strong>{{ capacity().utilizationPercent }}%</strong>
+    <span>
+      {{ usedLabel() }} {{ capacity().used }} {{ ofLabel() }} {{ capacity().capacity }}
+    </span>
+  </div>
+  <span
+    class="mm-ov-capacity__badge"
+    [class.is-busy]="capacity().busy"
+  >
+    {{ busyLabel() }}
+  </span>
+</div>
+
+<div class="mm-ov-capacity__meter" aria-hidden="true">
+  <div
+    class="mm-ov-capacity__meter-fill"
+    [style.width.%]="capacity().utilizationPercent"
+  ></div>
+</div>
+
+<div class="mm-ov-capacity__chart">
+  <mm-apex-chart
+    [series]="series()"
+    [chart]="chart"
+    [colors]="colors"
+    [xaxis]="xaxis()"
+    [yaxis]="yaxis"
+    [grid]="grid"
+    [stroke]="stroke"
+    [fill]="fill"
+    [tooltip]="tooltip"
+    [dataLabels]="{ enabled: false }"
+    [legend]="{ show: false }"
+  />
+</div>

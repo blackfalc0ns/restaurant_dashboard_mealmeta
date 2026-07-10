@@ -5,14 +5,47 @@ const loadEmptyPage = () =>
     (m) => m.RestaurantEmptyPageComponent,
   );
 
+const loadOverviewPage = () =>
+  import('./overview/restaurant-overview.page').then(
+    (m) => m.RestaurantOverviewPageComponent,
+  );
+
+const loadAnalyticsPage = () =>
+  import('./overview/analytics/restaurant-analytics.page').then(
+    (m) => m.RestaurantAnalyticsPageComponent,
+  );
+
+const loadOperationsPage = () =>
+  import('./overview/operations/restaurant-operations.page').then(
+    (m) => m.RestaurantOperationsPageComponent,
+  );
+
+const loadFinanceOverviewPage = () =>
+  import('./overview/finance/restaurant-finance-overview.page').then(
+    (m) => m.RestaurantFinanceOverviewPageComponent,
+  );
+
+const loadQualityOverviewPage = () =>
+  import('./overview/quality/restaurant-quality-overview.page').then(
+    (m) => m.RestaurantQualityOverviewPageComponent,
+  );
+
+const loadActivityPage = () =>
+  import('./overview/activity/restaurant-activity.page').then(
+    (m) => m.RestaurantActivityPageComponent,
+  );
+
+const loadDailyOrdersPage = () =>
+  import('./daily-orders/daily-orders.page').then(
+    (m) => m.DailyOrdersPageComponent,
+  );
+
+const loadOrderDetailPage = () =>
+  import('./daily-orders/detail/order-detail.page').then(
+    (m) => m.OrderDetailPageComponent,
+  );
+
 const SIDEBAR_LINK_PATHS = [
-  'overview',
-  'overview/analytics',
-  'overview/operations',
-  'overview/finance',
-  'overview/quality',
-  'overview/activity',
-  'orders/daily',
   'orders/pending-confirmation',
   'orders/upcoming-24h',
   'orders/labels',
@@ -37,6 +70,38 @@ const SIDEBAR_LINK_PATHS = [
 
 export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   { path: '', redirectTo: 'overview', pathMatch: 'full' },
+  {
+    path: 'overview',
+    loadComponent: loadOverviewPage,
+  },
+  {
+    path: 'overview/analytics',
+    loadComponent: loadAnalyticsPage,
+  },
+  {
+    path: 'overview/operations',
+    loadComponent: loadOperationsPage,
+  },
+  {
+    path: 'overview/finance',
+    loadComponent: loadFinanceOverviewPage,
+  },
+  {
+    path: 'overview/quality',
+    loadComponent: loadQualityOverviewPage,
+  },
+  {
+    path: 'overview/activity',
+    loadComponent: loadActivityPage,
+  },
+  {
+    path: 'orders/daily',
+    loadComponent: loadDailyOrdersPage,
+  },
+  {
+    path: 'orders/detail/:orderCode',
+    loadComponent: loadOrderDetailPage,
+  },
   ...SIDEBAR_LINK_PATHS.map((path) => ({
     path,
     loadComponent: loadEmptyPage,

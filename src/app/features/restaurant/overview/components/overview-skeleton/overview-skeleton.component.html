@@ -1,0 +1,92 @@
+<div class="mm-ov-skeleton__inner" aria-hidden="true">
+  <div class="mm-ov-skeleton__banner">
+    <div class="mm-ov-skeleton__banner-copy">
+      <span class="mm-ov-bone mm-ov-bone--pill"></span>
+      <span class="mm-ov-bone mm-ov-bone--title"></span>
+      <span class="mm-ov-bone mm-ov-bone--line"></span>
+      <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+      <span class="mm-ov-bone mm-ov-bone--btn"></span>
+    </div>
+    <div class="mm-ov-skeleton__banner-side">
+      <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+      <span class="mm-ov-bone mm-ov-bone--line"></span>
+      <span class="mm-ov-bone mm-ov-bone--line"></span>
+      <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+    </div>
+  </div>
+
+  <div class="mm-ov-skeleton__kpis">
+    @for (_ of [1, 2, 3, 4]; track $index) {
+      <div class="mm-ov-skeleton__kpi">
+        <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+        <span class="mm-ov-bone mm-ov-bone--value"></span>
+        <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+      </div>
+    }
+  </div>
+
+  <div class="mm-ov-skeleton__grid">
+    <div class="mm-ov-skeleton__primary">
+      <div class="mm-ov-skeleton__card">
+        <div class="mm-ov-skeleton__card-head">
+          <div>
+            <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+            <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+          </div>
+          <span class="mm-ov-bone mm-ov-bone--chip"></span>
+        </div>
+        @for (_ of [1, 2, 3]; track $index) {
+          <div class="mm-ov-skeleton__row">
+            <div class="mm-ov-skeleton__row-copy">
+              <span class="mm-ov-bone mm-ov-bone--line"></span>
+              <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+            </div>
+            <span class="mm-ov-bone mm-ov-bone--chip"></span>
+          </div>
+        }
+        <div class="mm-ov-skeleton__actions">
+          @for (_ of [1, 2, 3, 4]; track $index) {
+            <span class="mm-ov-bone mm-ov-bone--action"></span>
+          }
+        </div>
+      </div>
+
+      <div class="mm-ov-skeleton__card">
+        <div class="mm-ov-skeleton__card-head">
+          <div>
+            <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+            <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+          </div>
+          <span class="mm-ov-bone mm-ov-bone--chip"></span>
+        </div>
+        @for (_ of [1, 2, 3, 4, 5, 6]; track $index) {
+          <div class="mm-ov-skeleton__activity">
+            <span class="mm-ov-bone mm-ov-bone--avatar"></span>
+            <div class="mm-ov-skeleton__row-copy">
+              <span class="mm-ov-bone mm-ov-bone--line"></span>
+              <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+            </div>
+            <span class="mm-ov-bone mm-ov-bone--chip"></span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="mm-ov-skeleton__secondary">
+      @for (_ of [1, 2, 3]; track $index) {
+        <div class="mm-ov-skeleton__card">
+          <div class="mm-ov-skeleton__card-head">
+            <div>
+              <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+              <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+            </div>
+            <span class="mm-ov-bone mm-ov-bone--chip"></span>
+          </div>
+          <span class="mm-ov-bone mm-ov-bone--block"></span>
+          <span class="mm-ov-bone mm-ov-bone--line"></span>
+          <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+        </div>
+      }
+    </div>
+  </div>
+</div>

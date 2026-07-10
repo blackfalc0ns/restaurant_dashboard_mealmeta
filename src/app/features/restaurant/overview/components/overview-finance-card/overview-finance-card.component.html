@@ -1,0 +1,49 @@
+<div class="mm-ov-card__head">
+  <div>
+    <h2 class="mm-ov-card__title">{{ title() }}</h2>
+    <p class="mm-ov-card__subtitle">{{ subtitle() }}</p>
+  </div>
+  <a routerLink="/restaurant/overview/finance" class="mm-ov-card__link">
+    {{ viewLabel() }}
+  </a>
+</div>
+
+<div class="mm-ov-finance__hero">
+  <div>
+    <span>{{ pendingLabel() }}</span>
+    <strong>
+      {{ finance().pendingPayoutKd | number: '1.3-3' }}
+      <small>{{ kd() }}</small>
+    </strong>
+  </div>
+  <div class="mm-ov-finance__spark">
+    <mm-apex-chart
+      [series]="series()"
+      [chart]="sparkChart"
+      [colors]="colors"
+      [stroke]="{ curve: 'smooth', width: 2 }"
+      [fill]="{
+        type: 'gradient',
+        gradient: {
+          shadeIntensity: 0.4,
+          opacityFrom: 0.3,
+          opacityTo: 0.02,
+          stops: [0, 100]
+        }
+      }"
+    />
+  </div>
+</div>
+
+<div class="mm-ov-finance__rows">
+  <a routerLink="/restaurant/finance/invoices" class="mm-ov-finance__row">
+    <span>{{ invoiceLabel() }}</span>
+    <strong>{{ finance().lastInvoiceAmountKd | number: '1.3-3' }} {{ kd() }}</strong>
+  </a>
+  <a routerLink="/restaurant/finance/deductions" class="mm-ov-finance__row">
+    <span>{{ deductionsLabel() }}</span>
+    <strong class="is-deduction">
+      −{{ finance().deductionsKd | number: '1.3-3' }} {{ kd() }}
+    </strong>
+  </a>
+</div>

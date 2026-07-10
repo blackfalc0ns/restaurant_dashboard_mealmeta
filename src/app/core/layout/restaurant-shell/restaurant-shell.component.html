@@ -10,7 +10,11 @@
 
   <mm-restaurant-sidebar />
 
-  <main class="hidden">
-    <router-outlet />
-  </main>
+  <div class="mm-restaurant-shell-main">
+    <mm-restaurant-header />
+
+    <main class="mm-restaurant-shell-content">
+      <router-outlet />
+    </main>
+  </div>
 </div>

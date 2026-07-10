@@ -1,0 +1,30 @@
+<div class="mm-ov-card__head">
+  <div>
+    <h2 class="mm-ov-card__title">{{ title() }}</h2>
+    <p class="mm-ov-card__subtitle">{{ subtitle() }}</p>
+  </div>
+  <a routerLink="/restaurant/overview/activity" class="mm-ov-card__link">
+    {{ viewAll() }}
+  </a>
+</div>
+
+<ul class="mm-ov-activity__list">
+  @for (item of items(); track item.id) {
+    <li>
+      <a
+        class="mm-ov-activity__row"
+        [class]="'is-' + item.severity"
+        [routerLink]="item.route"
+      >
+        <span class="mm-ov-activity__icon">
+          <ng-icon [name]="iconFor(item.severity)" class="size-4" />
+        </span>
+        <div class="mm-ov-activity__copy">
+          <strong>{{ itemTitle(item) }}</strong>
+          <span>{{ itemDetail(item) }}</span>
+        </div>
+        <time class="mm-ov-activity__time">{{ itemTime(item) }}</time>
+      </a>
+    </li>
+  }
+</ul>

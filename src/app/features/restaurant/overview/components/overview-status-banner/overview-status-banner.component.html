@@ -1,0 +1,33 @@
+<div class="mm-ov-banner__glow" aria-hidden="true"></div>
+
+<div class="mm-ov-banner__body">
+  <div class="mm-ov-banner__copy">
+    <p class="mm-ov-banner__eyebrow">
+      <ng-icon name="lucideSparkles" class="size-3.5" />
+      <span>{{ greeting() }} · {{ name() }}</span>
+    </p>
+    <h1 class="mm-ov-banner__title">{{ title() }}</h1>
+    <p class="mm-ov-banner__subtitle">{{ subtitle() }}</p>
+
+    <div class="mm-ov-banner__actions">
+      <a routerLink="/restaurant/overview/operations" class="mm-ov-banner__cta">
+        {{ opsLinkLabel() }}
+      </a>
+    </div>
+  </div>
+
+  <div class="mm-ov-banner__checklist">
+    <p class="mm-ov-banner__checklist-title">{{ checklistTitle() }}</p>
+    <ul class="mm-ov-banner__checklist-list">
+      @for (item of banner().checklist; track item.id) {
+        <li [class.is-done]="item.done">
+          <ng-icon
+            [name]="item.done ? 'lucideCheck' : 'lucideCircleDashed'"
+            class="size-3.5"
+          />
+          <span>{{ itemLabel(item.label) }}</span>
+        </li>
+      }
+    </ul>
+  </div>
+</div>

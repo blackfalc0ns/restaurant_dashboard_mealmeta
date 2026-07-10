@@ -1,0 +1,186 @@
+<div class="mm-ql-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-quality-overview-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <header class="mm-ql-header">
+      <div>
+        <p class="mm-ql-header__eyebrow">MealMate</p>
+        <h1 class="mm-ql-header__title">{{ title() }}</h1>
+        <p class="mm-ql-header__subtitle">{{ subtitle() }}</p>
+      </div>
+      <a routerLink="/restaurant/quality/ratings" class="mm-ql-header__cta">
+        {{ locale.isRtl() ? 'كل التقييمات' : 'All ratings' }}
+      </a>
+    </header>
+
+    <section class="mm-ql-metrics">
+      @for (metric of data.metrics; track metric.id) {
+        <a class="mm-ql-metric" [attr.data-tone]="metric.tone" [routerLink]="metric.route">
+          <span class="mm-ql-metric__icon">
+            <ng-icon [name]="metric.icon" class="size-4" />
+          </span>
+          <div class="mm-ql-metric__copy">
+            <small>{{ metricLabel(metric) }}</small>
+            <strong>{{ metric.value }}</strong>
+            <span>{{ metricHint(metric) }}</span>
+          </div>
+        </a>
+      }
+    </section>
+
+    <section class="mm-ql-grid mm-ql-grid--wide">
+      <article class="mm-ql-panel">
+        <div class="mm-ql-panel__head">
+          <div>
+            <h2>{{ trendTitle() }}</h2>
+          </div>
+        </div>
+        <mm-apex-chart
+          [series]="series()"
+          [chart]="chart"
+          [colors]="colors"
+          [xaxis]="xaxis()"
+          [yaxis]="yaxis"
+          [grid]="grid"
+          [stroke]="stroke"
+          [tooltip]="tooltip"
+          [legend]="legend"
+          [dataLabels]="{ enabled: false }"
+          [markers]="{ size: 3 }"
+        />
+      </article>
+
+      <article class="mm-ql-panel mm-ql-score">
+        <div class="mm-ql-panel__head">
+          <div>
+            <h2>{{ scoreTitle() }}</h2>
+          </div>
+        </div>
+
+        <div class="mm-ql-score__hero">
+          <strong>{{ data.averageRating | number: '1.1-1' }}</strong>
+          <div class="mm-ql-score__stars" aria-hidden="true">
+            @for (filled of stars(); track $index) {
+              <ng-icon name="lucideStar" class="size-4" [class.is-filled]="filled" />
+            }
+          </div>
+          <small>{{ ratingsCountLabel() }}</small>
+        </div>
+
+        <h3 class="mm-ql-score__sub">{{ categoriesTitle() }}</h3>
+        <ul class="mm-ql-categories">
+          @for (item of data.categories; track item.id) {
+            <li>
+              <span>{{ categoryLabel(item) }}</span>
+              <strong>{{ item.score | number: '1.1-1' }}</strong>
+              <i><em [style.width.%]="item.percent"></em></i>
+            </li>
+          }
+        </ul>
+      </article>
+    </section>
+
+    <section class="mm-ql-grid mm-ql-grid--equal">
+      <article class="mm-ql-panel mm-ql-complaints-panel">
+        <div class="mm-ql-panel__head">
+          <div>
+            <h2>{{ complaintsTitle() }}</h2>
+            <p>{{ complaintsSubtitle() }}</p>
+          </div>
+          <span class="mm-ql-badge">{{ data.complaints.length }}</span>
+        </div>
+
+        <ul class="mm-ql-complaints">
+          @for (item of data.complaints; track item.id) {
+            <li>
+              <a class="mm-ql-complaint" [routerLink]="item.route" [attr.data-tone]="item.tone">
+                <span class="mm-ql-complaint__accent" aria-hidden="true"></span>
+                <span class="mm-ql-complaint__icon">
+                  <ng-icon name="lucideMessageSquareWarning" class="size-4" />
+                </span>
+                <div class="mm-ql-complaint__body">
+                  <div class="mm-ql-complaint__top">
+                    <strong>{{ complaintTitle(item) }}</strong>
+                    <span class="mm-ql-complaint__sla">
+                      <ng-icon name="lucideClock" class="size-3" />
+                      {{ complaintSla(item) }}
+                    </span>
+                  </div>
+                  <p>{{ complaintDetail(item) }}</p>
+                  <span class="mm-ql-complaint__cta">
+                    <ng-icon name="lucideReply" class="size-3.5" />
+                    {{ replyLabel() }}
+                  </span>
+                </div>
+              </a>
+            </li>
+          }
+        </ul>
+      </article>
+
+      <article class="mm-ql-panel">
+        <div class="mm-ql-panel__head">
+          <div>
+            <h2>{{ distTitle() }}</h2>
+          </div>
+        </div>
+        <mm-apex-chart
+          [series]="distSeries()"
+          [chart]="distChart"
+          [colors]="distBarColors"
+          [xaxis]="distXaxis()"
+          [yaxis]="{ show: false }"
+          [grid]="grid"
+          [tooltip]="tooltip"
+          [legend]="{ show: false }"
+          [plotOptions]="distPlotOptions"
+          [dataLabels]="{ enabled: false }"
+        />
+      </article>
+    </section>
+
+    <section class="mm-ql-panel mm-ql-ratings-panel">
+      <div class="mm-ql-panel__head">
+        <div>
+          <h2>{{ ratingsTitle() }}</h2>
+          <p>{{ ratingsSubtitle() }}</p>
+        </div>
+        <a routerLink="/restaurant/quality/ratings" class="mm-ql-link">
+          {{ locale.isRtl() ? 'عرض الكل' : 'View all' }}
+        </a>
+      </div>
+
+      <ul class="mm-ql-ratings">
+        @for (item of data.recentRatings; track item.id) {
+          <li class="mm-ql-rating">
+            <div class="mm-ql-rating__avatar" aria-hidden="true">
+              {{ ratingMeal(item).charAt(0) }}
+            </div>
+            <div class="mm-ql-rating__body">
+              <div class="mm-ql-rating__top">
+                <strong>{{ ratingMeal(item) }}</strong>
+                <time>{{ ratingTime(item) }}</time>
+              </div>
+              <div class="mm-ql-rating__stars" aria-hidden="true">
+                @for (filled of starFlags(item.stars); track $index) {
+                  <ng-icon name="lucideStar" class="size-3.5" [class.is-filled]="filled" />
+                }
+              </div>
+              <p class="mm-ql-rating__comment">“{{ ratingComment(item) }}”</p>
+            </div>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+</div>

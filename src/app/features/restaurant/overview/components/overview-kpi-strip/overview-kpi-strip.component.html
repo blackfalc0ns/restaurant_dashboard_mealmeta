@@ -1,0 +1,41 @@
+<div class="mm-ov-kpis__grid">
+  @for (kpi of kpis(); track kpi.id; let i = $index) {
+    <a
+      class="mm-ov-kpi"
+      [class]="'mm-ov-kpi--' + kpi.tone"
+      [routerLink]="kpi.route"
+      [style.animation-delay.ms]="i * 60"
+    >
+      <div class="mm-ov-kpi__top">
+        <span class="mm-ov-kpi__label">{{ label(kpi) }}</span>
+        <ng-icon name="lucideArrowRight" class="mm-ov-kpi__arrow size-3.5" />
+      </div>
+
+      <div class="mm-ov-kpi__value-row">
+        <strong class="mm-ov-kpi__value">{{ kpi.value }}</strong>
+        <div class="mm-ov-kpi__spark">
+          <mm-apex-chart
+            [series]="series(kpi)"
+            [chart]="sparkChart"
+            [colors]="colors(kpi)"
+            [stroke]="{ curve: 'smooth', width: 2 }"
+            [fill]="{
+              type: 'gradient',
+              gradient: {
+                shadeIntensity: 0.4,
+                opacityFrom: 0.35,
+                opacityTo: 0.02,
+                stops: [0, 100]
+              }
+            }"
+          />
+        </div>
+      </div>
+
+      <p class="mm-ov-kpi__trend">
+        <ng-icon [name]="trendIcon(kpi)" class="size-3" />
+        <span>{{ trend(kpi) }}</span>
+      </p>
+    </a>
+  }
+</div>

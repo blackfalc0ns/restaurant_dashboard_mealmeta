@@ -1,0 +1,36 @@
+<div class="mm-ov-card__head">
+  <div>
+    <h2 class="mm-ov-card__title">{{ title() }}</h2>
+    <p class="mm-ov-card__subtitle">{{ subtitle() }}</p>
+  </div>
+  <a routerLink="/restaurant/overview/quality" class="mm-ov-card__link">
+    {{ viewLabel() }}
+  </a>
+</div>
+
+<div class="mm-ov-quality__rating">
+  <div class="mm-ov-quality__score">
+    <strong>{{ quality().averageRating | number: '1.1-1' }}</strong>
+    <span>{{ ratingLabel() }}</span>
+  </div>
+  <div class="mm-ov-quality__stars" aria-hidden="true">
+    @for (filled of stars(); track $index) {
+      <ng-icon
+        name="lucideStar"
+        class="size-4"
+        [class.is-filled]="filled"
+      />
+    }
+  </div>
+  <p class="mm-ov-quality__count">{{ ratingsCountLabel() }}</p>
+</div>
+
+<a routerLink="/restaurant/overview/quality" class="mm-ov-quality__complaint">
+  <span class="mm-ov-quality__complaint-icon">
+    <ng-icon name="lucideMessageSquareWarning" class="size-4" />
+  </span>
+  <div>
+    <strong>{{ quality().openComplaints }} {{ complaintsLabel() }}</strong>
+    <span>{{ slaLabel() }}</span>
+  </div>
+</a>

@@ -1,0 +1,52 @@
+<div class="mm-ac-skeleton__inner" aria-hidden="true">
+  <div class="mm-ac-skeleton__header">
+    <div>
+      <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+      <span class="mm-ov-bone mm-ov-bone--title"></span>
+      <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+    </div>
+  </div>
+
+  <span class="mm-ov-bone mm-ov-bone--block" style="height: 5rem; border-radius: 1.25rem"></span>
+
+  <div class="mm-ac-skeleton__summary">
+    @for (_ of [1, 2, 3, 4]; track $index) {
+      <div class="mm-ac-skeleton__card">
+        <span class="mm-ov-bone mm-ov-bone--avatar"></span>
+        <div>
+          <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+          <span class="mm-ov-bone mm-ov-bone--value"></span>
+          <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="mm-ac-skeleton__tabs">
+    @for (_ of [1, 2, 3, 4, 5]; track $index) {
+      <span class="mm-ov-bone mm-ov-bone--chip" style="width: 4.5rem; height: 2.25rem"></span>
+    }
+  </div>
+
+  <div class="mm-ac-skeleton__layout">
+    <div class="mm-ac-skeleton__card mm-ac-skeleton__feed">
+      @for (_ of [1, 2, 3, 4]; track $index) {
+        <span class="mm-ov-bone mm-ov-bone--block" style="height: 9rem; margin-bottom: 0.75rem"></span>
+      }
+    </div>
+    <div class="mm-ac-skeleton__rail">
+      <div class="mm-ac-skeleton__card">
+        <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+        @for (_ of [1, 2, 3, 4, 5]; track $index) {
+          <span class="mm-ov-bone mm-ov-bone--line"></span>
+        }
+      </div>
+      <div class="mm-ac-skeleton__card">
+        <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+        @for (_ of [1, 2, 3, 4]; track $index) {
+          <span class="mm-ov-bone mm-ov-bone--action"></span>
+        }
+      </div>
+    </div>
+  </div>
+</div>

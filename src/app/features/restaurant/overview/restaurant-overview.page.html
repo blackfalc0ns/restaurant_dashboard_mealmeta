@@ -1,0 +1,38 @@
+<div class="mm-ov-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-overview-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <mm-overview-status-banner
+      [banner]="data.status"
+      [restaurantName]="data.restaurantName"
+    />
+
+    <mm-overview-kpi-strip [kpis]="data.kpis" />
+
+    <div class="mm-ov-page__grid">
+      <div class="mm-ov-page__primary">
+        <mm-overview-ops-panel
+          [orders]="data.urgentOrders"
+          [quickActions]="data.quickActions"
+        />
+        <mm-overview-activity-feed [items]="data.activity" />
+      </div>
+
+      <div class="mm-ov-page__secondary">
+        <mm-overview-capacity-card [capacity]="data.capacity" />
+        <mm-overview-finance-card [finance]="data.finance" />
+        <mm-overview-quality-card [quality]="data.quality" />
+      </div>
+    </div>
+  }
+</div>

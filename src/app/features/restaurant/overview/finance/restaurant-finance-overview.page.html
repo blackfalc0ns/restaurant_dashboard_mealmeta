@@ -1,0 +1,153 @@
+<div class="mm-fn-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-finance-overview-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <header class="mm-fn-header">
+      <div>
+        <p class="mm-fn-header__eyebrow">MealMate</p>
+        <h1 class="mm-fn-header__title">{{ title() }}</h1>
+        <p class="mm-fn-header__subtitle">{{ subtitle() }}</p>
+      </div>
+
+      <label class="mm-fn-period">
+        <span>{{ periodLabel() }}</span>
+        <select [value]="facade.period()" (change)="onPeriodChange($event)">
+          @for (option of periods; track option.id) {
+            <option [value]="option.id">{{ periodOptionLabel(option) }}</option>
+          }
+        </select>
+      </label>
+    </header>
+
+    <section class="mm-fn-metrics">
+      @for (metric of data.metrics; track metric.id) {
+        <a class="mm-fn-metric" [attr.data-tone]="metric.tone" [routerLink]="metric.route">
+          <span class="mm-fn-metric__icon">
+            <ng-icon [name]="metric.icon" class="size-4" />
+          </span>
+          <div class="mm-fn-metric__copy">
+            <small>{{ metricLabel(metric) }}</small>
+            <strong>
+              {{ metric.valueKd | number: '1.3-3' }}
+              <em>{{ kd() }}</em>
+            </strong>
+            <span>{{ metricHint(metric) }}</span>
+          </div>
+        </a>
+      }
+    </section>
+
+    <section class="mm-fn-grid mm-fn-grid--wide">
+      <article class="mm-fn-panel">
+        <div class="mm-fn-panel__head">
+          <div>
+            <h2>{{ trendTitle() }}</h2>
+            <p>{{ trendSubtitle() }}</p>
+          </div>
+        </div>
+        <mm-apex-chart
+          [series]="series()"
+          [chart]="chart"
+          [colors]="colors"
+          [xaxis]="xaxis()"
+          [yaxis]="yaxis"
+          [grid]="grid"
+          [stroke]="stroke"
+          [fill]="fill"
+          [tooltip]="tooltip"
+          [legend]="legend"
+          [dataLabels]="{ enabled: false }"
+        />
+      </article>
+
+      <article class="mm-fn-panel">
+        <div class="mm-fn-panel__head">
+          <div>
+            <h2>{{ breakdownTitle() }}</h2>
+          </div>
+          <a routerLink="/restaurant/finance/dues" class="mm-fn-link">
+            {{ locale.isRtl() ? 'التفاصيل' : 'Details' }}
+          </a>
+        </div>
+
+        <ul class="mm-fn-breakdown">
+          @for (item of data.breakdown; track item.id) {
+            <li [attr.data-tone]="item.tone">
+              <span>{{ breakdownLabel(item) }}</span>
+              <strong>{{ item.amountKd | number: '1.3-3' }} {{ kd() }}</strong>
+              <i><em [style.width.%]="item.percent"></em></i>
+            </li>
+          }
+        </ul>
+
+        <p class="mm-fn-note">{{ statementNote() }}</p>
+      </article>
+    </section>
+
+    <section class="mm-fn-grid mm-fn-grid--equal">
+      <article class="mm-fn-panel">
+        <div class="mm-fn-panel__head">
+          <div>
+            <h2>{{ txnTitle() }}</h2>
+          </div>
+          <a routerLink="/restaurant/finance/statements" class="mm-fn-link">
+            {{ locale.isRtl() ? 'كشف الحساب' : 'Statement' }}
+          </a>
+        </div>
+
+        <ul class="mm-fn-txn">
+          @for (txn of data.transactions; track txn.id) {
+            <li>
+              <a [routerLink]="txn.route" [attr.data-direction]="txn.direction">
+                <div>
+                  <strong>{{ txnTitleText(txn) }}</strong>
+                  <span>{{ txnDetail(txn) }}</span>
+                </div>
+                <div class="mm-fn-txn__meta">
+                  <b>
+                    {{ txn.direction === 'out' ? '−' : '+' }}
+                    {{ txn.amountKd | number: '1.3-3' }}
+                    {{ kd() }}
+                  </b>
+                  <small>{{ txnStatus(txn) }}</small>
+                </div>
+              </a>
+            </li>
+          }
+        </ul>
+      </article>
+
+      <article class="mm-fn-panel">
+        <div class="mm-fn-panel__head">
+          <div>
+            <h2>{{ linksTitle() }}</h2>
+          </div>
+        </div>
+
+        <div class="mm-fn-links">
+          @for (link of data.quickLinks; track link.id) {
+            <a [routerLink]="link.route">
+              <ng-icon [name]="link.icon" class="size-4" />
+              <span>{{ linkLabel(link) }}</span>
+            </a>
+          }
+        </div>
+
+        <a routerLink="/restaurant/finance/reports" class="mm-fn-cta">
+          <ng-icon name="lucideScrollText" class="size-4" />
+          {{ locale.isRtl() ? 'فتح التقارير المالية' : 'Open financial reports' }}
+        </a>
+      </article>
+    </section>
+  }
+</div>

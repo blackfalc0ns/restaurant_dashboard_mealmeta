@@ -1,0 +1,80 @@
+<header class="mm-restaurant-header">
+  <div class="mm-restaurant-header-accent" aria-hidden="true"></div>
+
+  <div class="mm-restaurant-header-bar">
+    <div class="mm-restaurant-header-start">
+      @if (layout.isMobile()) {
+        <button
+          type="button"
+          class="mm-restaurant-header-btn"
+          (click)="openMobileNav()"
+          [attr.aria-label]="menuLabel()"
+        >
+          <ng-icon name="lucideMenu" class="size-5" />
+        </button>
+      }
+
+      <div class="mm-restaurant-header-brand">
+        <img
+          class="mm-restaurant-header-logo"
+          [src]="brandLogoSrc"
+          alt="MealMate"
+          width="120"
+          height="22"
+        />
+      </div>
+
+      <span class="mm-restaurant-header-sep" aria-hidden="true"></span>
+
+      <div class="mm-restaurant-header-page">
+        <span>{{ pageMeta().section }}</span>
+        <strong>{{ pageMeta().page }}</strong>
+      </div>
+    </div>
+
+    <div class="mm-restaurant-header-actions">
+      <div class="mm-restaurant-header-date">
+        <ng-icon name="lucideCalendarDays" class="size-3.5" />
+        <span>{{ todayLabel() }}</span>
+      </div>
+
+      <div class="mm-restaurant-header-status">
+        <span class="mm-restaurant-header-status__icon">
+          <ng-icon name="lucideCircleCheck" class="size-3.5" />
+        </span>
+        <div>
+          <small>{{ statusLabel() }}</small>
+          <strong>{{ statusValue() }}</strong>
+        </div>
+      </div>
+
+      <span class="mm-restaurant-header-actions-sep" aria-hidden="true"></span>
+
+      <button
+        type="button"
+        class="mm-restaurant-header-btn mm-restaurant-header-notifications"
+        [attr.aria-label]="notificationsLabel()"
+      >
+        <ng-icon name="lucideBell" class="size-[1.05rem]" />
+        <span aria-hidden="true"></span>
+      </button>
+
+      <button
+        type="button"
+        class="mm-restaurant-header-lang"
+        (click)="locale.toggle()"
+      >
+        <ng-icon name="lucideGlobe" class="size-3.5 shrink-0 text-mm-primary" />
+        <span>{{ langSwitchLabel() }}</span>
+      </button>
+
+      <button type="button" class="mm-restaurant-header-account">
+        <span class="mm-restaurant-header-avatar">{{ avatarLetter() }}</span>
+        <span class="mm-restaurant-header-account__copy">
+          <strong>{{ restaurantName() }}</strong>
+          <small>{{ restaurantRole() }}</small>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
