@@ -45,10 +45,20 @@ const loadOrderDetailPage = () =>
     (m) => m.OrderDetailPageComponent,
   );
 
+const loadPendingConfirmationPage = () =>
+  import('./pending-confirmation/pending-confirmation.page').then(
+    (m) => m.PendingConfirmationPageComponent,
+  );
+
+const loadUpcoming24hPage = () =>
+  import('./upcoming-24h/upcoming-24h.page').then(
+    (m) => m.Upcoming24hPageComponent,
+  );
+
+const loadLabelsPage = () =>
+  import('./labels/labels.page').then((m) => m.LabelsPageComponent);
+
 const SIDEBAR_LINK_PATHS = [
-  'orders/pending-confirmation',
-  'orders/upcoming-24h',
-  'orders/labels',
   'orders/handover',
   'orders/archive',
   'operations/menu',
@@ -101,6 +111,18 @@ export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   {
     path: 'orders/detail/:orderCode',
     loadComponent: loadOrderDetailPage,
+  },
+  {
+    path: 'orders/pending-confirmation',
+    loadComponent: loadPendingConfirmationPage,
+  },
+  {
+    path: 'orders/upcoming-24h',
+    loadComponent: loadUpcoming24hPage,
+  },
+  {
+    path: 'orders/labels',
+    loadComponent: loadLabelsPage,
   },
   ...SIDEBAR_LINK_PATHS.map((path) => ({
     path,
