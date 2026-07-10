@@ -2,7 +2,7 @@
   <!-- Rail -->
   <div class="mm-dual-sb__rail">
     <a
-      routerLink="/restaurant/orders/pending-confirmation"
+      routerLink="/restaurant/overview"
       class="mm-dual-sb__logo"
       (click)="closeMobileNav()"
       aria-label="MealMate"
@@ -76,7 +76,9 @@
                   >
                     <ng-icon [name]="child.icon" class="mm-dual-sb__item-icon" />
                     <span class="mm-dual-sb__item-label">{{ label(child) }}</span>
-                    <span class="mm-dual-sb__item-count">{{ formatCount(child.badge) }}</span>
+                    @if (child.badge !== undefined) {
+                      <span class="mm-dual-sb__item-count">{{ formatCount(child.badge) }}</span>
+                    }
                   </a>
                 </li>
               }
@@ -97,7 +99,9 @@
             >
               <ng-icon [name]="item.icon" class="mm-dual-sb__item-icon" />
               <span class="mm-dual-sb__item-label">{{ label(item) }}</span>
-              <span class="mm-dual-sb__item-count">{{ formatCount(item.badge) }}</span>
+              @if (item.badge !== undefined) {
+                <span class="mm-dual-sb__item-count">{{ formatCount(item.badge) }}</span>
+              }
             </a>
           }
         }

@@ -19,6 +19,8 @@
     "@angular/router": "^19.2.0",
     "@ng-icons/core": "^29.10.0",
     "@ng-icons/lucide": "^29.10.0",
+    "apexcharts": "^4.7.0",
+    "ng-apexcharts": "^1.15.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "rxjs": "~7.8.0",

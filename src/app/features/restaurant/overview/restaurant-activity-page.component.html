@@ -1,0 +1,44 @@
+<section class="hub-page" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
+  <header class="hub-header">
+    <div><p>{{ text('الرئيسية', 'Overview') }}</p><h1>{{ text('مركز المتابعة', 'Activity center') }}</h1><span>{{ text('كل المهام والتنبيهات التي تحتاج إجراءً في مكان واحد', 'All tasks and alerts that need action in one place') }}</span></div>
+  </header>
+
+  <div class="queue-summary">
+    <article data-tone="red"><ng-icon name="lucideCircleAlert" /><div><strong>2</strong><span>{{ text('مهام عاجلة', 'Urgent tasks') }}</span></div></article>
+    <article data-tone="amber"><ng-icon name="lucideClock3" /><div><strong>4</strong><span>{{ text('مطلوب اليوم', 'Due today') }}</span></div></article>
+    <article data-tone="blue"><ng-icon name="lucideTruck" /><div><strong>3</strong><span>{{ text('حركات تسليم', 'Handover events') }}</span></div></article>
+    <article data-tone="green"><ng-icon name="lucideCheck" /><div><strong>18</strong><span>{{ text('اكتمل اليوم', 'Completed today') }}</span></div></article>
+  </div>
+
+  <nav class="hub-tabs" [attr.aria-label]="text('تصفية المتابعة', 'Filter activity')">
+    @for (filter of filters; track filter.id) {
+      <button type="button" [class.hub-tabs__active]="selectedType() === filter.id" (click)="selectedType.set(filter.id)">{{ text(filter.labelAr, filter.labelEn) }}</button>
+    }
+  </nav>
+
+  <div class="activity-layout">
+    <section class="hub-panel activity-queue">
+      <div class="hub-panel__header"><div><h2>{{ text('قائمة المتابعة', 'Follow-up queue') }}</h2><p>{{ filteredItems().length }} {{ text('عناصر ظاهرة', 'visible items') }}</p></div></div>
+      <div class="activity-list">
+        @for (item of filteredItems(); track item.id) {
+          <article class="activity-item" [attr.data-tone]="item.tone">
+            <span class="activity-item__icon"><ng-icon [name]="item.icon" /></span>
+            <div class="activity-item__content"><strong>{{ text(item.titleAr, item.titleEn) }}</strong><p>{{ text(item.detailAr, item.detailEn) }}</p><small>{{ text(item.timeAr, item.timeEn) }}</small></div>
+            <a [routerLink]="item.route">{{ text(item.actionAr, item.actionEn) }}<ng-icon [name]="directionIcon()" /></a>
+          </article>
+        }
+      </div>
+    </section>
+
+    <aside class="hub-panel timeline-panel">
+      <div class="hub-panel__header"><div><h2>{{ text('آخر النشاطات', 'Recent activity') }}</h2><p>{{ text('سجل مختصر لأحداث اليوم', "Today's event log") }}</p></div></div>
+      <ol class="timeline-list">
+        <li><i></i><div><strong>{{ text('تم تأكيد الطلب ORD-2490', 'Order ORD-2490 confirmed') }}</strong><span>10:42</span></div></li>
+        <li><i></i><div><strong>{{ text('تحديث السعة إلى 320 وجبة', 'Capacity updated to 320 meals') }}</strong><span>10:18</span></div></li>
+        <li><i></i><div><strong>{{ text('تسليم الطلب ORD-2478', 'Order ORD-2478 handed over') }}</strong><span>09:55</span></div></li>
+        <li><i></i><div><strong>{{ text('طباعة 24 ملصق وجبة', '24 meal labels printed') }}</strong><span>09:31</span></div></li>
+        <li><i></i><div><strong>{{ text('مزامنة قائمة الأسعار', 'Price list synchronized') }}</strong><span>08:50</span></div></li>
+      </ol>
+    </aside>
+  </div>
+</section>

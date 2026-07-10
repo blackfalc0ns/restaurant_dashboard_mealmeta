@@ -1,10 +1,19 @@
-import { Routes } from '@angular/router';
+import { CanMatchFn, Routes } from '@angular/router';
 
-/** Root routes — restaurant auth + F06 orders */
+const RESTAURANT_AUTH_PATHS = new Set(['login', 'forgot-password', 'verify-otp', 'register']);
+
+const matchesRestaurantAuth: CanMatchFn = (_route, segments) => {
+  const firstPath = segments[0]?.path;
+  const requestedPath = firstPath === 'restaurant' ? segments[1]?.path : firstPath;
+  return !requestedPath || RESTAURANT_AUTH_PATHS.has(requestedPath);
+};
+
+/** Root routes — restaurant auth, onboarding, and workspace. */
 export const APP_ROUTES: Routes = [
   { path: '', redirectTo: 'restaurant/login', pathMatch: 'full' },
   {
     path: 'restaurant',
+    canMatch: [matchesRestaurantAuth],
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
   {
@@ -20,7 +29,7 @@ export const APP_ROUTES: Routes = [
       ),
   },
   {
-    path: 'restaurant/orders',
+    path: 'restaurant',
     loadComponent: () =>
       import('./core/layout/restaurant-shell/restaurant-shell.component').then(
         (m) => m.RestaurantShellComponent
@@ -29,8 +38,8 @@ export const APP_ROUTES: Routes = [
       {
         path: '',
         loadChildren: () =>
-          import('./features/restaurant/order-72h-rule/order-72h-rule.routes').then(
-            (m) => m.ORDER_72H_RULE_ROUTES
+          import('./features/restaurant/restaurant-workspace.routes').then(
+            (m) => m.RESTAURANT_WORKSPACE_ROUTES
           ),
       },
     ],

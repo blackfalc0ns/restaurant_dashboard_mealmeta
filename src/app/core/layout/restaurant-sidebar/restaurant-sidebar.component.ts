@@ -13,22 +13,35 @@ import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
+  lucideActivity,
   lucideArchive,
-  lucideBriefcase,
-  lucideCircleDot,
+  lucideBadgeDollarSign,
+  lucideBriefcaseBusiness,
+  lucideCalendarDays,
+  lucideChartColumn,
+  lucideChartNoAxesCombined,
+  lucideClipboardList,
   lucideClock,
-  lucideCrosshair,
+  lucideCookingPot,
   lucideFileText,
   lucideGauge,
-  lucideLayers,
-  lucideList,
+  lucideHandCoins,
+  lucideLandmark,
+  lucideLayoutDashboard,
+  lucideListTodo,
   lucideLogOut,
+  lucideMapPinned,
   lucidePackage,
   lucidePlus,
   lucideQrCode,
   lucideReceipt,
+  lucideScanBarcode,
+  lucideScrollText,
   lucideSettings,
+  lucideStar,
+  lucideTruck,
   lucideUtensilsCrossed,
+  lucideUsers,
   lucideWallet,
 } from '@ng-icons/lucide';
 
@@ -55,22 +68,35 @@ import { RestaurantNavItem, RestaurantNavSection } from '@/core/navigation/resta
   },
   viewProviders: [
     provideIcons({
+      lucideActivity,
       lucideArchive,
-      lucideBriefcase,
-      lucideCircleDot,
+      lucideBadgeDollarSign,
+      lucideBriefcaseBusiness,
+      lucideCalendarDays,
+      lucideChartColumn,
+      lucideChartNoAxesCombined,
+      lucideClipboardList,
       lucideClock,
-      lucideCrosshair,
+      lucideCookingPot,
       lucideFileText,
       lucideGauge,
-      lucideLayers,
-      lucideList,
+      lucideHandCoins,
+      lucideLandmark,
+      lucideLayoutDashboard,
+      lucideListTodo,
       lucideLogOut,
+      lucideMapPinned,
       lucidePackage,
       lucidePlus,
       lucideQrCode,
       lucideReceipt,
+      lucideScanBarcode,
+      lucideScrollText,
       lucideSettings,
+      lucideStar,
+      lucideTruck,
       lucideUtensilsCrossed,
+      lucideUsers,
       lucideWallet,
     }),
   ],
@@ -143,7 +169,7 @@ export class RestaurantSidebarComponent {
   }
 
   sectionIcon(section: RestaurantNavSection): string {
-    return section.icon ?? 'lucideCrosshair';
+    return section.icon ?? 'lucideClipboardList';
   }
 
   label(item: RestaurantNavItem): string {

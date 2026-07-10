@@ -1,0 +1,106 @@
+<section class="ingredients-page" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
+  <header class="page-header">
+    <div>
+      <p>{{ text('التشغيل', 'Operations') }}</p>
+      <h1>{{ text('مكونات المطعم', 'Restaurant ingredients') }}</h1>
+      <span>{{ text('سجّل أنواع المكونات ومصادرها لتظهر بيانات مطعمك بصورة دقيقة.', 'Record ingredient types and sources to keep your restaurant profile accurate.') }}</span>
+    </div>
+    <button type="button" class="primary-button" (click)="openCreate()">
+      <ng-icon name="lucidePlus" />
+      <span>{{ text('إضافة مكوّن', 'Add ingredient') }}</span>
+    </button>
+  </header>
+
+  <div class="summary-grid">
+    <article><ng-icon name="lucideCookingPot" /><div><strong>{{ ingredients().length }}</strong><span>{{ text('إجمالي المكونات', 'Total ingredients') }}</span></div></article>
+    <article><ng-icon name="lucideCheck" /><div><strong>{{ activeCount() }}</strong><span>{{ text('مكوّن نشط', 'Active ingredients') }}</span></div></article>
+    <article><ng-icon name="lucideShieldCheck" /><div><strong>{{ certifiedCount() }}</strong><span>{{ text('معتمد حلال', 'Halal certified') }}</span></div></article>
+    <article class="summary-card--warning"><ng-icon name="lucideCircleAlert" /><div><strong>{{ allergenCount() }}</strong><span>{{ text('مسببات حساسية', 'Allergen entries') }}</span></div></article>
+  </div>
+
+  <div class="workspace">
+    <aside class="category-panel">
+      <h2>{{ text('التصنيفات', 'Categories') }}</h2>
+      @for (category of categories; track category.id) {
+        <button type="button" [class.active]="selectedCategory() === category.id" (click)="selectedCategory.set(category.id)">
+          <ng-icon [name]="category.icon" />
+          <span>{{ text(category.labelAr, category.labelEn) }}</span>
+          <b>{{ countForCategory(category.id) }}</b>
+        </button>
+      }
+    </aside>
+
+    <main class="ingredients-panel">
+      <div class="panel-toolbar">
+        <div><h2>{{ selectedCategory() === 'all' ? text('كل المكونات', 'All ingredients') : categoryLabel($any(selectedCategory())) }}</h2><span>{{ filteredIngredients().length }} {{ text('نتيجة', 'results') }}</span></div>
+        <label class="search-field">
+          <ng-icon name="lucideSearch" />
+          <input type="search" [value]="query()" (input)="onSearch($event)" [placeholder]="text('ابحث بالاسم أو المورد أو المنشأ', 'Search name, supplier, or origin')" />
+        </label>
+      </div>
+
+      @if (filteredIngredients().length) {
+        <div class="ingredient-list">
+          @for (ingredient of filteredIngredients(); track ingredient.id) {
+            <article class="ingredient-card" [class.inactive]="!ingredient.active">
+              <div class="ingredient-icon" [attr.data-category]="ingredient.category"><ng-icon [name]="categoryIcon(ingredient.category)" /></div>
+              <div class="ingredient-info">
+                <div class="ingredient-title">
+                  <h3>{{ text(ingredient.nameAr, ingredient.nameEn) }}</h3>
+                  <span class="category-badge">{{ categoryLabel(ingredient.category) }}</span>
+                  @if (!ingredient.active) { <span class="inactive-badge">{{ text('متوقف', 'Inactive') }}</span> }
+                </div>
+                <p>{{ text(ingredient.detailsAr, ingredient.detailsEn) }}</p>
+                <dl>
+                  <div><dt>{{ text('المورد', 'Supplier') }}</dt><dd>{{ ingredient.supplier }}</dd></div>
+                  <div><dt>{{ text('المنشأ', 'Origin') }}</dt><dd>{{ text(ingredient.originAr, ingredient.originEn) }}</dd></div>
+                  <div><dt>{{ text('الحفظ', 'Storage') }}</dt><dd>{{ text(ingredient.storageAr, ingredient.storageEn) }}</dd></div>
+                </dl>
+                <div class="ingredient-tags">
+                  @if (ingredient.halalCertified) { <span class="halal"><ng-icon name="lucideShieldCheck" />{{ text('حلال معتمد', 'Halal certified') }}</span> }
+                  @if (ingredient.containsAllergens) { <span class="allergen"><ng-icon name="lucideCircleAlert" />{{ text('يحتوي مسببات حساسية', 'Contains allergens') }}</span> }
+                </div>
+              </div>
+              <div class="card-actions">
+                <label class="switch" [attr.title]="text('تغيير حالة التوفر', 'Change availability')"><input type="checkbox" [checked]="ingredient.active" (change)="toggleActive(ingredient)" /><span></span></label>
+                <button type="button" (click)="openEdit(ingredient)" [attr.aria-label]="text('تعديل', 'Edit')"><ng-icon name="lucidePencil" /></button>
+                <button type="button" class="delete" (click)="remove(ingredient)" [attr.aria-label]="text('حذف', 'Delete')"><ng-icon name="lucideTrash2" /></button>
+              </div>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-state"><ng-icon name="lucidePackageOpen" /><h3>{{ text('لا توجد مكونات مطابقة', 'No matching ingredients') }}</h3><p>{{ text('غيّر البحث أو أضف مكوّناً جديداً.', 'Change the search or add a new ingredient.') }}</p><button type="button" (click)="openCreate()"><ng-icon name="lucidePlus" />{{ text('إضافة مكوّن', 'Add ingredient') }}</button></div>
+      }
+    </main>
+  </div>
+
+  @if (editorOpen()) {
+    <div class="dialog-backdrop" (click)="closeEditor()">
+      <section class="editor-dialog" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+        <header><div><h2>{{ editingId() ? text('تعديل المكوّن', 'Edit ingredient') : text('إضافة مكوّن جديد', 'Add new ingredient') }}</h2><p>{{ text('أدخل البيانات الأساسية ومصدر المكوّن.', 'Enter the ingredient details and source.') }}</p></div><button type="button" (click)="closeEditor()"><ng-icon name="lucideX" /></button></header>
+        <div class="form-body">
+          <label class="field field--full"><span>{{ text('التصنيف', 'Category') }} *</span><select [ngModel]="draft().category" (ngModelChange)="updateDraft('category', $event)">@for (category of categories.slice(1); track category.id) { <option [value]="category.id">{{ text(category.labelAr, category.labelEn) }}</option> }</select></label>
+          <label class="field"><span>الاسم بالعربية *</span><input type="text" [ngModel]="draft().nameAr" (ngModelChange)="updateDraft('nameAr', $event)" placeholder="مثال: لحم بقري" [class.invalid]="submitted() && !draft().nameAr.trim()" /></label>
+          <label class="field"><span>Name in English *</span><input type="text" dir="ltr" [ngModel]="draft().nameEn" (ngModelChange)="updateDraft('nameEn', $event)" placeholder="e.g. Beef" [class.invalid]="submitted() && !draft().nameEn.trim()" /></label>
+          <label class="field"><span>{{ text('النوع أو الوصف بالعربية', 'Arabic type / description') }} *</span><input type="text" [ngModel]="draft().detailsAr" (ngModelChange)="updateDraft('detailsAr', $event)" placeholder="تندرلوين — مبرد طازج" [class.invalid]="submitted() && !draft().detailsAr.trim()" /></label>
+          <label class="field"><span>{{ text('الوصف بالإنجليزية', 'English description') }}</span><input type="text" dir="ltr" [ngModel]="draft().detailsEn" (ngModelChange)="updateDraft('detailsEn', $event)" placeholder="Tenderloin — fresh chilled" /></label>
+          <label class="field field--full"><span>{{ text('المورد أو العلامة التجارية', 'Supplier or brand') }} *</span><input type="text" [ngModel]="draft().supplier" (ngModelChange)="updateDraft('supplier', $event)" [class.invalid]="submitted() && !draft().supplier.trim()" /></label>
+          <label class="field"><span>{{ text('بلد المنشأ بالعربية', 'Origin in Arabic') }}</span><input type="text" [ngModel]="draft().originAr" (ngModelChange)="updateDraft('originAr', $event)" /></label>
+          <label class="field"><span>{{ text('بلد المنشأ بالإنجليزية', 'Origin in English') }}</span><input type="text" dir="ltr" [ngModel]="draft().originEn" (ngModelChange)="updateDraft('originEn', $event)" /></label>
+          <label class="field"><span>{{ text('طريقة الحفظ بالعربية', 'Storage in Arabic') }}</span><input type="text" [ngModel]="draft().storageAr" (ngModelChange)="updateDraft('storageAr', $event)" /></label>
+          <label class="field"><span>{{ text('طريقة الحفظ بالإنجليزية', 'Storage in English') }}</span><input type="text" dir="ltr" [ngModel]="draft().storageEn" (ngModelChange)="updateDraft('storageEn', $event)" /></label>
+          <div class="checks field--full">
+            <label><input type="checkbox" [ngModel]="draft().halalCertified" (ngModelChange)="updateDraft('halalCertified', $event)" /><span><strong>{{ text('حلال معتمد', 'Halal certified') }}</strong><small>{{ text('المورد لديه شهادة حلال سارية', 'Supplier has a valid halal certificate') }}</small></span></label>
+            <label><input type="checkbox" [ngModel]="draft().containsAllergens" (ngModelChange)="updateDraft('containsAllergens', $event)" /><span><strong>{{ text('مسببات حساسية', 'Allergens') }}</strong><small>{{ text('يتطلب تنبيهاً للعميل', 'Requires a customer warning') }}</small></span></label>
+            <label><input type="checkbox" [ngModel]="draft().active" (ngModelChange)="updateDraft('active', $event)" /><span><strong>{{ text('متاح حالياً', 'Currently available') }}</strong><small>{{ text('يُستخدم في الوجبات الحالية', 'Used in current meals') }}</small></span></label>
+          </div>
+          @if (submitted() && !formValid()) { <p class="form-error"><ng-icon name="lucideCircleAlert" />{{ text('أكمل الحقول المطلوبة قبل الحفظ.', 'Complete the required fields before saving.') }}</p> }
+        </div>
+        <footer><button type="button" class="secondary-button" (click)="closeEditor()">{{ text('إلغاء', 'Cancel') }}</button><button type="button" class="primary-button" (click)="save()"><ng-icon name="lucideCheck" />{{ text('حفظ المكوّن', 'Save ingredient') }}</button></footer>
+      </section>
+    </div>
+  }
+
+  @if (savedNotice()) { <div class="toast"><ng-icon name="lucideCheck" />{{ text('تم حفظ بيانات المكوّن بنجاح', 'Ingredient saved successfully') }}</div> }
+</section>

@@ -1,11 +1,11 @@
-<header class="mm-restaurant-header">
+<header class="mm-restaurant-header" [attr.dir]="locale.isRtl() ? 'rtl' : 'ltr'">
   <div class="mm-restaurant-header-accent" aria-hidden="true"></div>
   <div class="mm-restaurant-header-bar">
     <div class="mm-restaurant-header-start">
       @if (layout.isMobile()) {
         <button
           type="button"
-          class="mm-restaurant-header-btn"
+          class="mm-restaurant-header-btn mm-restaurant-header-menu"
           (click)="openMobileNav()"
           [attr.aria-label]="menuLabel()"
         >
@@ -13,29 +13,61 @@
         </button>
       }
 
-      <img
-        class="mm-restaurant-header-logo"
-        [src]="brandLogoSrc"
-        alt="MealMate"
-        width="120"
-        height="24"
-      />
+      <div class="mm-restaurant-header-brand">
+        <img
+          class="mm-restaurant-header-logo"
+          [src]="brandLogoSrc"
+          alt="MealMate"
+          width="120"
+          height="24"
+        />
+      </div>
+
       <span class="mm-restaurant-header-sep" aria-hidden="true"></span>
-      <span class="mm-restaurant-header-context">{{ panelLabel() }}</span>
+
+      <div class="mm-restaurant-header-page">
+        <span>{{ panelLabel() }}</span>
+        <strong>{{ pageTitle() }}</strong>
+      </div>
     </div>
 
     <div class="mm-restaurant-header-actions">
+      <div class="mm-restaurant-header-status">
+        <span class="mm-restaurant-header-status__icon"><ng-icon name="lucideCheck" /></span>
+        <div>
+          <small>{{ locale.isRtl() ? 'حالة التشغيل' : 'Operational status' }}</small>
+          <strong>{{ operationalStatus() }}</strong>
+        </div>
+      </div>
+
+      <div class="mm-restaurant-header-date">
+        <ng-icon name="lucideCalendarDays" />
+        <span>{{ todayLabel() }}</span>
+      </div>
+
+      <span class="mm-restaurant-header-actions-sep" aria-hidden="true"></span>
+
       <button
         type="button"
-        class="mm-restaurant-header-btn"
+        class="mm-restaurant-header-btn mm-restaurant-header-notifications"
         [attr.aria-label]="locale.isRtl() ? 'الإشعارات' : 'Notifications'"
       >
         <ng-icon name="lucideBell" class="size-[1.05rem]" />
+        <span aria-hidden="true"></span>
       </button>
 
       <button type="button" class="mm-restaurant-header-lang" (click)="locale.toggle()">
         <ng-icon name="lucideGlobe" class="size-3.5" />
         <span>{{ langSwitchLabel() }}</span>
+      </button>
+
+      <button type="button" class="mm-restaurant-header-account">
+        <span class="mm-restaurant-header-avatar">م</span>
+        <span class="mm-restaurant-header-account__copy">
+          <strong>{{ restaurantName() }}</strong>
+          <small>{{ restaurantRole() }}</small>
+        </span>
+        <ng-icon name="lucideChevronDown" class="mm-restaurant-header-account__chevron" />
       </button>
     </div>
   </div>

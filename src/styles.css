@@ -655,16 +655,16 @@
   }
 
   .mm-restaurant-shell-main {
-    @apply relative z-[1] flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[var(--mm-shell-radius)] border border-[rgba(4,153,78,0.1)] bg-white;
-    box-shadow: 0 10px 36px -14px rgba(1, 83, 41, 0.16);
+    @apply relative z-[1] flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-hidden;
   }
 
   .mm-restaurant-shell-content {
-    @apply min-h-0 flex-1 overflow-auto bg-mm-cream p-5 md:p-6;
+    @apply min-h-0 flex-1 overflow-auto bg-transparent;
   }
 
   .mm-restaurant-header {
-    @apply relative shrink-0 overflow-hidden border-b border-mm-field-border/80 bg-white;
+    @apply relative shrink-0 overflow-hidden rounded-lg border border-[rgba(4,153,78,0.12)] bg-white;
+    box-shadow: 0 8px 28px -16px rgba(1, 83, 41, 0.28);
   }
 
   .mm-restaurant-header-accent {
@@ -673,36 +673,142 @@
   }
 
   .mm-restaurant-header-bar {
-    @apply flex items-center justify-between gap-3 px-4 py-3 md:px-6;
+    @apply flex min-h-[4.5rem] items-center justify-between gap-4 px-4 py-2.5 md:px-5;
   }
 
   .mm-restaurant-header-start {
     @apply flex min-w-0 items-center gap-3;
   }
 
+  .mm-restaurant-header-brand {
+    @apply flex shrink-0 items-center;
+  }
+
   .mm-restaurant-header-logo {
-    @apply h-5 w-auto max-w-[7rem] shrink-0 object-contain;
+    @apply h-[1.35rem] w-auto max-w-[7.5rem] shrink-0 object-contain;
     object-position: start;
   }
 
   .mm-restaurant-header-sep {
-    @apply hidden h-4 w-px shrink-0 bg-mm-field-border sm:block;
+    @apply hidden h-8 w-px shrink-0 bg-mm-field-border sm:block;
   }
 
-  .mm-restaurant-header-context {
-    @apply hidden truncate text-xs font-semibold text-mm-secondary sm:block;
+  .mm-restaurant-header-page {
+    @apply hidden min-w-0 sm:block;
+  }
+
+  .mm-restaurant-header-page span,
+  .mm-restaurant-header-page strong {
+    @apply block truncate;
+  }
+
+  .mm-restaurant-header-page span {
+    @apply text-[0.625rem] font-bold text-mm-icon;
+  }
+
+  .mm-restaurant-header-page strong {
+    @apply mt-0.5 text-sm font-extrabold text-mm-secondary;
   }
 
   .mm-restaurant-header-actions {
-    @apply flex shrink-0 items-center gap-2;
+    @apply flex min-w-0 shrink-0 items-center gap-1.5;
   }
 
   .mm-restaurant-header-btn {
-    @apply flex size-9 items-center justify-center rounded-lg text-mm-icon transition-colors hover:bg-[#edf8f1] hover:text-mm-primary;
+    @apply relative flex size-9 items-center justify-center rounded-lg border border-transparent text-mm-icon transition-colors hover:border-mm-primary/10 hover:bg-[#edf8f1] hover:text-mm-primary;
   }
 
   .mm-restaurant-header-lang {
-    @apply flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-mm-ink transition-colors hover:bg-[#edf8f1] hover:text-mm-secondary;
+    @apply flex h-9 items-center gap-1.5 rounded-lg border border-transparent px-2 text-[0.6875rem] font-bold text-mm-ink transition-colors hover:border-mm-primary/10 hover:bg-[#edf8f1] hover:text-mm-secondary;
+  }
+
+  .mm-restaurant-header-status {
+    @apply hidden items-center gap-2 rounded-lg bg-[#edf8f1] px-2.5 py-1.5 lg:flex;
+  }
+
+  .mm-restaurant-header-status__icon {
+    @apply flex size-6 items-center justify-center rounded-md bg-mm-primary text-white;
+  }
+
+  .mm-restaurant-header-status small,
+  .mm-restaurant-header-status strong {
+    @apply block whitespace-nowrap;
+  }
+
+  .mm-restaurant-header-status small {
+    @apply text-[0.5625rem] font-bold text-mm-icon;
+  }
+
+  .mm-restaurant-header-status strong {
+    @apply text-[0.625rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-restaurant-header-date {
+    @apply hidden items-center gap-1.5 px-2 text-[0.625rem] font-bold text-mm-ink-muted xl:flex;
+  }
+
+  .mm-restaurant-header-date ng-icon {
+    @apply text-mm-primary;
+  }
+
+  .mm-restaurant-header-actions-sep {
+    @apply hidden h-7 w-px shrink-0 bg-mm-field-border md:block;
+  }
+
+  .mm-restaurant-header-notifications > span {
+    @apply absolute end-1.5 top-1.5 size-1.5 rounded-full bg-mm-accent ring-2 ring-white;
+  }
+
+  .mm-restaurant-header-account {
+    @apply flex h-10 items-center gap-2 rounded-lg border border-mm-field-border/80 bg-[#fafcfb] px-1.5 pe-2 text-start transition-colors hover:border-mm-primary/25 hover:bg-[#f4faf7];
+  }
+
+  .mm-restaurant-header-avatar {
+    @apply flex size-7 shrink-0 items-center justify-center rounded-md bg-mm-secondary text-[0.6875rem] font-black text-white;
+  }
+
+  .mm-restaurant-header-account__copy {
+    @apply hidden min-w-0 lg:block;
+  }
+
+  .mm-restaurant-header-account__copy strong,
+  .mm-restaurant-header-account__copy small {
+    @apply block max-w-24 truncate;
+  }
+
+  .mm-restaurant-header-account__copy strong {
+    @apply text-[0.625rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-restaurant-header-account__copy small {
+    @apply text-[0.5rem] font-semibold text-mm-icon;
+  }
+
+  .mm-restaurant-header-account__chevron {
+    @apply hidden size-3 text-mm-icon lg:block;
+  }
+
+  @media (max-width: 639px) {
+    .mm-restaurant-header-bar {
+      @apply min-h-[4rem] gap-2 px-3;
+    }
+
+    .mm-restaurant-header-start,
+    .mm-restaurant-header-actions {
+      @apply gap-1;
+    }
+
+    .mm-restaurant-header-logo {
+      @apply h-[1.15rem] max-w-[5.5rem];
+    }
+
+    .mm-restaurant-header-lang span {
+      @apply hidden;
+    }
+
+    .mm-restaurant-header-account {
+      @apply h-9 border-0 bg-transparent p-1;
+    }
   }
 
   /* ─── Dual sidebar — single block ──────────────────────────────────── */
