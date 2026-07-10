@@ -1,4 +1,122 @@
-import { LabelsData } from '../models/labels.model';
+import { LabelJobItem, LabelsData, MealLabelSticker } from '../models/labels.model';
+
+function stickers(
+  orderCode: string,
+  items: Array<{
+    id: string;
+    slotAr: string;
+    slotEn: string;
+    mealAr: string;
+    mealEn: string;
+    calories: number;
+    protein: number;
+    allergenAr?: string;
+    allergenEn?: string;
+  }>,
+): MealLabelSticker[] {
+  return items.map((item, index) => ({
+    id: item.id,
+    slotLabel: { ar: item.slotAr, en: item.slotEn },
+    mealName: { ar: item.mealAr, en: item.mealEn },
+    calories: item.calories,
+    proteinGrams: item.protein,
+    allergenNote:
+      item.allergenAr && item.allergenEn
+        ? { ar: item.allergenAr, en: item.allergenEn }
+        : null,
+    barcodeCode: `MM-${orderCode.replace('ORD-', '')}-L${String(index + 1).padStart(2, '0')}`,
+  }));
+}
+
+const lunchStickers = (orderCode: string) =>
+  stickers(orderCode, [
+    {
+      id: `${orderCode}-s1`,
+      slotAr: 'رئيسية',
+      slotEn: 'Main',
+      mealAr: 'صدر دجاج مشوي + كينوا',
+      mealEn: 'Grilled chicken + quinoa',
+      calories: 420,
+      protein: 38,
+    },
+    {
+      id: `${orderCode}-s2`,
+      slotAr: 'سلطة',
+      slotEn: 'Salad',
+      mealAr: 'سلطة كولسلو خفيفة',
+      mealEn: 'Light coleslaw salad',
+      calories: 110,
+      protein: 3,
+    },
+  ]);
+
+const fullStickers = (orderCode: string) =>
+  stickers(orderCode, [
+    {
+      id: `${orderCode}-s1`,
+      slotAr: 'إفطار',
+      slotEn: 'Breakfast',
+      mealAr: 'شوفان بروتين + توت',
+      mealEn: 'Protein oats + berries',
+      calories: 310,
+      protein: 24,
+      allergenAr: 'يحتوي حليب',
+      allergenEn: 'Contains dairy',
+    },
+    {
+      id: `${orderCode}-s2`,
+      slotAr: 'رئيسية 1',
+      slotEn: 'Main 1',
+      mealAr: 'دجاج تكا + أرز بني',
+      mealEn: 'Chicken tikka + brown rice',
+      calories: 480,
+      protein: 42,
+    },
+    {
+      id: `${orderCode}-s3`,
+      slotAr: 'رئيسية 2',
+      slotEn: 'Main 2',
+      mealAr: 'ستيك وبروكلي',
+      mealEn: 'Steak & broccoli',
+      calories: 450,
+      protein: 40,
+    },
+    {
+      id: `${orderCode}-s4`,
+      slotAr: 'سناك',
+      slotEn: 'Snack',
+      mealAr: 'زبادي يوناني وتوت',
+      mealEn: 'Greek yogurt & berries',
+      calories: 180,
+      protein: 16,
+      allergenAr: 'يحتوي حليب',
+      allergenEn: 'Contains dairy',
+    },
+    {
+      id: `${orderCode}-s5`,
+      slotAr: 'سلطة',
+      slotEn: 'Salad',
+      mealAr: 'سلطة كينوا وخضار',
+      mealEn: 'Quinoa veggie salad',
+      calories: 160,
+      protein: 6,
+    },
+  ]);
+
+function job(
+  partial: Omit<LabelJobItem, 'stickers' | 'deliveryDateLabel'> & {
+    stickers: MealLabelSticker[];
+    deliveryDateLabel?: LabelJobItem['deliveryDateLabel'];
+  },
+): LabelJobItem {
+  return {
+    ...partial,
+    deliveryDateLabel: partial.deliveryDateLabel ?? {
+      ar: 'غداً · الأحد 12 يوليو',
+      en: 'Tomorrow · Sun 12 Jul',
+    },
+  };
+}
 
 export const LABELS_MOCK: LabelsData = {
   title: {
@@ -6,8 +124,8 @@ export const LABELS_MOCK: LabelsData = {
     en: 'Labels & barcodes',
   },
   subtitle: {
-    ar: 'طباعة ملصقات الوجبات والباركود بعد نافذة −24س · بدون بيانات عميل شخصية',
-    en: 'Print meal labels and barcodes after the −24h window · no customer PII',
+    ar: 'معاينة وطباعة ملصقات الوجبات والباركود بعد نافذة −24س · بدون بيانات عميل شخصية',
+    en: 'Preview and print meal labels and barcodes after the −24h window · no customer PII',
   },
   dateLabel: {
     ar: 'السبت 11 يوليو 2026',
@@ -52,7 +170,7 @@ export const LABELS_MOCK: LabelsData = {
     },
   ],
   jobs: [
-    {
+    job({
       id: 'lb-1',
       orderCode: 'ORD-2419',
       batchCode: 'BATCH-11',
@@ -71,8 +189,9 @@ export const LABELS_MOCK: LabelsData = {
       status: 'ready',
       printedAtLabel: null,
       route: '/restaurant/orders/detail/ORD-2419',
-    },
-    {
+      stickers: lunchStickers('ORD-2419'),
+    }),
+    job({
       id: 'lb-2',
       orderCode: 'ORD-2420',
       batchCode: 'BATCH-12',
@@ -91,8 +210,16 @@ export const LABELS_MOCK: LabelsData = {
       status: 'ready',
       printedAtLabel: null,
       route: '/restaurant/orders/detail/ORD-2420',
-    },
-    {
+      stickers: [
+        ...fullStickers('ORD-2420'),
+        ...fullStickers('ORD-2420B').map((s, i) => ({
+          ...s,
+          id: `ORD-2420-b2-${i}`,
+          barcodeCode: `MM-2420-B2-L${String(i + 1).padStart(2, '0')}`,
+        })),
+      ],
+    }),
+    job({
       id: 'lb-3',
       orderCode: 'ORD-2424',
       batchCode: 'BATCH-11',
@@ -111,8 +238,9 @@ export const LABELS_MOCK: LabelsData = {
       status: 'ready',
       printedAtLabel: null,
       route: '/restaurant/orders/detail/ORD-2420',
-    },
-    {
+      stickers: fullStickers('ORD-2424'),
+    }),
+    job({
       id: 'lb-4',
       orderCode: 'ORD-2425',
       batchCode: 'BATCH-13',
@@ -131,8 +259,9 @@ export const LABELS_MOCK: LabelsData = {
       status: 'ready',
       printedAtLabel: null,
       route: '/restaurant/orders/detail/ORD-2418',
-    },
-    {
+      stickers: fullStickers('ORD-2425'),
+    }),
+    job({
       id: 'lb-5',
       orderCode: 'ORD-2418',
       batchCode: 'BATCH-11',
@@ -151,8 +280,9 @@ export const LABELS_MOCK: LabelsData = {
       status: 'missing',
       printedAtLabel: null,
       route: '/restaurant/orders/detail/ORD-2418',
-    },
-    {
+      stickers: [],
+    }),
+    job({
       id: 'lb-6',
       orderCode: 'ORD-2427',
       batchCode: 'BATCH-14',
@@ -171,8 +301,9 @@ export const LABELS_MOCK: LabelsData = {
       status: 'missing',
       printedAtLabel: null,
       route: '/restaurant/orders/detail/ORD-2420',
-    },
-    {
+      stickers: [],
+    }),
+    job({
       id: 'lb-7',
       orderCode: 'ORD-2421',
       batchCode: 'BATCH-10',
@@ -191,8 +322,9 @@ export const LABELS_MOCK: LabelsData = {
       status: 'printed',
       printedAtLabel: { ar: 'طُبع منذ 40 د', en: 'Printed 40m ago' },
       route: '/restaurant/orders/detail/ORD-2418',
-    },
-    {
+      stickers: fullStickers('ORD-2421'),
+    }),
+    job({
       id: 'lb-8',
       orderCode: 'ORD-2422',
       batchCode: 'BATCH-10',
@@ -211,8 +343,9 @@ export const LABELS_MOCK: LabelsData = {
       status: 'printed',
       printedAtLabel: { ar: 'طُبع منذ ساعة', en: 'Printed 1h ago' },
       route: '/restaurant/orders/detail/ORD-2419',
-    },
-    {
+      stickers: fullStickers('ORD-2422'),
+    }),
+    job({
       id: 'lb-9',
       orderCode: 'ORD-2426',
       batchCode: 'BATCH-13',
@@ -231,6 +364,7 @@ export const LABELS_MOCK: LabelsData = {
       status: 'printed',
       printedAtLabel: { ar: 'طُبع منذ 15 د', en: 'Printed 15m ago' },
       route: '/restaurant/orders/detail/ORD-2419',
-    },
+      stickers: lunchStickers('ORD-2426'),
+    }),
   ],
 };

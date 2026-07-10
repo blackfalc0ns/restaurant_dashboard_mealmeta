@@ -22,6 +22,7 @@ export class LabelsFacade {
   readonly currentPage = signal(1);
   readonly printingId = signal<string | null>(null);
   readonly printingBatch = signal(false);
+  readonly selectedJobId = signal<string | null>(null);
   readonly pageSize = LABELS_PAGE_SIZE;
 
   readonly filteredJobs = computed<LabelJobItem[]>(() => {
@@ -95,6 +96,13 @@ export class LabelsFacade {
     return { from, to, total };
   });
 
+  readonly selectedJob = computed<LabelJobItem | null>(() => {
+    const data = this.data();
+    const selectedId = this.selectedJobId();
+    if (!data || !selectedId) return null;
+    return data.jobs.find((job) => job.id === selectedId) ?? null;
+  });
+
   private loadTimer: ReturnType<typeof setTimeout> | null = null;
   private printTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -107,9 +115,18 @@ export class LabelsFacade {
       const mock = structuredClone(LABELS_MOCK);
       this.data.set(mock);
       this.syncSummaries();
+      this.selectedJobId.set(null);
       this.page.set({ viewState: 'success' });
       this.loadTimer = null;
     }, 900);
+  }
+
+  selectJob(jobId: string): void {
+    this.selectedJobId.set(jobId);
+  }
+
+  clearSelectedJob(): void {
+    this.selectedJobId.set(null);
   }
 
   setFilter(filter: LabelsFilter): void {
@@ -190,6 +207,7 @@ export class LabelsFacade {
     this.currentPage.set(1);
     this.printingId.set(null);
     this.printingBatch.set(false);
+    this.selectedJobId.set(null);
   }
 
   private markPrinted(jobIds: string[]): void {

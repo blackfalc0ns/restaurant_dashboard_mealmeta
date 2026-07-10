@@ -15,6 +15,17 @@ export interface LabelsSummary {
   icon: string;
 }
 
+/** Single printable meal sticker inside a box. */
+export interface MealLabelSticker {
+  id: string;
+  slotLabel: LocalizedText;
+  mealName: LocalizedText;
+  calories: number;
+  proteinGrams: number;
+  allergenNote: LocalizedText | null;
+  barcodeCode: string;
+}
+
 export interface LabelJobItem {
   id: string;
   orderCode: string;
@@ -28,9 +39,11 @@ export interface LabelJobItem {
   shift: Exclude<LabelsShift, 'all'>;
   shiftLabel: LocalizedText;
   deliverySlotLabel: LocalizedText;
+  deliveryDateLabel: LocalizedText;
   status: LabelPrintStatus;
   printedAtLabel: LocalizedText | null;
   route: string;
+  stickers: MealLabelSticker[];
 }
 
 export interface LabelsData {

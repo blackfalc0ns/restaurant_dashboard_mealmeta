@@ -116,12 +116,16 @@
           </div>
 
           @for (job of facade.pagedJobs(); track job.id) {
-            <article class="mm-lb-row" role="row" [attr.data-status]="job.status">
-              <a class="mm-lb-row__identity" [routerLink]="job.route">
+            <article
+              class="mm-lb-row"
+              role="row"
+              [attr.data-status]="job.status"
+            >
+              <div class="mm-lb-row__identity">
                 <strong>{{ job.orderCode }}</strong>
                 <span>{{ job.batchCode }} · {{ shiftText(job) }}</span>
                 <small>{{ deliverySlot(job) }}</small>
-              </a>
+              </div>
 
               <div class="mm-lb-row__meal">
                 <strong>{{ mealLabel(job) }}</strong>
@@ -148,6 +152,15 @@
               </div>
 
               <div class="mm-lb-row__action">
+                @if (job.stickers.length) {
+                  <button
+                    type="button"
+                    class="mm-lb-preview-btn"
+                    (click)="preview(job)"
+                  >
+                    {{ previewLabel() }}
+                  </button>
+                }
                 @if (job.status === 'ready') {
                   <button
                     type="button"
@@ -221,5 +234,89 @@
         </nav>
       }
     </section>
+
+    @if (previewOpen() && facade.selectedJob(); as selected) {
+      <div
+        class="mm-lb-modal"
+        role="dialog"
+        aria-modal="true"
+        [attr.aria-label]="previewTitle()"
+      >
+        <button
+          type="button"
+          class="mm-lb-modal__backdrop"
+          [attr.aria-label]="closeLabel()"
+          (click)="closePreview()"
+        ></button>
+
+        <div class="mm-lb-modal__panel">
+          <div class="mm-lb-modal__head">
+            <div>
+              <h2>{{ previewTitle() }}</h2>
+              <p>
+                {{ selected.orderCode }} · {{ mealLabel(selected) }} ·
+                {{ deliveryDate(selected) }}
+              </p>
+            </div>
+            <div class="mm-lb-modal__head-actions">
+              <span class="mm-lb-count">{{ selected.stickers.length }}</span>
+              <button
+                type="button"
+                class="mm-lb-modal__close"
+                [attr.aria-label]="closeLabel()"
+                (click)="closePreview()"
+              >
+                <ng-icon name="lucideX" class="size-4" />
+              </button>
+            </div>
+          </div>
+
+          @if (selected.stickers.length === 0) {
+            <p class="mm-lb-empty">{{ previewEmpty() }}</p>
+          } @else {
+            <div class="mm-lb-stickers">
+              @for (sticker of selected.stickers; track sticker.id) {
+                <article class="mm-lb-sticker">
+                  <header class="mm-lb-sticker__top">
+                    <strong>{{ brandMark() }}</strong>
+                    <span>{{ stickerSlot(sticker) }}</span>
+                  </header>
+
+                  <h3>{{ stickerMeal(sticker) }}</h3>
+                  <p class="mm-lb-sticker__meta">
+                    {{ selected.orderCode }} · {{ selected.batchCode }}
+                  </p>
+                  <p class="mm-lb-sticker__slot">
+                    {{ deliveryDate(selected) }} · {{ deliverySlot(selected) }}
+                  </p>
+
+                  <div class="mm-lb-sticker__facts">
+                    <span>{{ sticker.calories }} {{ caloriesUnit() }}</span>
+                    <span>{{ sticker.proteinGrams }}g {{ proteinUnit() }}</span>
+                  </div>
+
+                  @if (stickerAllergen(sticker); as allergen) {
+                    <p class="mm-lb-sticker__allergen">{{ allergen }}</p>
+                  }
+
+                  <div class="mm-lb-sticker__barcode" aria-hidden="true">
+                    <div class="mm-lb-sticker__bars">
+                      @for (w of barcodeBars(sticker.barcodeCode); track $index) {
+                        <i [style.width.px]="w"></i>
+                      }
+                    </div>
+                    <code>{{ sticker.barcodeCode }}</code>
+                  </div>
+
+                  <footer class="mm-lb-sticker__foot">
+                    {{ programLabel(selected) }}
+                  </footer>
+                </article>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
   }
 </div>

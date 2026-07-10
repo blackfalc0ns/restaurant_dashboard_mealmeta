@@ -5,6 +5,7 @@ import {
   computed,
   inject,
   OnInit,
+  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -18,6 +19,7 @@ import {
   lucideScanBarcode,
   lucideSearch,
   lucideTriangleAlert,
+  lucideX,
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
@@ -32,6 +34,7 @@ import {
   LabelsFilter,
   LabelsShift,
   LabelsSummary,
+  MealLabelSticker,
 } from './models/labels.model';
 
 @Component({
@@ -57,6 +60,7 @@ import {
       lucideScanBarcode,
       lucideSearch,
       lucideTriangleAlert,
+      lucideX,
     }),
   ],
 })
@@ -64,6 +68,8 @@ export class LabelsPageComponent implements OnInit {
   readonly facade = inject(LabelsFacade);
   readonly locale = inject(AppLocaleService);
   private readonly destroyRef = inject(DestroyRef);
+
+  readonly previewOpen = signal(false);
 
   readonly filters: Array<{
     id: LabelsFilter;
@@ -111,10 +117,38 @@ export class LabelsPageComponent implements OnInit {
     this.locale.isRtl() ? 'قائمة الطباعة' : 'Print queue',
   );
 
+  readonly previewTitle = computed(() =>
+    this.locale.isRtl() ? 'معاينة الملصقات' : 'Label preview',
+  );
+
+  readonly previewEmpty = computed(() =>
+    this.locale.isRtl()
+      ? 'اختر طلبًا جاهزًا لمعاينة ملصقاته'
+      : 'Select a ready job to preview its labels',
+  );
+
   readonly listSubtitle = computed(() =>
     this.locale.isRtl()
       ? 'ملصق لكل وجبة · باركود لكل بوكس · بدون بيانات عميل'
       : 'One label per meal · barcode per box · no customer PII',
+  );
+
+  readonly closeLabel = computed(() =>
+    this.locale.isRtl() ? 'إغلاق' : 'Close',
+  );
+
+  readonly previewLabel = computed(() =>
+    this.locale.isRtl() ? 'معاينة' : 'Preview',
+  );
+
+  readonly brandMark = computed(() => 'MealMate');
+
+  readonly caloriesUnit = computed(() =>
+    this.locale.isRtl() ? 'سعرة' : 'kcal',
+  );
+
+  readonly proteinUnit = computed(() =>
+    this.locale.isRtl() ? 'بروتين' : 'protein',
   );
 
   readonly searchPlaceholder = computed(() =>
@@ -214,6 +248,33 @@ export class LabelsPageComponent implements OnInit {
       : '';
   }
 
+  deliveryDate(job: LabelJobItem): string {
+    return pickLocale(job.deliveryDateLabel, this.locale.locale());
+  }
+
+  stickerSlot(sticker: MealLabelSticker): string {
+    return pickLocale(sticker.slotLabel, this.locale.locale());
+  }
+
+  stickerMeal(sticker: MealLabelSticker): string {
+    return pickLocale(sticker.mealName, this.locale.locale());
+  }
+
+  stickerAllergen(sticker: MealLabelSticker): string | null {
+    return sticker.allergenNote
+      ? pickLocale(sticker.allergenNote, this.locale.locale())
+      : null;
+  }
+
+  barcodeBars(code: string): number[] {
+    const bars: number[] = [];
+    for (let i = 0; i < code.length; i += 1) {
+      const n = code.charCodeAt(i);
+      bars.push(1 + (n % 3), 1 + ((n >> 2) % 2), 2 + (n % 2));
+    }
+    return bars.slice(0, 28);
+  }
+
   statusLabel(status: LabelPrintStatus): string {
     const map: Record<LabelPrintStatus, { ar: string; en: string }> = {
       ready: { ar: 'جاهز للطباعة', en: 'Ready to print' },
@@ -243,6 +304,17 @@ export class LabelsPageComponent implements OnInit {
 
   print(job: LabelJobItem): void {
     this.facade.printJob(job.id);
+  }
+
+  preview(job: LabelJobItem): void {
+    if (!job.stickers.length) return;
+    this.facade.selectJob(job.id);
+    this.previewOpen.set(true);
+  }
+
+  closePreview(): void {
+    this.previewOpen.set(false);
+    this.facade.clearSelectedJob();
   }
 
   printBatch(): void {
