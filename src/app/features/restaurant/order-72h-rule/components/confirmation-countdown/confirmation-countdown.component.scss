@@ -1,0 +1,13 @@
+.mm-countdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mm-countdown[data-state='overdue'] {
+  color: var(--mm-color-error, #b00020);
+}
+
+.mm-countdown[data-state='warning'] {
+  color: var(--mm-color-warning, #ed6c02);
+}
