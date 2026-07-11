@@ -1,0 +1,35 @@
+<div class="mm-hod-skeleton__inner" aria-hidden="true">
+  <div class="mm-hod-skeleton__hero">
+    <span class="mm-ov-bone mm-ov-bone--chip"></span>
+    <span class="mm-ov-bone mm-ov-bone--title"></span>
+    <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+    <div class="mm-hod-skeleton__chips">
+      @for (_ of [1, 2, 3, 4]; track $index) {
+        <span class="mm-ov-bone mm-ov-bone--chip"></span>
+      }
+    </div>
+  </div>
+
+  <div class="mm-hod-skeleton__grid">
+    <div class="mm-hod-skeleton__card">
+      @for (_ of [1, 2]; track $index) {
+        <div class="mm-hod-skeleton__box">
+          <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+          <span class="mm-ov-bone mm-ov-bone--line"></span>
+          <span class="mm-ov-bone mm-ov-bone--btn"></span>
+        </div>
+      }
+    </div>
+    <div class="mm-hod-skeleton__card">
+      @for (_ of [1, 2, 3, 4]; track $index) {
+        <div class="mm-hod-skeleton__step">
+          <span class="mm-ov-bone mm-ov-bone--avatar"></span>
+          <div>
+            <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+            <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

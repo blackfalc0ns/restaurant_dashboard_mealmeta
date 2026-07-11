@@ -58,8 +58,15 @@ const loadUpcoming24hPage = () =>
 const loadLabelsPage = () =>
   import('./labels/labels.page').then((m) => m.LabelsPageComponent);
 
+const loadHandoverPage = () =>
+  import('./handover/handover.page').then((m) => m.HandoverPageComponent);
+
+const loadHandoverDetailPage = () =>
+  import('./handover/detail/handover-detail.page').then(
+    (m) => m.HandoverDetailPageComponent,
+  );
+
 const SIDEBAR_LINK_PATHS = [
-  'orders/handover',
   'orders/archive',
   'operations/menu',
   'operations/ingredients',
@@ -123,6 +130,14 @@ export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   {
     path: 'orders/labels',
     loadComponent: loadLabelsPage,
+  },
+  {
+    path: 'orders/handover',
+    loadComponent: loadHandoverPage,
+  },
+  {
+    path: 'orders/handover/:orderCode',
+    loadComponent: loadHandoverDetailPage,
   },
   ...SIDEBAR_LINK_PATHS.map((path) => ({
     path,

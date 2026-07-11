@@ -26,6 +26,26 @@ export interface MealLabelSticker {
   barcodeCode: string;
 }
 
+/** Box invoice for driver pickup/delivery scan. */
+export interface BoxInvoice {
+  invoiceCode: string;
+  /** Payload encoded in the invoice QR for driver scan. */
+  qrPayload: string;
+  boxBarcode: string;
+  mealCount: number;
+  amountLabel: LocalizedText;
+  scanHint: LocalizedText;
+}
+
+/** One physical box: invoice (QR) + meal labels. */
+export interface OrderBoxPack {
+  id: string;
+  boxIndex: number;
+  boxLabel: LocalizedText;
+  invoice: BoxInvoice;
+  stickers: MealLabelSticker[];
+}
+
 export interface LabelJobItem {
   id: string;
   orderCode: string;
@@ -43,7 +63,9 @@ export interface LabelJobItem {
   status: LabelPrintStatus;
   printedAtLabel: LocalizedText | null;
   route: string;
+  /** @deprecated use boxes[].stickers — kept for list counts */
   stickers: MealLabelSticker[];
+  boxes: OrderBoxPack[];
 }
 
 export interface LabelsData {

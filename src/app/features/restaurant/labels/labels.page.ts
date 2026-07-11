@@ -29,13 +29,16 @@ import { pickLocale } from '../overview/overview-i18n';
 import { LabelsFacade } from './data/labels.facade';
 import { LabelsSkeletonComponent } from './labels-skeleton.component';
 import {
+  BoxInvoice,
   LabelJobItem,
   LabelPrintStatus,
   LabelsFilter,
   LabelsShift,
   LabelsSummary,
   MealLabelSticker,
+  OrderBoxPack,
 } from './models/labels.model';
+import { buildQrMatrix } from './utils/qr-matrix';
 
 @Component({
   selector: 'mm-labels-page',
@@ -118,19 +121,33 @@ export class LabelsPageComponent implements OnInit {
   );
 
   readonly previewTitle = computed(() =>
-    this.locale.isRtl() ? 'معاينة الملصقات' : 'Label preview',
+    this.locale.isRtl()
+      ? 'معاينة الفواتير والملصقات'
+      : 'Invoice & label preview',
   );
 
   readonly previewEmpty = computed(() =>
     this.locale.isRtl()
-      ? 'اختر طلبًا جاهزًا لمعاينة ملصقاته'
-      : 'Select a ready job to preview its labels',
+      ? 'اختر طلبًا جاهزًا لمعاينة فواتيره وملصقاته'
+      : 'Select a ready job to preview invoices & labels',
   );
 
   readonly listSubtitle = computed(() =>
     this.locale.isRtl()
-      ? 'ملصق لكل وجبة · باركود لكل بوكس · بدون بيانات عميل'
-      : 'One label per meal · barcode per box · no customer PII',
+      ? 'فاتورة QR لكل بوكس · ملصق لكل وجبة · بدون بيانات عميل'
+      : 'QR invoice per box · label per meal · no customer PII',
+  );
+
+  readonly invoiceTitle = computed(() =>
+    this.locale.isRtl() ? 'فاتورة البوكس' : 'Box invoice',
+  );
+
+  readonly mealsTitle = computed(() =>
+    this.locale.isRtl() ? 'ملصقات الوجبات' : 'Meal labels',
+  );
+
+  readonly mealsCountLabel = computed(() =>
+    this.locale.isRtl() ? 'وجبات' : 'meals',
   );
 
   readonly closeLabel = computed(() =>
@@ -252,6 +269,18 @@ export class LabelsPageComponent implements OnInit {
     return pickLocale(job.deliveryDateLabel, this.locale.locale());
   }
 
+  boxLabel(box: OrderBoxPack): string {
+    return pickLocale(box.boxLabel, this.locale.locale());
+  }
+
+  invoiceAmount(invoice: BoxInvoice): string {
+    return pickLocale(invoice.amountLabel, this.locale.locale());
+  }
+
+  invoiceScanHint(invoice: BoxInvoice): string {
+    return pickLocale(invoice.scanHint, this.locale.locale());
+  }
+
   stickerSlot(sticker: MealLabelSticker): string {
     return pickLocale(sticker.slotLabel, this.locale.locale());
   }
@@ -264,6 +293,10 @@ export class LabelsPageComponent implements OnInit {
     return sticker.allergenNote
       ? pickLocale(sticker.allergenNote, this.locale.locale())
       : null;
+  }
+
+  qrMatrix(payload: string): boolean[][] {
+    return buildQrMatrix(payload, 21);
   }
 
   barcodeBars(code: string): number[] {
@@ -307,7 +340,7 @@ export class LabelsPageComponent implements OnInit {
   }
 
   preview(job: LabelJobItem): void {
-    if (!job.stickers.length) return;
+    if (!job.boxes.length) return;
     this.facade.selectJob(job.id);
     this.previewOpen.set(true);
   }

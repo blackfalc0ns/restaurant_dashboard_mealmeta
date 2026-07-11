@@ -1,0 +1,303 @@
+<div class="mm-hod-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-handover-detail-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <header class="mm-hod-hero">
+      <div class="mm-hod-hero__main">
+        <a [routerLink]="data.listRoute" class="mm-hod-back">
+          <ng-icon
+            [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+            class="size-3.5"
+          />
+          {{ backLabel() }}
+        </a>
+
+        <div class="mm-hod-hero__top">
+          <span class="mm-hod-badge" [attr.data-status]="data.status">
+            {{ statusLabel(data.status) }}
+          </span>
+          <span class="mm-hod-hero__batch">{{ data.batchCode }}</span>
+          <span class="mm-hod-hero__batch">{{ text(data.shiftLabel) }}</span>
+        </div>
+
+        <h1>{{ data.orderCode }}</h1>
+        <p>{{ text(data.pickupHint) }}</p>
+
+        <div class="mm-hod-hero__chips">
+          <span>
+            <ng-icon name="lucideTruck" class="size-3.5" />
+            {{ data.driverCode }}
+          </span>
+          <span>
+            <ng-icon name="lucideScanBarcode" class="size-3.5" />
+            {{ data.barcodeCode }}
+          </span>
+          <span>
+            <ng-icon name="lucideMapPin" class="size-3.5" />
+            {{ text(data.deliveryZoneLabel) }}
+          </span>
+          <span>{{ text(data.deliverySlotLabel) }}</span>
+          <span>{{ data.customerMaskedId }}</span>
+          <span>{{ text(data.etaLabel) }}</span>
+        </div>
+
+        <p class="mm-hod-privacy">{{ text(data.privacyNote) }}</p>
+      </div>
+
+      <div class="mm-hod-hero__actions">
+        @if (data.status === 'awaiting-pickup') {
+          <button
+            type="button"
+            class="mm-hod-cta"
+            [disabled]="facade.confirmingPickup()"
+            (click)="confirmPickup()"
+          >
+            <ng-icon name="lucideScanBarcode" class="size-4" />
+            {{
+              facade.confirmingPickup()
+                ? locale.isRtl()
+                  ? 'جاري التأكيد...'
+                  : 'Confirming...'
+                : confirmPickupLabel()
+            }}
+          </button>
+        }
+        <a class="mm-hod-labels" [routerLink]="data.labelsRoute">
+          <ng-icon name="lucidePrinter" class="size-4" />
+          {{ labelsLabel() }}
+        </a>
+        <a class="mm-hod-order-link" [routerLink]="data.orderDetailRoute">
+          <ng-icon name="lucideExternalLink" class="size-4" />
+          {{ orderDetailLabel() }}
+        </a>
+      </div>
+    </header>
+
+    <section class="mm-hod-facts">
+      <div class="mm-hod-panel__head mm-hod-facts__head">
+        <h2>{{ factsTitle() }}</h2>
+        <span>{{ text(data.mealSummary) }}</span>
+      </div>
+      <div class="mm-hod-facts__grid">
+        @for (fact of data.facts; track fact.id) {
+          <article class="mm-hod-fact">
+            <span class="mm-hod-fact__icon">
+              <ng-icon [name]="fact.icon" class="size-3.5" />
+            </span>
+            <div>
+              <small>{{ factLabel(fact) }}</small>
+              <strong>{{ factValue(fact) }}</strong>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+
+    <div class="mm-hod-grid">
+      <div class="mm-hod-main">
+        <section class="mm-hod-panel">
+          <div class="mm-hod-panel__head">
+            <div>
+              <h2>{{ boxesTitle() }}</h2>
+              <p>
+                {{ text(data.programLabel) }} · {{ text(data.tierLabel) }} ·
+                {{ text(data.bundleLabel) }}
+              </p>
+            </div>
+            <b class="mm-hod-panel__count">{{ data.boxCount }}</b>
+          </div>
+
+          <div class="mm-hod-boxes">
+            @for (box of data.boxes; track box.id) {
+              <article class="mm-hod-box">
+                <header class="mm-hod-box__top">
+                  <div>
+                    <strong>{{ boxLabel(box) }}</strong>
+                    <span
+                      >{{ box.mealCount }} {{ mealsUnit() }} ·
+                      {{ invoiceLabel() }} {{ box.invoiceCode }}</span
+                    >
+                  </div>
+                  <code>{{ box.boxBarcode }}</code>
+                </header>
+
+                <div class="mm-hod-box__scans">
+                  <div
+                    class="mm-hod-scan"
+                    [class.is-done]="box.pickupScanned"
+                  >
+                    <span class="mm-hod-scan__icon">
+                      <ng-icon
+                        [name]="
+                          box.pickupScanned ? 'lucideCheck' : 'lucideCircle'
+                        "
+                        class="size-3.5"
+                      />
+                    </span>
+                    <div>
+                      <strong>{{ pickupScanLabel() }}</strong>
+                      <small>{{ boxPickupAt(box) }}</small>
+                    </div>
+                  </div>
+
+                  <div
+                    class="mm-hod-scan"
+                    [class.is-done]="box.deliveryScanned"
+                  >
+                    <span class="mm-hod-scan__icon">
+                      <ng-icon
+                        [name]="
+                          box.deliveryScanned ? 'lucideCheck' : 'lucideCircle'
+                        "
+                        class="size-3.5"
+                      />
+                    </span>
+                    <div>
+                      <strong>{{ deliveryScanLabel() }}</strong>
+                      <small>{{ boxDeliveryAt(box) }}</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mm-hod-box__meals">
+                  <p class="mm-hod-box__meals-title">{{ mealsInBoxLabel() }}</p>
+                  <ul>
+                    @for (meal of box.meals; track meal.id) {
+                      <li>
+                        <div class="mm-hod-meal__copy">
+                          <span>{{ mealSlot(meal) }}</span>
+                          <strong>{{ mealName(meal) }}</strong>
+                          @if (mealAllergen(meal); as allergen) {
+                            <small class="mm-hod-meal__allergen">{{
+                              allergen
+                            }}</small>
+                          }
+                        </div>
+                        <div class="mm-hod-meal__meta">
+                          <em
+                            >{{ meal.calories }} {{ kcalUnit() }} ·
+                            {{ meal.proteinGrams }}g</em
+                          >
+                          <code>{{ meal.barcodeCode }}</code>
+                        </div>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      </div>
+
+      <aside class="mm-hod-side">
+        <section class="mm-hod-panel mm-hod-driver">
+          <div class="mm-hod-panel__head">
+            <div>
+              <h2>{{ driverTitle() }}</h2>
+              <p>{{ text(data.driver.contactRule) }}</p>
+            </div>
+            <ng-icon name="lucideTruck" class="size-4 text-mm-primary" />
+          </div>
+
+          <div class="mm-hod-driver__code">{{ data.driver.code }}</div>
+          <dl class="mm-hod-driver__meta">
+            <div>
+              <dt>{{ locale.isRtl() ? 'المركبة' : 'Vehicle' }}</dt>
+              <dd>{{ text(data.driver.vehicleLabel) }}</dd>
+            </div>
+            <div>
+              <dt>{{ locale.isRtl() ? 'الحقائب' : 'Bags' }}</dt>
+              <dd>{{ text(data.driver.bagsLabel) }}</dd>
+            </div>
+            <div>
+              <dt>{{ locale.isRtl() ? 'المنطقة' : 'Zone' }}</dt>
+              <dd>{{ text(data.driver.zoneLabel) }}</dd>
+            </div>
+            <div>
+              <dt>{{ locale.isRtl() ? 'آخر ظهور' : 'Last ping' }}</dt>
+              <dd>{{ text(data.driver.lastPingLabel) }}</dd>
+            </div>
+            @if (data.pickedUpAtLabel) {
+              <div>
+                <dt>{{ locale.isRtl() ? 'وقت الاستلام' : 'Picked up' }}</dt>
+                <dd>{{ text(data.pickedUpAtLabel) }}</dd>
+              </div>
+            }
+          </dl>
+        </section>
+
+        <section class="mm-hod-panel">
+          <div class="mm-hod-panel__head">
+            <div>
+              <h2>{{ checklistTitle() }}</h2>
+              <p>{{ text(data.deliveryDateLabel) }}</p>
+            </div>
+            <ng-icon
+              name="lucideClipboardList"
+              class="size-4 text-mm-primary"
+            />
+          </div>
+
+          <ul class="mm-hod-check">
+            @for (item of data.checklist; track item.id) {
+              <li [class.is-done]="item.done">
+                <span class="mm-hod-check__icon">
+                  <ng-icon
+                    [name]="item.done ? 'lucideCheck' : 'lucideCircle'"
+                    class="size-3.5"
+                  />
+                </span>
+                <div>
+                  <strong>{{ checkLabel(item) }}</strong>
+                  <small>{{ checkHint(item) }}</small>
+                </div>
+              </li>
+            }
+          </ul>
+        </section>
+
+        <section class="mm-hod-panel">
+          <div class="mm-hod-panel__head">
+            <div>
+              <h2>{{ timelineTitle() }}</h2>
+              <p>
+                {{ text(data.shiftLabel) }} · {{ text(data.deliverySlotLabel) }}
+              </p>
+            </div>
+            <ng-icon name="lucidePackage" class="size-4 text-mm-primary" />
+          </div>
+
+          <ol class="mm-hod-timeline">
+            @for (item of data.timeline; track item.id) {
+              <li
+                class="mm-hod-timeline__item"
+                [attr.data-tone]="item.tone"
+                [class.is-done]="item.done"
+              >
+                <span class="mm-hod-timeline__dot"></span>
+                <div class="mm-hod-timeline__copy">
+                  <div class="mm-hod-timeline__row">
+                    <strong>{{ timelineTitleText(item) }}</strong>
+                    <time>{{ timelineTime(item) }}</time>
+                  </div>
+                  <p>{{ timelineDetail(item) }}</p>
+                </div>
+              </li>
+            }
+          </ol>
+        </section>
+      </aside>
+    </div>
+  }
+</div>

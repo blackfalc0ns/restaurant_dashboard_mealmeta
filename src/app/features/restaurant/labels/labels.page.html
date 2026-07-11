@@ -152,7 +152,7 @@
               </div>
 
               <div class="mm-lb-row__action">
-                @if (job.stickers.length) {
+                @if (job.boxes.length) {
                   <button
                     type="button"
                     class="mm-lb-preview-btn"
@@ -259,7 +259,9 @@
               </p>
             </div>
             <div class="mm-lb-modal__head-actions">
-              <span class="mm-lb-count">{{ selected.stickers.length }}</span>
+              <span class="mm-lb-count">
+                {{ selected.boxCount }} · {{ selected.labelCount }}
+              </span>
               <button
                 type="button"
                 class="mm-lb-modal__close"
@@ -271,47 +273,133 @@
             </div>
           </div>
 
-          @if (selected.stickers.length === 0) {
+          @if (selected.boxes.length === 0) {
             <p class="mm-lb-empty">{{ previewEmpty() }}</p>
           } @else {
-            <div class="mm-lb-stickers">
-              @for (sticker of selected.stickers; track sticker.id) {
-                <article class="mm-lb-sticker">
-                  <header class="mm-lb-sticker__top">
-                    <strong>{{ brandMark() }}</strong>
-                    <span>{{ stickerSlot(sticker) }}</span>
-                  </header>
-
-                  <h3>{{ stickerMeal(sticker) }}</h3>
-                  <p class="mm-lb-sticker__meta">
-                    {{ selected.orderCode }} · {{ selected.batchCode }}
-                  </p>
-                  <p class="mm-lb-sticker__slot">
-                    {{ deliveryDate(selected) }} · {{ deliverySlot(selected) }}
-                  </p>
-
-                  <div class="mm-lb-sticker__facts">
-                    <span>{{ sticker.calories }} {{ caloriesUnit() }}</span>
-                    <span>{{ sticker.proteinGrams }}g {{ proteinUnit() }}</span>
+            <div class="mm-lb-preview-scroll">
+              @for (box of selected.boxes; track box.id) {
+                <section class="mm-lb-box">
+                  <div class="mm-lb-box__head">
+                    <h3>{{ boxLabel(box) }}</h3>
+                    <span>
+                      {{ box.invoice.mealCount }} {{ mealsCountLabel() }}
+                    </span>
                   </div>
 
-                  @if (stickerAllergen(sticker); as allergen) {
-                    <p class="mm-lb-sticker__allergen">{{ allergen }}</p>
-                  }
+                  <article class="mm-lb-invoice">
+                    <header class="mm-lb-invoice__top">
+                      <div>
+                        <strong>{{ brandMark() }}</strong>
+                        <small>{{ invoiceTitle() }}</small>
+                      </div>
+                      <span class="mm-lb-invoice__code">{{
+                        box.invoice.invoiceCode
+                      }}</span>
+                    </header>
 
-                  <div class="mm-lb-sticker__barcode" aria-hidden="true">
-                    <div class="mm-lb-sticker__bars">
-                      @for (w of barcodeBars(sticker.barcodeCode); track $index) {
-                        <i [style.width.px]="w"></i>
-                      }
+                    <div class="mm-lb-invoice__body">
+                      <div
+                        class="mm-lb-qr"
+                        role="img"
+                        [attr.aria-label]="invoiceScanHint(box.invoice)"
+                      >
+                        @for (
+                          row of qrMatrix(box.invoice.qrPayload);
+                          track $index
+                        ) {
+                          <div class="mm-lb-qr__row">
+                            @for (cell of row; track $index) {
+                              <i [class.is-on]="cell"></i>
+                            }
+                          </div>
+                        }
+                      </div>
+
+                      <div class="mm-lb-invoice__meta">
+                        <p>
+                          <span>{{ selected.orderCode }}</span>
+                          <span>{{ selected.batchCode }}</span>
+                        </p>
+                        <p>
+                          <span>{{ deliveryDate(selected) }}</span>
+                          <span>{{ deliverySlot(selected) }}</span>
+                        </p>
+                        <p class="mm-lb-invoice__amount">
+                          {{ invoiceAmount(box.invoice) }}
+                        </p>
+                        <p class="mm-lb-invoice__hint">
+                          <ng-icon name="lucideQrCode" class="size-3.5" />
+                          {{ invoiceScanHint(box.invoice) }}
+                        </p>
+                        <div class="mm-lb-invoice__barcode" aria-hidden="true">
+                          <div class="mm-lb-sticker__bars">
+                            @for (
+                              w of barcodeBars(box.invoice.boxBarcode);
+                              track $index
+                            ) {
+                              <i [style.width.px]="w"></i>
+                            }
+                          </div>
+                          <code>{{ box.invoice.boxBarcode }}</code>
+                        </div>
+                      </div>
                     </div>
-                    <code>{{ sticker.barcodeCode }}</code>
+                  </article>
+
+                  <div class="mm-lb-box__meals-head">
+                    <h4>{{ mealsTitle() }}</h4>
                   </div>
 
-                  <footer class="mm-lb-sticker__foot">
-                    {{ programLabel(selected) }}
-                  </footer>
-                </article>
+                  <div class="mm-lb-stickers">
+                    @for (sticker of box.stickers; track sticker.id) {
+                      <article class="mm-lb-sticker">
+                        <header class="mm-lb-sticker__top">
+                          <strong>{{ brandMark() }}</strong>
+                          <span>{{ stickerSlot(sticker) }}</span>
+                        </header>
+
+                        <h3>{{ stickerMeal(sticker) }}</h3>
+                        <p class="mm-lb-sticker__meta">
+                          {{ selected.orderCode }} · {{ boxLabel(box) }}
+                        </p>
+                        <p class="mm-lb-sticker__slot">
+                          {{ deliveryDate(selected) }} ·
+                          {{ deliverySlot(selected) }}
+                        </p>
+
+                        <div class="mm-lb-sticker__facts">
+                          <span
+                            >{{ sticker.calories }} {{ caloriesUnit() }}</span
+                          >
+                          <span
+                            >{{ sticker.proteinGrams }}g
+                            {{ proteinUnit() }}</span
+                          >
+                        </div>
+
+                        @if (stickerAllergen(sticker); as allergen) {
+                          <p class="mm-lb-sticker__allergen">{{ allergen }}</p>
+                        }
+
+                        <div class="mm-lb-sticker__barcode" aria-hidden="true">
+                          <div class="mm-lb-sticker__bars">
+                            @for (
+                              w of barcodeBars(sticker.barcodeCode);
+                              track $index
+                            ) {
+                              <i [style.width.px]="w"></i>
+                            }
+                          </div>
+                          <code>{{ sticker.barcodeCode }}</code>
+                        </div>
+
+                        <footer class="mm-lb-sticker__foot">
+                          {{ programLabel(selected) }}
+                        </footer>
+                      </article>
+                    }
+                  </div>
+                </section>
               }
             </div>
           }
