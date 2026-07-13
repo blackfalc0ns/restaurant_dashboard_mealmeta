@@ -6,9 +6,10 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
+  lucideArchive,
   lucideArrowLeft,
   lucideArrowRight,
   lucideCheck,
@@ -51,6 +52,7 @@ import { HandoverDetailSkeletonComponent } from './handover-detail-skeleton.comp
   host: { class: 'mm-hod-page block' },
   viewProviders: [
     provideIcons({
+      lucideArchive,
       lucideArrowLeft,
       lucideArrowRight,
       lucideCheck,
@@ -69,6 +71,7 @@ export class HandoverDetailPageComponent implements OnInit {
   readonly facade = inject(HandoverDetailFacade);
   readonly locale = inject(AppLocaleService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly backLabel = computed(() =>
@@ -105,6 +108,18 @@ export class HandoverDetailPageComponent implements OnInit {
 
   readonly confirmPickupLabel = computed(() =>
     this.locale.isRtl() ? 'تأكيد استلام المندوب' : 'Confirm driver pickup',
+  );
+
+  readonly confirmDeliveryLabel = computed(() =>
+    this.locale.isRtl() ? 'تأكيد التسليم' : 'Confirm delivery',
+  );
+
+  readonly moveToArchiveLabel = computed(() =>
+    this.locale.isRtl() ? 'نقل للأرشيف' : 'Move to archive',
+  );
+
+  readonly archivedLabel = computed(() =>
+    this.locale.isRtl() ? 'تم الأرشفة' : 'Archived',
   );
 
   readonly labelsLabel = computed(() =>
@@ -219,5 +234,15 @@ export class HandoverDetailPageComponent implements OnInit {
 
   confirmPickup(): void {
     this.facade.confirmPickup();
+  }
+
+  confirmDelivery(): void {
+    this.facade.confirmDelivery();
+  }
+
+  moveToArchive(): void {
+    this.facade.moveToArchive(() => {
+      void this.router.navigateByUrl('/restaurant/orders/archive');
+    });
   }
 }

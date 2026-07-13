@@ -55,22 +55,67 @@
       </div>
 
       <div class="mm-hod-hero__actions">
-        @if (data.status === 'awaiting-pickup') {
-          <button
-            type="button"
-            class="mm-hod-cta"
-            [disabled]="facade.confirmingPickup()"
-            (click)="confirmPickup()"
-          >
-            <ng-icon name="lucideScanBarcode" class="size-4" />
-            {{
-              facade.confirmingPickup()
-                ? locale.isRtl()
-                  ? 'جاري التأكيد...'
-                  : 'Confirming...'
-                : confirmPickupLabel()
-            }}
-          </button>
+        @if (facade.archived()) {
+          <span class="mm-hod-archived">
+            <ng-icon name="lucideCheck" class="size-4" />
+            {{ archivedLabel() }}
+          </span>
+          <a class="mm-hod-cta" routerLink="/restaurant/orders/archive">
+            <ng-icon name="lucideArchive" class="size-4" />
+            {{ locale.isRtl() ? 'فتح الأرشيف' : 'Open archive' }}
+          </a>
+        } @else {
+          @if (data.status === 'awaiting-pickup') {
+            <button
+              type="button"
+              class="mm-hod-cta"
+              [disabled]="facade.confirmingPickup()"
+              (click)="confirmPickup()"
+            >
+              <ng-icon name="lucideScanBarcode" class="size-4" />
+              {{
+                facade.confirmingPickup()
+                  ? locale.isRtl()
+                    ? 'جاري التأكيد...'
+                    : 'Confirming...'
+                  : confirmPickupLabel()
+              }}
+            </button>
+          }
+          @if (data.status === 'en-route') {
+            <button
+              type="button"
+              class="mm-hod-cta"
+              [disabled]="facade.confirmingPickup()"
+              (click)="confirmDelivery()"
+            >
+              <ng-icon name="lucideCheck" class="size-4" />
+              {{
+                facade.confirmingPickup()
+                  ? locale.isRtl()
+                    ? 'جاري التأكيد...'
+                    : 'Confirming...'
+                  : confirmDeliveryLabel()
+              }}
+            </button>
+          }
+          @if (data.status === 'delivered' || data.status === 'en-route') {
+            <button
+              type="button"
+              class="mm-hod-archive-btn"
+              [disabled]="facade.archiving()"
+              (click)="moveToArchive()"
+            >
+              <ng-icon name="lucideArchive" class="size-4" />
+              {{
+                facade.archiving()
+                  ? locale.isRtl()
+                    ? 'جاري النقل...'
+                    : 'Moving...'
+                  : moveToArchiveLabel()
+              }}
+            </button>
+          }
         }
         <a class="mm-hod-labels" [routerLink]="data.labelsRoute">
           <ng-icon name="lucidePrinter" class="size-4" />

@@ -12,78 +12,37 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <header class="mm-do-header">
-      <div>
-        <p class="mm-do-header__eyebrow">
-          <ng-icon name="lucideCalendarDays" class="size-3.5" />
-          {{ dateLabel() }}
-        </p>
-        <h1 class="mm-do-header__title">{{ title() }}</h1>
-        <p class="mm-do-header__subtitle">{{ subtitle() }}</p>
+    <mm-workspace-header
+      icon="lucideCalendarDays"
+      [eyebrow]="dateLabel()"
+      [title]="title()"
+      [subtitle]="subtitle()"
+    >
+      <div workspaceActions>
+        <a routerLink="/restaurant/orders/archive" class="mm-do-archive">
+          <ng-icon name="lucideArchive" class="size-4" />
+          {{ archiveLabel() }}
+        </a>
+        <a routerLink="/restaurant/orders/labels" class="mm-do-print">
+          <ng-icon name="lucidePrinter" class="size-4" />
+          {{ printLabel() }}
+        </a>
       </div>
+    </mm-workspace-header>
 
-      <a routerLink="/restaurant/orders/labels" class="mm-do-print">
-        <ng-icon name="lucidePrinter" class="size-4" />
-        {{ printLabel() }}
-      </a>
-    </header>
-
-    <section class="mm-do-summary">
+    <mm-workspace-stats>
       @for (card of data.summaries; track card.id) {
-        <article class="mm-do-summary__card" [attr.data-tone]="card.tone">
-          <span class="mm-do-summary__icon">
-            <ng-icon [name]="card.icon" class="size-4" />
-          </span>
-          <div class="mm-do-summary__copy">
-            <small>{{ summaryLabel(card) }}</small>
-            <strong>{{ card.value }}</strong>
-            <span>{{ summaryHint(card) }}</span>
-          </div>
-        </article>
-      }
-    </section>
-
-    <section class="mm-do-toolbar">
-      <label class="mm-do-search">
-        <ng-icon name="lucideSearch" class="size-4" />
-        <input
-          type="search"
-          [placeholder]="searchPlaceholder()"
-          [ngModel]="facade.search()"
-          (ngModelChange)="onSearch($event)"
+        <mm-workspace-stat
+          [icon]="card.icon"
+          [label]="summaryLabel(card)"
+          [value]="card.value"
+          [hint]="summaryHint(card)"
+          [tone]="card.tone"
         />
-      </label>
-
-      <label class="mm-do-shift">
-        <span>{{ shiftLabel() }}</span>
-        <select
-          [ngModel]="facade.shift()"
-          (ngModelChange)="onShiftChange($event)"
-        >
-          @for (option of shifts; track option.id) {
-            <option [value]="option.id">{{ filterLabel(option) }}</option>
-          }
-        </select>
-      </label>
-    </section>
-
-    <div class="mm-do-tabs" role="tablist">
-      @for (option of filters; track option.id) {
-        <button
-          type="button"
-          role="tab"
-          class="mm-do-tabs__btn"
-          [class.is-active]="facade.filter() === option.id"
-          [attr.aria-selected]="facade.filter() === option.id"
-          (click)="setFilter(option.id)"
-        >
-          <span>{{ filterLabel(option) }}</span>
-          <b>{{ filterCount(option.id) }}</b>
-        </button>
       }
-    </div>
+    </mm-workspace-stats>
 
-    <section class="mm-do-panel">
+    <mm-workspace-panel>
       <div class="mm-do-panel__head">
         <div>
           <h2>{{ listTitle() }}</h2>
@@ -91,6 +50,26 @@
         </div>
         <span class="mm-do-count">{{ facade.filteredOrders().length }}</span>
       </div>
+
+      <mm-workspace-toolbar>
+        <label class="mm-do-search">
+          <ng-icon name="lucideSearch" class="size-4" />
+          <input type="search" [placeholder]="searchPlaceholder()" [ngModel]="facade.search()" (ngModelChange)="onSearch($event)" />
+        </label>
+        <label class="mm-do-shift">
+          <span>{{ shiftLabel() }}</span>
+          <select [ngModel]="facade.shift()" (ngModelChange)="onShiftChange($event)">
+            @for (option of shifts; track option.id) { <option [value]="option.id">{{ filterLabel(option) }}</option> }
+          </select>
+        </label>
+        <mm-workspace-filters>
+          @for (option of filters; track option.id) {
+            <button type="button" role="tab" class="mm-do-tabs__btn" [class.is-active]="facade.filter() === option.id" [attr.aria-selected]="facade.filter() === option.id" (click)="setFilter(option.id)">
+              <span>{{ filterLabel(option) }}</span><b>{{ filterCount(option.id) }}</b>
+            </button>
+          }
+        </mm-workspace-filters>
+      </mm-workspace-toolbar>
 
       @if (facade.filteredOrders().length === 0) {
         <p class="mm-do-empty">{{ emptyLabel() }}</p>
@@ -136,6 +115,23 @@
               </div>
 
               <div class="mm-do-row__action">
+                @if (order.status === 'completed') {
+                  <button
+                    type="button"
+                    class="mm-do-row-archive"
+                    [disabled]="facade.archivingId() === order.id"
+                    (click)="archiveOrder(order)"
+                  >
+                    <ng-icon name="lucideArchive" class="size-3.5" />
+                    {{
+                      facade.archivingId() === order.id
+                        ? locale.isRtl()
+                          ? 'جاري...'
+                          : 'Moving...'
+                        : moveToArchiveLabel()
+                    }}
+                  </button>
+                }
                 <a [routerLink]="order.route">
                   {{ actionLabel(order) }}
                   <ng-icon name="lucideArrowRight" class="size-3.5" />
@@ -189,6 +185,6 @@
           </div>
         </nav>
       }
-    </section>
+    </mm-workspace-panel>
   }
 </div>

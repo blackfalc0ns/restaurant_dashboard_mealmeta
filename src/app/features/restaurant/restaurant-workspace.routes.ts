@@ -66,11 +66,36 @@ const loadHandoverDetailPage = () =>
     (m) => m.HandoverDetailPageComponent,
   );
 
+const loadArchivePage = () =>
+  import('./archive/archive.page').then((m) => m.ArchivePageComponent);
+
+const loadMenuPage = () =>
+  import('./menu/menu.page').then((m) => m.MenuPageComponent);
+
+const loadMenuCreatePage = () =>
+  import('./menu/create/menu-create.page').then(
+    (m) => m.MenuCreatePageComponent,
+  );
+
+const loadMenuDetailPage = () =>
+  import('./menu/detail/menu-detail.page').then(
+    (m) => m.MenuDetailPageComponent,
+  );
+
+const loadIngredientsPage = () =>
+  import('./ingredients/ingredients.page').then(
+    (m) => m.IngredientsPageComponent,
+  );
+
+const loadIngredientCreatePage = () =>
+  import('./ingredients/create/ingredient-create.page').then(
+    (m) => m.IngredientCreatePageComponent,
+  );
+
+const loadPricingPage = () =>
+  import('./pricing/pricing.page').then((m) => m.PricingPageComponent);
+
 const SIDEBAR_LINK_PATHS = [
-  'orders/archive',
-  'operations/menu',
-  'operations/ingredients',
-  'operations/pricing',
   'operations/service-regions',
   'operations/capacity',
   'operations/availability',
@@ -138,6 +163,34 @@ export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   {
     path: 'orders/handover/:orderCode',
     loadComponent: loadHandoverDetailPage,
+  },
+  {
+    path: 'orders/archive',
+    loadComponent: loadArchivePage,
+  },
+  {
+    path: 'operations/menu/create',
+    loadComponent: loadMenuCreatePage,
+  },
+  {
+    path: 'operations/menu/:mealId',
+    loadComponent: loadMenuDetailPage,
+  },
+  {
+    path: 'operations/menu',
+    loadComponent: loadMenuPage,
+  },
+  {
+    path: 'operations/ingredients/create',
+    loadComponent: loadIngredientCreatePage,
+  },
+  {
+    path: 'operations/ingredients',
+    loadComponent: loadIngredientsPage,
+  },
+  {
+    path: 'operations/pricing',
+    loadComponent: loadPricingPage,
   },
   ...SIDEBAR_LINK_PATHS.map((path) => ({
     path,

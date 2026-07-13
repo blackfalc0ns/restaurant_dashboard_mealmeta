@@ -127,7 +127,7 @@ export const RESTAURANT_NAV_SECTIONS: RestaurantNavSection[] = [
       },
       {
         id: 'pricing',
-        labelAr: 'الأسعار',
+        labelAr: 'التسعير',
         labelEn: 'Pricing',
         route: '/restaurant/operations/pricing',
         icon: 'lucideBadgeDollarSign',

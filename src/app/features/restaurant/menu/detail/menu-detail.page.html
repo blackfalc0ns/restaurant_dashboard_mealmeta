@@ -1,0 +1,203 @@
+<div class="mm-mnd-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-menu-detail-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <header class="mm-mnd-hero">
+      <div class="mm-mnd-hero__main">
+        <a [routerLink]="data.listRoute" class="mm-mnd-back">
+          <ng-icon
+            [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+            class="size-3.5"
+          />
+          {{ backLabel() }}
+        </a>
+
+        <div class="mm-mnd-hero__body">
+          <img
+            class="mm-mnd-hero__image"
+            [src]="data.imageUrl"
+            [alt]="text(data.name)"
+          />
+
+          <div class="mm-mnd-hero__copy">
+            <div class="mm-mnd-hero__top">
+              <span class="mm-mnd-badge" [attr.data-status]="data.status">
+                {{ statusLabel(data.status) }}
+              </span>
+              <span class="mm-mnd-hero__chip">{{ text(data.slotLabel) }}</span>
+              <span class="mm-mnd-hero__chip">{{ text(data.programLabel) }}</span>
+            </div>
+
+            <h1>{{ text(data.name) }}</h1>
+            <p>{{ text(data.description) }}</p>
+
+            <div class="mm-mnd-hero__meta">
+              <span>{{ text(data.bundleLabel) }}</span>
+              <span>{{ text(data.updatedAtLabel) }}</span>
+              <span
+                >{{ data.calories }} {{ kcalUnit() }} · {{ data.proteinGrams }}g
+                P</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mm-mnd-hero__actions">
+        @if (data.status === 'draft') {
+          <span class="mm-mnd-locked">{{ draftLockedLabel() }}</span>
+        } @else {
+          <button
+            type="button"
+            class="mm-mnd-cta"
+            [attr.data-status]="data.status"
+            [disabled]="facade.toggling()"
+            (click)="toggle()"
+          >
+            <ng-icon
+              [name]="data.status === 'active' ? 'lucidePause' : 'lucidePlay'"
+              class="size-4"
+            />
+            {{
+              facade.toggling()
+                ? locale.isRtl()
+                  ? 'جاري...'
+                  : 'Updating...'
+                : toggleLabel(data.status)
+            }}
+          </button>
+        }
+
+        <a class="mm-mnd-secondary" [routerLink]="data.ingredientsRoute">
+          <ng-icon name="lucideCookingPot" class="size-4" />
+          {{ ingredientsLinkLabel() }}
+        </a>
+      </div>
+    </header>
+
+    <section class="mm-mnd-facts">
+      <div class="mm-mnd-panel__head">
+        <h2>{{ factsTitle() }}</h2>
+      </div>
+      <div class="mm-mnd-facts__grid">
+        @for (fact of data.facts; track fact.id) {
+          <article class="mm-mnd-fact">
+            <span class="mm-mnd-fact__icon">
+              <ng-icon [name]="fact.icon" class="size-3.5" />
+            </span>
+            <div>
+              <small>{{ factLabel(fact) }}</small>
+              <strong>{{ factValue(fact) }}</strong>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+
+    <div class="mm-mnd-split">
+      <section class="mm-mnd-panel">
+        <div class="mm-mnd-panel__head">
+          <h2>{{ nutritionTitle() }}</h2>
+        </div>
+        <div class="mm-mnd-nutrition">
+          <article>
+            <small>{{ locale.isRtl() ? 'السعرات' : 'Calories' }}</small>
+            <strong>{{ data.calories }}</strong>
+            <span>{{ kcalUnit() }}</span>
+          </article>
+          <article>
+            <small>{{ locale.isRtl() ? 'بروتين' : 'Protein' }}</small>
+            <strong>{{ data.proteinGrams }}</strong>
+            <span>g</span>
+          </article>
+          <article>
+            <small>{{ locale.isRtl() ? 'كارب' : 'Carbs' }}</small>
+            <strong>{{ data.carbsGrams }}</strong>
+            <span>g</span>
+          </article>
+          <article>
+            <small>{{ locale.isRtl() ? 'دهون' : 'Fat' }}</small>
+            <strong>{{ data.fatGrams }}</strong>
+            <span>g</span>
+          </article>
+          <article>
+            <small>{{ locale.isRtl() ? 'ألياف' : 'Fiber' }}</small>
+            <strong>{{ data.fiberGrams }}</strong>
+            <span>g</span>
+          </article>
+          <article>
+            <small>{{ locale.isRtl() ? 'صوديوم' : 'Sodium' }}</small>
+            <strong>{{ data.sodiumMg }}</strong>
+            <span>mg</span>
+          </article>
+        </div>
+
+        @if (data.allergyFlags.length) {
+          <div class="mm-mnd-allergens">
+            <ng-icon name="lucideTriangleAlert" class="size-3.5" />
+            @for (flag of data.allergyFlags; track $index) {
+              <span>{{ text(flag) }}</span>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="mm-mnd-panel">
+        <div class="mm-mnd-panel__head">
+          <h2>{{ prepTitle() }}</h2>
+        </div>
+        <p class="mm-mnd-note">{{ text(data.prepNote) }}</p>
+        <p class="mm-mnd-note mm-mnd-note--muted">
+          {{ text(data.kitchenNote) }}
+        </p>
+      </section>
+    </div>
+
+    <section class="mm-mnd-panel">
+      <div class="mm-mnd-panel__head">
+        <div>
+          <h2>{{ ingredientsTitle() }}</h2>
+          <p>
+            {{
+              locale.isRtl()
+                ? 'مكوّنات الوصفة والكميات التقريبية'
+                : 'Recipe ingredients and approximate amounts'
+            }}
+          </p>
+        </div>
+        <span class="mm-mnd-count">{{ data.ingredients.length }}</span>
+      </div>
+
+      <div class="mm-mnd-ingredients">
+        @for (item of data.ingredients; track item.id) {
+          <article
+            class="mm-mnd-ingredient"
+            [attr.data-allergen]="item.allergen ? 'true' : null"
+          >
+            <div>
+              <strong>{{ ingredientName(item) }}</strong>
+              <span>{{ ingredientAmount(item) }}</span>
+            </div>
+            <div class="mm-mnd-ingredient__macros">
+              <span>{{ item.calories }} {{ kcalUnit() }}</span>
+              <span>{{ item.proteinGrams }}g P</span>
+              @if (item.allergen) {
+                <b>{{ locale.isRtl() ? 'حساسية' : 'Allergen' }}</b>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+  }
+</div>

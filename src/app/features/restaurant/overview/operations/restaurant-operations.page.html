@@ -12,24 +12,16 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <header class="mm-op-header">
-      <div>
-        <p class="mm-op-header__eyebrow">
-          <ng-icon name="lucideCalendarDays" class="size-3.5" />
-          {{ dateLabel() }}
-        </p>
-        <h1 class="mm-op-header__title">{{ title() }}</h1>
-        <p class="mm-op-header__subtitle">{{ subtitle() }}</p>
-      </div>
-
+    <mm-workspace-header icon="lucideCookingPot" [eyebrow]="dateLabel()" [title]="title()" [subtitle]="subtitle()">
       <div
+        workspaceAside
         class="mm-op-busy"
         [class.is-busy]="data.busy"
       >
         <ng-icon name="lucideActivity" class="size-4" />
         <span>{{ data.busy ? busyOn() : busyOff() }}</span>
       </div>
-    </header>
+    </mm-workspace-header>
 
     <section class="mm-op-metrics">
       @for (metric of data.metrics; track metric.id) {

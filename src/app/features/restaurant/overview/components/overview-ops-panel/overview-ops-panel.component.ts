@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
+  lucideArchive,
   lucideClock,
   lucideGauge,
   lucideQrCode,
@@ -26,6 +27,7 @@ import { pickLocale } from '../../overview-i18n';
   host: { class: 'mm-ov-card mm-ov-ops block' },
   viewProviders: [
     provideIcons({
+      lucideArchive,
       lucideClock,
       lucideGauge,
       lucideQrCode,

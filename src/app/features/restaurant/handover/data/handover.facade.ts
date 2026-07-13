@@ -1,7 +1,9 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { PageStateModel } from '@/shared/models/page-view-state.model';
 
+import { ArchiveFacade } from '../../archive/data/archive.facade';
+import { archiveItemFromHandoverList } from '../../archive/data/archive-mappers';
 import {
   HandoverFilter,
   HandoverListData,
@@ -14,12 +16,15 @@ export const HANDOVER_PAGE_SIZE = 5;
 
 @Injectable({ providedIn: 'root' })
 export class HandoverFacade {
+  private readonly archiveFacade = inject(ArchiveFacade);
+
   readonly page = signal<PageStateModel>({ viewState: 'idle' });
   readonly data = signal<HandoverListData | null>(null);
   readonly filter = signal<HandoverFilter>('all');
   readonly shift = signal<HandoverShift>('all');
   readonly search = signal('');
   readonly currentPage = signal(1);
+  readonly archivingId = signal<string | null>(null);
   readonly pageSize = HANDOVER_PAGE_SIZE;
 
   readonly filteredOrders = computed<HandoverListItem[]>(() => {
@@ -98,6 +103,7 @@ export class HandoverFacade {
   });
 
   private loadTimer: ReturnType<typeof setTimeout> | null = null;
+  private archiveTimer: ReturnType<typeof setTimeout> | null = null;
 
   load(): void {
     this.clearTimer();
@@ -140,18 +146,62 @@ export class HandoverFacade {
     this.goToPage(this.currentPage() - 1);
   }
 
+  /** Move a delivered/en-route handover order into the archive. */
+  archiveOrder(orderId: string, onDone?: () => void): void {
+    const data = this.data();
+    if (!data || this.archivingId()) return;
+
+    const target = data.orders.find((order) => order.id === orderId);
+    if (!target || target.status === 'awaiting-pickup') return;
+
+    this.archivingId.set(orderId);
+    if (this.archiveTimer) clearTimeout(this.archiveTimer);
+
+    this.archiveTimer = setTimeout(() => {
+      this.archiveFacade.prependOrder(archiveItemFromHandoverList(target));
+      this.removeOrderById(orderId);
+      this.archivingId.set(null);
+      this.archiveTimer = null;
+      onDone?.();
+    }, 550);
+  }
+
+  /** Remove an order from the active handover queue (already archived elsewhere). */
+  removeOrderByCode(orderCode: string): void {
+    const current = this.data();
+    if (!current) return;
+    this.syncSummaries({
+      ...current,
+      orders: current.orders.filter((order) => order.orderCode !== orderCode),
+    });
+  }
+
+  private removeOrderById(orderId: string): void {
+    const current = this.data();
+    if (!current) return;
+    this.syncSummaries({
+      ...current,
+      orders: current.orders.filter((order) => order.id !== orderId),
+    });
+  }
+
   retry(): void {
     this.load();
   }
 
   reset(): void {
     this.clearTimer();
+    if (this.archiveTimer) {
+      clearTimeout(this.archiveTimer);
+      this.archiveTimer = null;
+    }
     this.page.set({ viewState: 'idle' });
     this.data.set(null);
     this.filter.set('all');
     this.shift.set('all');
     this.search.set('');
     this.currentPage.set(1);
+    this.archivingId.set(null);
   }
 
   private syncSummaries(data: HandoverListData): void {

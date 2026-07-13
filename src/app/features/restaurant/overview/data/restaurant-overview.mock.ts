@@ -248,6 +248,12 @@ export const RESTAURANT_OVERVIEW_MOCK: RestaurantOverviewData = {
       icon: 'lucideQrCode',
     },
     {
+      id: 'archive',
+      label: { ar: 'أرشيف الطلبات', en: 'Orders archive' },
+      route: '/restaurant/orders/archive',
+      icon: 'lucideArchive',
+    },
+    {
       id: 'capacity',
       label: { ar: 'تعديل الطاقة', en: 'Adjust capacity' },
       route: '/restaurant/operations/capacity',

@@ -29,6 +29,13 @@ import {
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
+import {
+  RestaurantWorkspaceFiltersComponent,
+  RestaurantWorkspaceHeaderComponent,
+  RestaurantWorkspaceStatComponent,
+  RestaurantWorkspaceStatsComponent,
+  RestaurantWorkspaceToolbarComponent,
+} from '@/shared/components/restaurant-workspace/restaurant-workspace-ui.component';
 
 import { pickLocale } from '../overview-i18n';
 import { ActivitySkeletonComponent } from './activity-skeleton.component';
@@ -46,7 +53,17 @@ import {
 @Component({
   selector: 'mm-restaurant-activity-page',
   standalone: true,
-  imports: [RouterLink, NgIcon, PageStateComponent, ActivitySkeletonComponent],
+  imports: [
+    RouterLink,
+    NgIcon,
+    PageStateComponent,
+    ActivitySkeletonComponent,
+    RestaurantWorkspaceHeaderComponent,
+    RestaurantWorkspaceStatsComponent,
+    RestaurantWorkspaceStatComponent,
+    RestaurantWorkspaceToolbarComponent,
+    RestaurantWorkspaceFiltersComponent,
+  ],
   templateUrl: './restaurant-activity.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'mm-ac-page block' },

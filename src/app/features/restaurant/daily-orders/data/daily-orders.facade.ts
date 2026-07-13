@@ -1,7 +1,9 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { PageStateModel } from '@/shared/models/page-view-state.model';
 
+import { ArchiveFacade } from '../../archive/data/archive.facade';
+import { archiveItemFromDailyOrder } from '../../archive/data/archive-mappers';
 import {
   DailyOrderFilter,
   DailyOrderItem,
@@ -14,12 +16,15 @@ export const DAILY_ORDERS_PAGE_SIZE = 5;
 
 @Injectable({ providedIn: 'root' })
 export class DailyOrdersFacade {
+  private readonly archiveFacade = inject(ArchiveFacade);
+
   readonly page = signal<PageStateModel>({ viewState: 'idle' });
   readonly data = signal<DailyOrdersData | null>(null);
   readonly filter = signal<DailyOrderFilter>('all');
   readonly shift = signal<DailyShift>('all');
   readonly search = signal('');
   readonly currentPage = signal(1);
+  readonly archivingId = signal<string | null>(null);
   readonly pageSize = DAILY_ORDERS_PAGE_SIZE;
 
   readonly filteredOrders = computed<DailyOrderItem[]>(() => {
@@ -99,6 +104,7 @@ export class DailyOrdersFacade {
   });
 
   private loadTimer: ReturnType<typeof setTimeout> | null = null;
+  private archiveTimer: ReturnType<typeof setTimeout> | null = null;
 
   load(): void {
     this.clearTimer();
@@ -139,18 +145,49 @@ export class DailyOrdersFacade {
     this.goToPage(this.currentPage() - 1);
   }
 
+  archiveOrder(orderId: string, onDone?: () => void): void {
+    const data = this.data();
+    if (!data || this.archivingId()) return;
+
+    const target = data.orders.find((order) => order.id === orderId);
+    if (!target || target.status !== 'completed') return;
+
+    this.archivingId.set(orderId);
+    if (this.archiveTimer) clearTimeout(this.archiveTimer);
+
+    this.archiveTimer = setTimeout(() => {
+      this.archiveFacade.prependOrder(archiveItemFromDailyOrder(target));
+      this.data.update((current) =>
+        current
+          ? {
+              ...current,
+              orders: current.orders.filter((order) => order.id !== orderId),
+            }
+          : current,
+      );
+      this.archivingId.set(null);
+      this.archiveTimer = null;
+      onDone?.();
+    }, 550);
+  }
+
   retry(): void {
     this.load();
   }
 
   reset(): void {
     this.clearTimer();
+    if (this.archiveTimer) {
+      clearTimeout(this.archiveTimer);
+      this.archiveTimer = null;
+    }
     this.page.set({ viewState: 'idle' });
     this.data.set(null);
     this.filter.set('all');
     this.shift.set('all');
     this.search.set('');
     this.currentPage.set(1);
+    this.archivingId.set(null);
   }
 
   private clearTimer(): void {

@@ -24,6 +24,14 @@ import {
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
+import {
+  RestaurantWorkspaceFiltersComponent,
+  RestaurantWorkspaceHeaderComponent,
+  RestaurantWorkspacePanelComponent,
+  RestaurantWorkspaceStatComponent,
+  RestaurantWorkspaceStatsComponent,
+  RestaurantWorkspaceToolbarComponent,
+} from '@/shared/components/restaurant-workspace/restaurant-workspace-ui.component';
 
 import { pickLocale } from '../overview/overview-i18n';
 import { LabelsFacade } from './data/labels.facade';
@@ -49,6 +57,12 @@ import { buildQrMatrix } from './utils/qr-matrix';
     NgIcon,
     PageStateComponent,
     LabelsSkeletonComponent,
+    RestaurantWorkspaceHeaderComponent,
+    RestaurantWorkspaceStatsComponent,
+    RestaurantWorkspaceStatComponent,
+    RestaurantWorkspaceToolbarComponent,
+    RestaurantWorkspaceFiltersComponent,
+    RestaurantWorkspacePanelComponent,
   ],
   templateUrl: './labels.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -12,16 +12,11 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <header class="mm-ql-header">
-      <div>
-        <p class="mm-ql-header__eyebrow">MealMate</p>
-        <h1 class="mm-ql-header__title">{{ title() }}</h1>
-        <p class="mm-ql-header__subtitle">{{ subtitle() }}</p>
-      </div>
-      <a routerLink="/restaurant/quality/ratings" class="mm-ql-header__cta">
+    <mm-workspace-header icon="lucidePackageCheck" eyebrow="MealMate" [title]="title()" [subtitle]="subtitle()">
+      <a workspaceAside routerLink="/restaurant/quality/ratings" class="mm-ql-header__cta">
         {{ locale.isRtl() ? 'كل التقييمات' : 'All ratings' }}
       </a>
-    </header>
+    </mm-workspace-header>
 
     <section class="mm-ql-metrics">
       @for (metric of data.metrics; track metric.id) {

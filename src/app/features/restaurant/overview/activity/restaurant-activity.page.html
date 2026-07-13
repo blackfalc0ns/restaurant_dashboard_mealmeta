@@ -12,13 +12,7 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <header class="mm-ac-header">
-      <div>
-        <p class="mm-ac-header__eyebrow">MealMate</p>
-        <h1 class="mm-ac-header__title">{{ title() }}</h1>
-        <p class="mm-ac-header__subtitle">{{ subtitle() }}</p>
-      </div>
-    </header>
+    <mm-workspace-header icon="lucideArchive" eyebrow="MealMate" [title]="title()" [subtitle]="subtitle()" />
 
     <a class="mm-ac-attention" [routerLink]="data.attention.route">
       <span class="mm-ac-attention__icon">
@@ -34,36 +28,21 @@
       </span>
     </a>
 
-    <section class="mm-ac-summary">
+    <mm-workspace-stats>
       @for (card of data.summaries; track card.id) {
-        <article class="mm-ac-summary__card" [attr.data-tone]="card.tone">
-          <span class="mm-ac-summary__icon">
-            <ng-icon [name]="card.icon" class="size-4" />
-          </span>
-          <div class="mm-ac-summary__copy">
-            <small>{{ summaryLabel(card) }}</small>
-            <strong>{{ card.value }}</strong>
-            <span>{{ summaryHint(card) }}</span>
-          </div>
-        </article>
+        <mm-workspace-stat [icon]="card.icon" [label]="summaryLabel(card)" [value]="card.value" [hint]="summaryHint(card)" [tone]="card.tone" />
       }
-    </section>
+    </mm-workspace-stats>
 
-    <div class="mm-ac-tabs" role="tablist">
-      @for (option of filters; track option.id) {
-        <button
-          type="button"
-          role="tab"
-          class="mm-ac-tabs__btn"
-          [class.is-active]="facade.filter() === option.id"
-          [attr.aria-selected]="facade.filter() === option.id"
-          (click)="setFilter(option.id)"
-        >
-          <span>{{ filterLabel(option) }}</span>
-          <b>{{ filterCount(option.id) }}</b>
-        </button>
-      }
-    </div>
+    <mm-workspace-toolbar>
+      <mm-workspace-filters>
+        @for (option of filters; track option.id) {
+          <button type="button" role="tab" [class.is-active]="facade.filter() === option.id" [attr.aria-selected]="facade.filter() === option.id" (click)="setFilter(option.id)">
+            <span>{{ filterLabel(option) }}</span><b>{{ filterCount(option.id) }}</b>
+          </button>
+        }
+      </mm-workspace-filters>
+    </mm-workspace-toolbar>
 
     <div class="mm-ac-layout">
       <section class="mm-ac-panel">

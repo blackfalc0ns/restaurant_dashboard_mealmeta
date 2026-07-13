@@ -1,0 +1,26 @@
+<div class="mm-mnd-skeleton__inner" aria-hidden="true">
+  <div class="mm-mnd-skeleton__hero">
+    <span
+      class="mm-ov-bone mm-ov-bone--avatar"
+      style="width: 8rem; height: 8rem; border-radius: 1rem"
+    ></span>
+    <div style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1">
+      <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+      <span class="mm-ov-bone mm-ov-bone--title"></span>
+      <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+      <span class="mm-ov-bone mm-ov-bone--chip"></span>
+    </div>
+  </div>
+
+  <div class="mm-mnd-skeleton__facts">
+    @for (_ of [1, 2, 3, 4, 5, 6]; track $index) {
+      <span class="mm-ov-bone" style="height: 4.25rem; border-radius: 0.9rem"></span>
+    }
+  </div>
+
+  <div class="mm-mnd-skeleton__panel">
+    @for (_ of [1, 2, 3, 4]; track $index) {
+      <span class="mm-ov-bone" style="height: 3.25rem; border-radius: 0.75rem"></span>
+    }
+  </div>
+</div>

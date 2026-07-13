@@ -23,6 +23,7 @@ import {
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { BRAND_COLORS } from '@/core/brand/brand-colors';
 import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
+import { RestaurantWorkspaceHeaderComponent } from '@/shared/components/restaurant-workspace/restaurant-workspace-ui.component';
 import { MmApexChartComponent } from '@/shared/components/apex-chart/mm-apex-chart.component';
 import {
   mmBaseChart,
@@ -54,6 +55,7 @@ import {
     PageStateComponent,
     MmApexChartComponent,
     AnalyticsSkeletonComponent,
+    RestaurantWorkspaceHeaderComponent,
   ],
   templateUrl: './restaurant-analytics.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

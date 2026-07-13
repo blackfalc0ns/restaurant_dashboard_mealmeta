@@ -12,14 +12,8 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <header class="mm-an-header">
-      <div>
-        <p class="mm-an-header__eyebrow">MealMate</p>
-        <h1 class="mm-an-header__title">{{ title() }}</h1>
-        <p class="mm-an-header__subtitle">{{ subtitle() }}</p>
-      </div>
-
-      <label class="mm-an-period">
+    <mm-workspace-header icon="lucideClipboardList" eyebrow="MealMate" [title]="title()" [subtitle]="subtitle()">
+      <label workspaceAside class="mm-an-period">
         <span>{{ periodLabel() }}</span>
         <select [value]="facade.period()" (change)="onPeriodChange($event)">
           @for (option of periods; track option.id) {
@@ -27,7 +21,7 @@
           }
         </select>
       </label>
-    </header>
+    </mm-workspace-header>
 
     <section class="mm-an-metrics">
       @for (metric of data.metrics; track metric.id) {

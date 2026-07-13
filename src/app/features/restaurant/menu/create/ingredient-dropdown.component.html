@@ -1,0 +1,84 @@
+<div class="mm-ing-dd__wrap">
+  <button
+    #triggerBtn
+    type="button"
+    class="mm-ing-dd__trigger"
+    cdkOverlayOrigin
+    #origin="cdkOverlayOrigin"
+    [attr.aria-expanded]="open()"
+    aria-haspopup="listbox"
+    (click)="toggle()"
+    (keydown)="onKeydown($event)"
+  >
+    <span>{{ triggerLabel() }}</span>
+    <ng-icon
+      name="lucideChevronDown"
+      class="size-4 transition"
+      [class.rotate-180]="open()"
+    />
+  </button>
+
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="origin"
+    [cdkConnectedOverlayOpen]="open()"
+    [cdkConnectedOverlayHasBackdrop]="true"
+    cdkConnectedOverlayBackdropClass="mm-ing-dd-backdrop"
+    [cdkConnectedOverlayWidth]="origin.elementRef.nativeElement.offsetWidth"
+    [cdkConnectedOverlayOffsetY]="6"
+    [cdkConnectedOverlayPush]="true"
+    (backdropClick)="close()"
+    (detach)="close()"
+  >
+    <div
+      class="mm-ing-dd__panel"
+      role="listbox"
+      [attr.dir]="isRtl() ? 'rtl' : 'ltr'"
+      (keydown)="onKeydown($event)"
+    >
+      <label class="mm-ing-dd__search">
+        <ng-icon name="lucideSearch" class="size-4" />
+        <input
+          type="search"
+          [ngModel]="query()"
+          (ngModelChange)="onQueryChange($event)"
+          [placeholder]="searchPlaceholder()"
+          autocomplete="off"
+        />
+      </label>
+
+      <div class="mm-ing-dd__list">
+        @for (item of filtered(); track item.option.id) {
+          <button
+            type="button"
+            class="mm-ing-dd__option"
+            role="option"
+            [class.is-active]="isActive(item)"
+            [class.is-selected]="item.selected"
+            [disabled]="item.disabled || item.selected"
+            [attr.aria-selected]="item.selected"
+            (click)="select(item)"
+          >
+            <div class="mm-ing-dd__option-main">
+              <strong>{{ item.label }}</strong>
+              <div class="mm-ing-dd__macros">
+                <span>P {{ item.nutrition.proteinGrams }}g</span>
+                <span>C {{ item.nutrition.carbsGrams }}g</span>
+                <span>F {{ item.nutrition.fatGrams }}g</span>
+              </div>
+            </div>
+            <div class="mm-ing-dd__option-side">
+              <b>{{ item.nutrition.calories }}</b>
+              <small>kcal</small>
+              @if (item.selected) {
+                <ng-icon name="lucideCheck" class="size-3.5 text-mm-primary" />
+              }
+            </div>
+          </button>
+        } @empty {
+          <p class="mm-ing-dd__empty">{{ emptyLabel() }}</p>
+        }
+      </div>
+    </div>
+  </ng-template>
+</div>

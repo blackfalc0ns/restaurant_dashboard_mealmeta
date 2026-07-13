@@ -12,66 +12,20 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <header class="mm-pc-header">
-      <div>
-        <p class="mm-pc-header__eyebrow">
-          <ng-icon name="lucideClock" class="size-3.5" />
-          {{ dateLabel() }}
-        </p>
-        <h1 class="mm-pc-header__title">{{ title() }}</h1>
-        <p class="mm-pc-header__subtitle">{{ subtitle() }}</p>
-      </div>
-
-      <span class="mm-pc-header__hint">
+    <mm-workspace-header icon="lucideClipboardList" [eyebrow]="dateLabel()" [title]="title()" [subtitle]="subtitle()">
+      <span workspaceAside class="mm-pc-header__hint">
         <ng-icon name="lucideTimer" class="size-3.5" />
         {{ windowHint() }}
       </span>
-    </header>
+    </mm-workspace-header>
 
-    <section class="mm-pc-summary">
+    <mm-workspace-stats>
       @for (card of data.summaries; track card.id) {
-        <article class="mm-pc-summary__card" [attr.data-tone]="card.tone">
-          <span class="mm-pc-summary__icon">
-            <ng-icon [name]="card.icon" class="size-4" />
-          </span>
-          <div class="mm-pc-summary__copy">
-            <small>{{ summaryLabel(card) }}</small>
-            <strong>{{ card.value }}</strong>
-            <span>{{ summaryHint(card) }}</span>
-          </div>
-        </article>
+        <mm-workspace-stat [icon]="card.icon" [label]="summaryLabel(card)" [value]="card.value" [hint]="summaryHint(card)" [tone]="card.tone" />
       }
-    </section>
+    </mm-workspace-stats>
 
-    <section class="mm-pc-toolbar">
-      <label class="mm-pc-search">
-        <ng-icon name="lucideSearch" class="size-4" />
-        <input
-          type="search"
-          [placeholder]="searchPlaceholder()"
-          [ngModel]="facade.search()"
-          (ngModelChange)="onSearch($event)"
-        />
-      </label>
-    </section>
-
-    <div class="mm-pc-tabs" role="tablist">
-      @for (option of filters; track option.id) {
-        <button
-          type="button"
-          role="tab"
-          class="mm-pc-tabs__btn"
-          [class.is-active]="facade.filter() === option.id"
-          [attr.aria-selected]="facade.filter() === option.id"
-          (click)="setFilter(option.id)"
-        >
-          <span>{{ filterLabel(option) }}</span>
-          <b>{{ filterCount(option.id) }}</b>
-        </button>
-      }
-    </div>
-
-    <section class="mm-pc-panel">
+    <mm-workspace-panel>
       <div class="mm-pc-panel__head">
         <div>
           <h2>{{ listTitle() }}</h2>
@@ -79,6 +33,20 @@
         </div>
         <span class="mm-pc-count">{{ facade.filteredOrders().length }}</span>
       </div>
+
+      <mm-workspace-toolbar>
+        <label class="mm-pc-search">
+          <ng-icon name="lucideSearch" class="size-4" />
+          <input type="search" [placeholder]="searchPlaceholder()" [ngModel]="facade.search()" (ngModelChange)="onSearch($event)" />
+        </label>
+        <mm-workspace-filters>
+          @for (option of filters; track option.id) {
+            <button type="button" role="tab" [class.is-active]="facade.filter() === option.id" [attr.aria-selected]="facade.filter() === option.id" (click)="setFilter(option.id)">
+              <span>{{ filterLabel(option) }}</span><b>{{ filterCount(option.id) }}</b>
+            </button>
+          }
+        </mm-workspace-filters>
+      </mm-workspace-toolbar>
 
       @if (facade.filteredOrders().length === 0) {
         <p class="mm-pc-empty">{{ emptyLabel() }}</p>
@@ -200,6 +168,6 @@
           </div>
         </nav>
       }
-    </section>
+    </mm-workspace-panel>
   }
 </div>

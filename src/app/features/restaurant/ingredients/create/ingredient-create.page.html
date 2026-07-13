@@ -1,0 +1,355 @@
+<div class="mm-igc-page__inner">
+  <div class="mm-igc-body">
+    <header class="mm-igc-hero">
+      <div class="mm-igc-hero__main">
+        <a routerLink="/restaurant/operations/ingredients" class="mm-igc-back">
+          <ng-icon
+            [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+            class="size-3.5"
+          />
+          <span>{{ backLabel() }}</span>
+        </a>
+
+        <div class="mm-igc-hero__copy">
+          <p class="mm-igc-hero__eyebrow">
+            <ng-icon name="lucideCookingPot" class="size-3.5" />
+            <span>{{
+              locale.isRtl() ? 'مكونات المطعم' : 'Restaurant ingredients'
+            }}</span>
+          </p>
+          <h1>{{ title() }}</h1>
+          <p class="mm-igc-hero__subtitle">{{ subtitle() }}</p>
+        </div>
+      </div>
+    </header>
+
+    <form
+      id="ingredient-create-form"
+      class="mm-igc-layout"
+      (ngSubmit)="submit()"
+    >
+      <div class="mm-igc-main">
+        <section class="mm-igc-panel">
+          <div class="mm-igc-panel__head">
+            <div>
+              <h2>{{ locale.isRtl() ? 'بيانات المكوّن' : 'Ingredient details' }}</h2>
+              <p>
+                {{
+                  locale.isRtl()
+                    ? 'الاسم والفئة والوزن الافتراضي'
+                    : 'Name, category, and default weight'
+                }}
+              </p>
+            </div>
+          </div>
+
+          <div class="mm-igc-grid">
+            <label class="mm-igc-field">
+              <span>{{ locale.isRtl() ? 'الاسم (عربي)' : 'Name (Arabic)' }}</span>
+              <input
+                type="text"
+                [ngModel]="facade.draft().nameAr"
+                (ngModelChange)="facade.patch('nameAr', $event)"
+                name="nameAr"
+                [placeholder]="locale.isRtl() ? 'مثال: صدر دجاج' : 'e.g. Chicken breast'"
+                required
+              />
+            </label>
+
+            <label class="mm-igc-field">
+              <span>{{ locale.isRtl() ? 'الاسم (إنجليزي)' : 'Name (English)' }}</span>
+              <input
+                type="text"
+                [ngModel]="facade.draft().nameEn"
+                (ngModelChange)="facade.patch('nameEn', $event)"
+                name="nameEn"
+                placeholder="e.g. Chicken breast"
+                required
+              />
+            </label>
+
+            <label class="mm-igc-field">
+              <span>{{ locale.isRtl() ? 'الفئة' : 'Category' }}</span>
+              <select
+                [ngModel]="facade.draft().category"
+                (ngModelChange)="facade.patch('category', $event)"
+                name="category"
+              >
+                @for (option of categories; track option.id) {
+                  <option [value]="option.id">{{ optionLabel(option) }}</option>
+                }
+              </select>
+            </label>
+
+            <label class="mm-igc-field">
+              <span>
+                {{
+                  locale.isRtl()
+                    ? 'الوزن الافتراضي (جم)'
+                    : 'Default weight (g)'
+                }}
+              </span>
+              <input
+                type="number"
+                min="1"
+                step="1"
+                [ngModel]="facade.draft().defaultWeightGrams"
+                (ngModelChange)="onNumber('defaultWeightGrams', $event)"
+                name="defaultWeightGrams"
+                required
+              />
+            </label>
+          </div>
+        </section>
+
+        <section class="mm-igc-panel">
+          <div class="mm-igc-panel__head">
+            <div>
+              <h2>
+                {{
+                  locale.isRtl()
+                    ? 'القيم الغذائية / 100 جم'
+                    : 'Nutrition / 100g'
+                }}
+              </h2>
+              <p>
+                {{
+                  locale.isRtl()
+                    ? 'تُستخدم لحساب سعرات الوجبات تلقائيًا'
+                    : 'Used to auto-calculate meal nutrition'
+                }}
+              </p>
+            </div>
+            <span class="mm-igc-panel__tag">100 g</span>
+          </div>
+
+          <div class="mm-igc-grid mm-igc-grid--macros">
+            <label class="mm-igc-field">
+              <span>{{ locale.isRtl() ? 'السعرات' : 'Calories' }}</span>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                [ngModel]="facade.draft().caloriesPer100g"
+                (ngModelChange)="onNumber('caloriesPer100g', $event)"
+                name="caloriesPer100g"
+                required
+              />
+            </label>
+
+            <label class="mm-igc-field">
+              <span>{{ locale.isRtl() ? 'بروتين (جم)' : 'Protein (g)' }}</span>
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                [ngModel]="facade.draft().proteinPer100g"
+                (ngModelChange)="onNumber('proteinPer100g', $event)"
+                name="proteinPer100g"
+                required
+              />
+            </label>
+
+            <label class="mm-igc-field">
+              <span>{{ locale.isRtl() ? 'كارب (جم)' : 'Carbs (g)' }}</span>
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                [ngModel]="facade.draft().carbsPer100g"
+                (ngModelChange)="onNumber('carbsPer100g', $event)"
+                name="carbsPer100g"
+                required
+              />
+            </label>
+
+            <label class="mm-igc-field">
+              <span>{{ locale.isRtl() ? 'دهون (جم)' : 'Fat (g)' }}</span>
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                [ngModel]="facade.draft().fatPer100g"
+                (ngModelChange)="onNumber('fatPer100g', $event)"
+                name="fatPer100g"
+                required
+              />
+            </label>
+          </div>
+        </section>
+
+        <section class="mm-igc-panel">
+          <div class="mm-igc-panel__head">
+            <div>
+              <h2>{{ locale.isRtl() ? 'الحساسية' : 'Allergens' }}</h2>
+              <p>
+                {{
+                  locale.isRtl()
+                    ? 'اختَر من القائمة أو أضف حساسية جديدة'
+                    : 'Pick from the list or add a new allergen'
+                }}
+              </p>
+            </div>
+          </div>
+
+          <div class="mm-igc-allergens">
+            @for (option of facade.allergenOptions(); track option.id) {
+              <div
+                class="mm-igc-chip-wrap"
+                [class.is-active]="facade.isAllergenSelected(option.id)"
+              >
+                <button
+                  type="button"
+                  class="mm-igc-chip"
+                  [class.is-active]="facade.isAllergenSelected(option.id)"
+                  (click)="facade.toggleAllergen(option.id)"
+                >
+                  {{ optionLabel(option) }}
+                </button>
+                @if (facade.isCustomAllergen(option.id)) {
+                  <button
+                    type="button"
+                    class="mm-igc-chip__remove"
+                    [attr.aria-label]="
+                      locale.isRtl() ? 'حذف الحساسية' : 'Remove allergen'
+                    "
+                    (click)="facade.removeCustomAllergen(option.id)"
+                  >
+                    <ng-icon name="lucideX" class="size-3" />
+                  </button>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="mm-igc-allergen-add">
+            <p class="mm-igc-allergen-add__label">{{ addAllergenLabel() }}</p>
+            <div class="mm-igc-allergen-add__row">
+              <label class="mm-igc-field">
+                <span>{{ locale.isRtl() ? 'عربي' : 'Arabic' }}</span>
+                <input
+                  type="text"
+                  [ngModel]="facade.newAllergenAr()"
+                  (ngModelChange)="onNewAllergenAr($event)"
+                  name="newAllergenAr"
+                  [placeholder]="locale.isRtl() ? 'مثال: صويا' : 'e.g. صويا'"
+                  (keydown.enter)="$event.preventDefault(); addAllergen()"
+                />
+              </label>
+              <label class="mm-igc-field">
+                <span>{{ locale.isRtl() ? 'إنجليزي' : 'English' }}</span>
+                <input
+                  type="text"
+                  [ngModel]="facade.newAllergenEn()"
+                  (ngModelChange)="onNewAllergenEn($event)"
+                  name="newAllergenEn"
+                  placeholder="e.g. Soy"
+                  (keydown.enter)="$event.preventDefault(); addAllergen()"
+                />
+              </label>
+              <button
+                type="button"
+                class="mm-igc-allergen-add__btn"
+                [disabled]="!facade.canAddAllergen()"
+                (click)="addAllergen()"
+              >
+                <ng-icon name="lucidePlus" class="size-4" />
+                <span>{{ locale.isRtl() ? 'إضافة' : 'Add' }}</span>
+              </button>
+            </div>
+            @if (allergenErrorLabel()) {
+              <p class="mm-igc-allergen-add__error">{{ allergenErrorLabel() }}</p>
+            }
+          </div>
+        </section>
+      </div>
+
+      <aside class="mm-igc-preview">
+        <div class="mm-igc-preview__card">
+          <p class="mm-igc-preview__label">
+            {{ locale.isRtl() ? 'معاينة' : 'Preview' }}
+          </p>
+          <h3>{{ previewName() }}</h3>
+          <div class="mm-igc-preview__chips">
+            <span>{{ categoryPreview() }}</span>
+            <span
+              >{{ facade.draft().defaultWeightGrams ?? '—'
+              }}{{ locale.isRtl() ? ' جم' : ' g' }}</span
+            >
+          </div>
+
+          <div class="mm-igc-preview__nutrition">
+            <article>
+              <small>kcal</small>
+              <strong>{{ facade.draft().caloriesPer100g ?? '—' }}</strong>
+            </article>
+            <article>
+              <small>P</small>
+              <strong>{{ facade.draft().proteinPer100g ?? '—' }}</strong>
+            </article>
+            <article>
+              <small>C</small>
+              <strong>{{ facade.draft().carbsPer100g ?? '—' }}</strong>
+            </article>
+            <article>
+              <small>F</small>
+              <strong>{{ facade.draft().fatPer100g ?? '—' }}</strong>
+            </article>
+          </div>
+
+          <div class="mm-igc-preview__allergens">
+            <small>
+              <ng-icon name="lucideTriangleAlert" class="size-3.5" />
+              {{ locale.isRtl() ? 'الحساسية' : 'Allergens' }}
+            </small>
+            @if (allergenPreview().length === 0) {
+              <p class="mm-igc-preview__empty">
+                {{
+                  locale.isRtl() ? 'بدون حساسية محددة' : 'No allergens selected'
+                }}
+              </p>
+            } @else {
+              <div class="mm-igc-preview__flags">
+                @for (flag of allergenPreview(); track flag) {
+                  <span>{{ flag }}</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </aside>
+    </form>
+  </div>
+
+  <div class="mm-igc-footer">
+    <div class="mm-igc-footer__copy">
+      <strong>{{ saveLabel() }}</strong>
+      <p>
+        {{
+          facade.canSubmit()
+            ? locale.isRtl()
+              ? 'جاهز للحفظ كمسودة بانتظار الاعتماد'
+              : 'Ready to save as draft awaiting approval'
+            : locale.isRtl()
+              ? 'أكمل الاسم والقيم الغذائية للحفظ'
+              : 'Complete name and nutrition values to save'
+        }}
+      </p>
+    </div>
+    <button
+      type="submit"
+      form="ingredient-create-form"
+      class="mm-igc-save"
+      [disabled]="!facade.canSubmit() || facade.saving()"
+    >
+      <ng-icon name="lucideSave" class="size-4" />
+      {{
+        facade.saving()
+          ? locale.isRtl()
+            ? 'جاري الحفظ...'
+            : 'Saving...'
+          : saveLabel()
+      }}
+    </button>
+  </div>
+</div>

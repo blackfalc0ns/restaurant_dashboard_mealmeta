@@ -22,6 +22,14 @@ import {
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
+import {
+  RestaurantWorkspaceFiltersComponent,
+  RestaurantWorkspaceHeaderComponent,
+  RestaurantWorkspacePanelComponent,
+  RestaurantWorkspaceStatComponent,
+  RestaurantWorkspaceStatsComponent,
+  RestaurantWorkspaceToolbarComponent,
+} from '@/shared/components/restaurant-workspace/restaurant-workspace-ui.component';
 
 import { pickLocale } from '../overview/overview-i18n';
 import { PendingConfirmationFacade } from './data/pending-confirmation.facade';
@@ -42,6 +50,12 @@ import { PendingConfirmationSkeletonComponent } from './pending-confirmation-ske
     NgIcon,
     PageStateComponent,
     PendingConfirmationSkeletonComponent,
+    RestaurantWorkspaceHeaderComponent,
+    RestaurantWorkspaceStatsComponent,
+    RestaurantWorkspaceStatComponent,
+    RestaurantWorkspaceToolbarComponent,
+    RestaurantWorkspaceFiltersComponent,
+    RestaurantWorkspacePanelComponent,
   ],
   templateUrl: './pending-confirmation.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

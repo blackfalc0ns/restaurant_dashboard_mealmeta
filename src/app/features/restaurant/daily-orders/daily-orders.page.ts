@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
+  lucideArchive,
   lucideArrowRight,
   lucideCalendarDays,
   lucideChefHat,
@@ -25,6 +26,14 @@ import {
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
+import {
+  RestaurantWorkspaceFiltersComponent,
+  RestaurantWorkspaceHeaderComponent,
+  RestaurantWorkspacePanelComponent,
+  RestaurantWorkspaceStatComponent,
+  RestaurantWorkspaceStatsComponent,
+  RestaurantWorkspaceToolbarComponent,
+} from '@/shared/components/restaurant-workspace/restaurant-workspace-ui.component';
 
 import { pickLocale } from '../overview/overview-i18n';
 import { DailyOrdersFacade } from './data/daily-orders.facade';
@@ -46,12 +55,19 @@ import {
     NgIcon,
     PageStateComponent,
     DailyOrdersSkeletonComponent,
+    RestaurantWorkspaceHeaderComponent,
+    RestaurantWorkspaceStatsComponent,
+    RestaurantWorkspaceStatComponent,
+    RestaurantWorkspaceToolbarComponent,
+    RestaurantWorkspaceFiltersComponent,
+    RestaurantWorkspacePanelComponent,
   ],
   templateUrl: './daily-orders.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'mm-do-page block' },
   viewProviders: [
     provideIcons({
+      lucideArchive,
       lucideArrowRight,
       lucideCalendarDays,
       lucideChefHat,
@@ -105,6 +121,14 @@ export class DailyOrdersPageComponent implements OnInit {
     const data = this.facade.data();
     return data ? pickLocale(data.printLabel, this.locale.locale()) : '';
   });
+
+  readonly archiveLabel = computed(() =>
+    this.locale.isRtl() ? 'أرشيف الطلبات' : 'Orders archive',
+  );
+
+  readonly moveToArchiveLabel = computed(() =>
+    this.locale.isRtl() ? 'أرشفة' : 'Archive',
+  );
 
   readonly listTitle = computed(() =>
     this.locale.isRtl() ? 'قائمة طلبات اليوم' : 'Today’s order list',
@@ -237,5 +261,9 @@ export class DailyOrdersPageComponent implements OnInit {
 
   prevPage(): void {
     this.facade.prevPage();
+  }
+
+  archiveOrder(order: DailyOrderItem): void {
+    this.facade.archiveOrder(order.id);
   }
 }

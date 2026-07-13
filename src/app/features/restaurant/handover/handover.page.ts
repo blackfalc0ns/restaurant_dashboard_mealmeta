@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
+  lucideArchive,
   lucideCheck,
   lucideChevronLeft,
   lucideChevronRight,
@@ -21,6 +22,14 @@ import {
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
+import {
+  RestaurantWorkspaceFiltersComponent,
+  RestaurantWorkspaceHeaderComponent,
+  RestaurantWorkspacePanelComponent,
+  RestaurantWorkspaceStatComponent,
+  RestaurantWorkspaceStatsComponent,
+  RestaurantWorkspaceToolbarComponent,
+} from '@/shared/components/restaurant-workspace/restaurant-workspace-ui.component';
 
 import { pickLocale } from '../overview/overview-i18n';
 import { HandoverFacade } from './data/handover.facade';
@@ -42,12 +51,19 @@ import {
     NgIcon,
     PageStateComponent,
     HandoverSkeletonComponent,
+    RestaurantWorkspaceHeaderComponent,
+    RestaurantWorkspaceStatsComponent,
+    RestaurantWorkspaceStatComponent,
+    RestaurantWorkspaceToolbarComponent,
+    RestaurantWorkspaceFiltersComponent,
+    RestaurantWorkspacePanelComponent,
   ],
   templateUrl: './handover.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'mm-ho-page block' },
   viewProviders: [
     provideIcons({
+      lucideArchive,
       lucideCheck,
       lucideChevronLeft,
       lucideChevronRight,
@@ -109,6 +125,10 @@ export class HandoverPageComponent implements OnInit {
     return data ? pickLocale(data.windowHint, this.locale.locale()) : '';
   });
 
+  readonly archiveLabel = computed(() =>
+    this.locale.isRtl() ? 'أرشيف الطلبات' : 'Orders archive',
+  );
+
   readonly listTitle = computed(() =>
     this.locale.isRtl() ? 'قائمة التسليم' : 'Handover queue',
   );
@@ -137,6 +157,10 @@ export class HandoverPageComponent implements OnInit {
 
   readonly detailsLabel = computed(() =>
     this.locale.isRtl() ? 'التفاصيل' : 'Details',
+  );
+
+  readonly moveToArchiveLabel = computed(() =>
+    this.locale.isRtl() ? 'أرشفة' : 'Archive',
   );
 
   readonly prevLabel = computed(() =>
@@ -253,5 +277,9 @@ export class HandoverPageComponent implements OnInit {
 
   prevPage(): void {
     this.facade.prevPage();
+  }
+
+  archiveOrder(order: HandoverListItem): void {
+    this.facade.archiveOrder(order.id);
   }
 }

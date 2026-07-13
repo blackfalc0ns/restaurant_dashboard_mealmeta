@@ -1,0 +1,218 @@
+<div class="mm-px-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-pricing-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <div class="mm-px-scroll">
+      <mm-workspace-header
+        icon="lucideBadgeDollarSign"
+        [eyebrow]="dateLabel()"
+        [title]="title()"
+        [subtitle]="subtitle()"
+      >
+          <div workspaceActions>
+            <a [routerLink]="menuRoute()" class="mm-px-menu-link">
+              <ng-icon name="lucideUtensilsCrossed" class="size-4" />
+              {{ menuLinkLabel() }}
+            </a>
+            <span class="mm-px-hero__rule">
+              <ng-icon name="lucideInfo" class="size-3.5" />
+              {{ locale.isRtl() ? 'الأسعار الجديدة لا تغيّر الطلبات المقفولة' : 'New prices do not change locked orders' }}
+            </span>
+          </div>
+      </mm-workspace-header>
+
+      <mm-workspace-stats>
+        @for (card of activeSummaries(); track card.id; let i = $index) {
+          <mm-workspace-stat [icon]="card.icon" [label]="summaryLabel(card)" [value]="card.value" [hint]="summaryHint(card)" [tone]="card.tone" />
+        }
+      </mm-workspace-stats>
+
+      <aside class="mm-px-note">
+        <span class="mm-px-note__icon"><ng-icon name="lucideInfo" class="size-4" /></span>
+        <div>
+          <strong>{{ locale.isRtl() ? 'تحديث الأسعار' : 'Updating prices' }}</strong>
+          <p>{{ note() }}</p>
+        </div>
+      </aside>
+
+      <mm-workspace-panel>
+        <div class="mm-px-workspace__head">
+          <div>
+            <p class="mm-px-section-kicker">
+              <ng-icon name="lucidePackage" class="size-3.5" />
+              {{ locale.isRtl() ? 'تسعير الاشتراكات' : 'Subscription pricing' }}
+            </p>
+            <h2>{{ listTitle() }}</h2>
+            <p>{{ listSubtitle() }}</p>
+          </div>
+          <span class="mm-px-count">{{ listCount() }} {{ locale.isRtl() ? 'عنصر' : 'items' }}</span>
+        </div>
+
+        <mm-workspace-toolbar>
+          <label class="mm-px-search">
+            <ng-icon name="lucideSearch" class="size-4" />
+            <input
+              type="search"
+              [placeholder]="searchPlaceholder()"
+              [ngModel]="facade.search()"
+              (ngModelChange)="onSearch($event)"
+            />
+          </label>
+
+          <label class="mm-px-select">
+            <span>{{ programLabel() }}</span>
+            <select [ngModel]="facade.program()" (ngModelChange)="onProgramChange($event)">
+              <option value="all">{{ locale.isRtl() ? 'كل الأنواع' : 'All types' }}</option>
+              @for (option of facade.programs(); track option.id) {
+                <option [value]="option.id">{{ localizedLabel(option.label) }}</option>
+              }
+            </select>
+          </label>
+          <label class="mm-px-select">
+            <span>{{ bundleLabel() }}</span>
+            <select [ngModel]="facade.bundle()" (ngModelChange)="onBundleChange($event)">
+              <option value="all">{{ locale.isRtl() ? 'كل الباقات' : 'All bundles' }}</option>
+              @for (option of facade.bundles(); track option.id) {
+                <option [value]="option.id">{{ localizedLabel(option.label) }}</option>
+              }
+            </select>
+          </label>
+
+          <mm-workspace-filters>
+            @for (option of filters; track option.id) {
+              <button
+                type="button"
+                role="tab"
+                [class.is-active]="facade.filter() === option.id"
+                [attr.aria-selected]="facade.filter() === option.id"
+                (click)="setFilter(option.id)"
+              >
+                {{ filterLabel(option) }}
+                <b>{{ filterCount(option.id) }}</b>
+              </button>
+            }
+          </mm-workspace-filters>
+        </mm-workspace-toolbar>
+
+        @if (listCount() === 0) {
+          <div class="mm-px-empty">
+            <ng-icon name="lucideSearch" class="size-6" />
+            <strong>{{ emptyLabel() }}</strong>
+          </div>
+        } @else {
+          <div class="mm-px-list">
+            <div class="mm-px-list__head mm-px-list__head--boxes">
+              <span>{{ locale.isRtl() ? 'البرنامج والباقة' : 'Program & bundle' }}</span>
+              <span>{{ locale.isRtl() ? 'السعر الشهري' : 'Monthly price' }}</span>
+              <span>{{ locale.isRtl() ? 'التصنيف' : 'Tier' }}</span>
+              <span>{{ locale.isRtl() ? 'الحالة' : 'Status' }}</span>
+            </div>
+
+            @for (base of facade.pagedRows(); track base.id; let rowIndex = $index) {
+              @let row = facade.previewRow(base);
+              <article
+                class="mm-px-price-row mm-px-price-row--box"
+                [class.is-dirty]="facade.isRowDirty(base.id)"
+                [attr.data-status]="row.status"
+                [attr.data-tier]="row.tier ?? 'none'"
+              >
+                <div class="mm-px-product">
+                  <span class="mm-px-product__number">{{ (facade.currentPage() - 1) * 5 + rowIndex + 1 }}</span>
+                  <div>
+                    <strong>{{ programName(row) }}</strong>
+                    <span>{{ bundleName(row) }}</span>
+                    <small>{{ updatedLabel(row) }}</small>
+                  </div>
+                </div>
+
+                <div class="mm-px-price-cell">
+                  <label class="mm-px-price-input" [class.is-dirty]="facade.isRowDirty(base.id)">
+                    <span>{{ locale.isRtl() ? 'السعر الشهري' : 'Monthly price' }}</span>
+                    <div>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        [ngModel]="facade.draftValue(base.id)"
+                        (ngModelChange)="onPriceInput(base.id, $event == null ? '' : '' + $event)"
+                        [attr.aria-label]="locale.isRtl() ? 'سعر البوكس الشهري بالدينار' : 'Monthly box price in KD'"
+                        placeholder="117"
+                      />
+                      <b>{{ locale.isRtl() ? 'د.ك' : 'KD' }}</b>
+                    </div>
+                  </label>
+                </div>
+
+                <div class="mm-px-tier-wrap">
+                  @if (row.tier) {
+                    <span class="mm-px-tier" [attr.data-tier]="row.tier">{{ tierLabel(row.tier) }}</span>
+                  } @else {
+                    <span class="mm-px-tier mm-px-tier--empty">{{ locale.isRtl() ? 'غير محدد' : 'Not set' }}</span>
+                  }
+                </div>
+
+                <div class="mm-px-status-wrap">
+                  <span class="mm-px-status" [attr.data-status]="row.status">
+                    <i></i>{{ statusLabel(row.status) }}
+                  </span>
+                  @if (facade.isRowDirty(base.id)) {
+                    <small class="mm-px-unsaved">{{ locale.isRtl() ? 'تعديل غير محفوظ' : 'Unsaved edit' }}</small>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        }
+
+        @if (listCount() > 0) {
+          <nav class="mm-px-pager" [attr.aria-label]="rangeText()">
+            <p>{{ rangeText() }}</p>
+            <div>
+              <button type="button" [disabled]="facade.currentPage() <= 1" (click)="prevPage()">
+                <ng-icon [name]="locale.isRtl() ? 'lucideChevronRight' : 'lucideChevronLeft'" class="size-4" />
+                {{ prevLabel() }}
+              </button>
+              @for (pageNum of facade.pageNumbers(); track pageNum) {
+                <button type="button" class="mm-px-pager__page" [class.is-active]="facade.currentPage() === pageNum" (click)="goToPage(pageNum)">{{ pageNum }}</button>
+              }
+              <button type="button" [disabled]="facade.currentPage() >= facade.totalPages()" (click)="nextPage()">
+                {{ nextLabel() }}
+                <ng-icon [name]="locale.isRtl() ? 'lucideChevronLeft' : 'lucideChevronRight'" class="size-4" />
+              </button>
+            </div>
+          </nav>
+        }
+      </mm-workspace-panel>
+    </div>
+
+    <footer class="mm-px-savebar" [class.is-dirty]="facade.isDirty()">
+      <div class="mm-px-savebar__state">
+        <span><ng-icon [name]="facade.isDirty() ? 'lucideFilePen' : 'lucideCheck'" class="size-4" /></span>
+        <div>
+          <strong>{{ facade.isDirty() ? (locale.isRtl() ? 'لديك تغييرات غير محفوظة' : 'You have unsaved changes') : (locale.isRtl() ? 'كل الأسعار محفوظة' : 'All prices are saved') }}</strong>
+          <p>{{ dirtyHint() }}</p>
+        </div>
+      </div>
+      <div class="mm-px-savebar__actions">
+        <button type="button" class="mm-px-discard" [disabled]="!facade.isDirty() || facade.saving()" (click)="discard()">
+          <ng-icon name="lucideX" class="size-4" />{{ discardLabel() }}
+        </button>
+        <button type="button" class="mm-px-save" [disabled]="!facade.isDirty() || facade.saving()" (click)="save()">
+          <ng-icon name="lucideSave" class="size-4" />
+          {{ facade.saving() ? (locale.isRtl() ? 'جارٍ الحفظ…' : 'Saving…') : saveLabel() }}
+          @if (facade.dirtyCount() > 0 && !facade.saving()) { <b>{{ facade.dirtyCount() }}</b> }
+        </button>
+      </div>
+    </footer>
+  }
+</div>

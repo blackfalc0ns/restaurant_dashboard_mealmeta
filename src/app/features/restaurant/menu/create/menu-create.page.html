@@ -1,0 +1,553 @@
+<div class="mm-mnc-page__inner">
+  <div class="mm-mnc-body">
+    <header class="mm-mnc-hero">
+      <div class="mm-mnc-hero__main">
+        <a routerLink="/restaurant/operations/menu" class="mm-mnc-back">
+          <ng-icon
+            [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+            class="size-3.5"
+          />
+          <span>{{ backLabel() }}</span>
+        </a>
+
+        <div class="mm-mnc-hero__copy">
+          <p class="mm-mnc-hero__eyebrow">
+            <ng-icon name="lucideUtensilsCrossed" class="size-3.5" />
+            <span>{{ locale.isRtl() ? 'القوائم والوجبات' : 'Menus & meals' }}</span>
+          </p>
+          <h1>{{ title() }}</h1>
+          <p class="mm-mnc-hero__subtitle">{{ subtitle() }}</p>
+        </div>
+      </div>
+    </header>
+
+    <form
+      id="meal-create-form"
+      class="mm-mnc-layout"
+      (ngSubmit)="submit()"
+    >
+    <div class="mm-mnc-main">
+      <section class="mm-mnc-panel">
+        <div class="mm-mnc-panel__head">
+          <div>
+            <h2>{{ locale.isRtl() ? 'بيانات الوجبة' : 'Meal details' }}</h2>
+            <p>
+              {{
+                locale.isRtl()
+                  ? 'الاسم والتصنيف والصورة'
+                  : 'Name, classification, and image'
+              }}
+            </p>
+          </div>
+        </div>
+
+        <div class="mm-mnc-grid">
+          <label class="mm-mnc-field">
+            <span>{{ locale.isRtl() ? 'الاسم (عربي)' : 'Name (Arabic)' }}</span>
+            <input
+              type="text"
+              [ngModel]="facade.draft().nameAr"
+              (ngModelChange)="facade.patch('nameAr', $event)"
+              name="nameAr"
+              [placeholder]="
+                locale.isRtl() ? 'مثال: صدر دجاج مشوي' : 'e.g. Grilled chicken'
+              "
+              required
+            />
+          </label>
+
+          <label class="mm-mnc-field">
+            <span>{{ locale.isRtl() ? 'الاسم (إنجليزي)' : 'Name (English)' }}</span>
+            <input
+              type="text"
+              [ngModel]="facade.draft().nameEn"
+              (ngModelChange)="facade.patch('nameEn', $event)"
+              name="nameEn"
+              placeholder="e.g. Grilled chicken"
+              required
+            />
+          </label>
+
+          <label class="mm-mnc-field mm-mnc-field--full">
+            <span>{{ locale.isRtl() ? 'الوصف (عربي)' : 'Description (Arabic)' }}</span>
+            <textarea
+              rows="2"
+              [ngModel]="facade.draft().descriptionAr"
+              (ngModelChange)="facade.patch('descriptionAr', $event)"
+              name="descriptionAr"
+              required
+            ></textarea>
+          </label>
+
+          <label class="mm-mnc-field mm-mnc-field--full">
+            <span
+              >{{ locale.isRtl() ? 'الوصف (إنجليزي)' : 'Description (English)' }}</span
+            >
+            <textarea
+              rows="2"
+              [ngModel]="facade.draft().descriptionEn"
+              (ngModelChange)="facade.patch('descriptionEn', $event)"
+              name="descriptionEn"
+              required
+            ></textarea>
+          </label>
+
+          <label class="mm-mnc-field">
+            <span>{{ locale.isRtl() ? 'الفئة' : 'Slot' }}</span>
+            <select
+              [ngModel]="facade.draft().slot"
+              (ngModelChange)="facade.patch('slot', $event)"
+              name="slot"
+            >
+              @for (option of slots; track option.id) {
+                <option [value]="option.id">{{ optionLabel(option) }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="mm-mnc-field">
+            <span>{{ locale.isRtl() ? 'البرنامج' : 'Program' }}</span>
+            <select
+              [ngModel]="facade.draft().programKey"
+              (ngModelChange)="facade.patch('programKey', $event)"
+              name="programKey"
+            >
+              @for (option of programs; track option.id) {
+                <option [value]="option.id">{{ optionLabel(option) }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="mm-mnc-field">
+            <span>{{ locale.isRtl() ? 'الباقة' : 'Bundle' }}</span>
+            <select
+              [ngModel]="facade.draft().bundleId"
+              (ngModelChange)="facade.patch('bundleId', $event)"
+              name="bundleId"
+            >
+              @for (option of bundles; track option.id) {
+                <option [value]="option.id">{{ optionLabel(option) }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="mm-mnc-field">
+            <span>{{ locale.isRtl() ? 'ملاحظة التحضير' : 'Prep note' }}</span>
+            <select
+              [ngModel]="facade.draft().prepId"
+              (ngModelChange)="facade.patch('prepId', $event)"
+              name="prepId"
+            >
+              @for (option of prepNotes; track option.id) {
+                <option [value]="option.id">{{ optionLabel(option) }}</option>
+              }
+            </select>
+          </label>
+        </div>
+
+        <div class="mm-mnc-upload">
+          <div class="mm-mnc-upload__head">
+            <div>
+              <h3>{{ locale.isRtl() ? 'صورة الوجبة' : 'Meal image' }}</h3>
+              <p>
+                {{
+                  locale.isRtl()
+                    ? 'ارفع صورة من جهازك (JPG / PNG / WEBP · حتى 4MB)'
+                    : 'Upload from your device (JPG / PNG / WEBP · up to 4MB)'
+                }}
+              </p>
+            </div>
+          </div>
+
+          <input
+            #imageInput
+            class="mm-mnc-upload__input"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            (change)="onImageSelected($event)"
+          />
+
+          @if (facade.draft().imageUrl && facade.draft().imageSource === 'upload') {
+            <div class="mm-mnc-upload__preview">
+              <img
+                [src]="facade.draft().imageUrl"
+                [alt]="previewName()"
+              />
+              <div class="mm-mnc-upload__meta">
+                <strong>{{
+                  facade.draft().imageName ||
+                    (locale.isRtl() ? 'صورة مرفوعة' : 'Uploaded image')
+                }}</strong>
+                <span>{{
+                  locale.isRtl()
+                    ? 'جاهزة للحفظ مع الوجبة'
+                    : 'Ready to save with the meal'
+                }}</span>
+                <div class="mm-mnc-upload__actions">
+                  <button
+                    type="button"
+                    class="mm-mnc-upload__btn"
+                    (click)="openFilePicker()"
+                  >
+                    <ng-icon name="lucideUpload" class="size-3.5" />
+                    {{ locale.isRtl() ? 'تغيير الصورة' : 'Change image' }}
+                  </button>
+                  <button
+                    type="button"
+                    class="mm-mnc-upload__btn mm-mnc-upload__btn--danger"
+                    (click)="clearUploadedImage()"
+                  >
+                    <ng-icon name="lucideX" class="size-3.5" />
+                    {{ locale.isRtl() ? 'إزالة' : 'Remove' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          } @else {
+            <button
+              type="button"
+              class="mm-mnc-upload__drop"
+              (click)="openFilePicker()"
+            >
+              <span class="mm-mnc-upload__icon">
+                <ng-icon name="lucideImagePlus" class="size-5" />
+              </span>
+              <strong>
+                {{
+                  locale.isRtl()
+                    ? 'اضغط لرفع صورة الوجبة'
+                    : 'Click to upload meal image'
+                }}
+              </strong>
+              <span>
+                {{
+                  locale.isRtl()
+                    ? 'أو اختر صورة جاهزة بالأسفل'
+                    : 'Or pick a gallery image below'
+                }}
+              </span>
+            </button>
+          }
+
+          @if (imageError()) {
+            <p class="mm-mnc-upload__error">{{ imageError() }}</p>
+          }
+
+          <div class="mm-mnc-images" role="listbox">
+            <p class="mm-mnc-images__label">
+              {{
+                locale.isRtl()
+                  ? 'أو اختر من المعرض'
+                  : 'Or choose from gallery'
+              }}
+            </p>
+            @for (image of images; track image.id) {
+              <button
+                type="button"
+                class="mm-mnc-image"
+                role="option"
+                [class.is-active]="
+                  facade.draft().imageSource === 'gallery' &&
+                  facade.draft().imageUrl === image.url
+                "
+                [attr.aria-selected]="
+                  facade.draft().imageSource === 'gallery' &&
+                  facade.draft().imageUrl === image.url
+                "
+                (click)="selectGalleryImage(image.url)"
+              >
+                <img [src]="image.url" [alt]="optionLabel(image)" />
+                @if (
+                  facade.draft().imageSource === 'gallery' &&
+                  facade.draft().imageUrl === image.url
+                ) {
+                  <span class="mm-mnc-image__check">
+                    <ng-icon name="lucideCheck" class="size-3" />
+                  </span>
+                }
+              </button>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="mm-mnc-panel">
+        <div class="mm-mnc-panel__head">
+          <div>
+            <h2>{{ locale.isRtl() ? 'مكوّنات الوجبة' : 'Meal ingredients' }}</h2>
+            <p>
+              {{
+                locale.isRtl()
+                  ? 'اختر من القائمة المنسدلة · السعرات والنسب ظاهرة مع كل مكوّن'
+                  : 'Pick from the dropdown · calories and macros shown per ingredient'
+              }}
+            </p>
+          </div>
+          <span class="mm-mnc-panel__tag">
+            {{ facade.selectedIngredientCount() }}
+            {{ locale.isRtl() ? 'مختار' : 'selected' }}
+          </span>
+        </div>
+
+        <div class="mm-mnc-totals">
+          <article>
+            <small>{{ locale.isRtl() ? 'إجمالي السعرات' : 'Total kcal' }}</small>
+            <strong>{{ facade.nutrition().calories }}</strong>
+          </article>
+          <article>
+            <small>{{ locale.isRtl() ? 'بروتين' : 'Protein' }}</small>
+            <strong>{{ facade.nutrition().proteinGrams }}g</strong>
+          </article>
+          <article>
+            <small>{{ locale.isRtl() ? 'كارب' : 'Carbs' }}</small>
+            <strong>{{ facade.nutrition().carbsGrams }}g</strong>
+          </article>
+          <article>
+            <small>{{ locale.isRtl() ? 'دهون' : 'Fat' }}</small>
+            <strong>{{ facade.nutrition().fatGrams }}g</strong>
+          </article>
+        </div>
+
+        <div class="mm-mnc-dropdown-row">
+          <mm-ingredient-dropdown
+            [options]="dropdownOptions()"
+            [isRtl]="locale.isRtl()"
+            [triggerLabel]="
+              locale.isRtl() ? 'إضافة مكوّن من القائمة' : 'Add ingredient from list'
+            "
+            [searchPlaceholder]="
+              locale.isRtl() ? 'ابحث عن مكوّن...' : 'Search ingredients...'
+            "
+            [emptyLabel]="
+              locale.isRtl() ? 'لا نتائج مطابقة' : 'No matching ingredients'
+            "
+            (picked)="onIngredientPicked($event)"
+          />
+        </div>
+
+        <div class="mm-mnc-selected">
+          <div class="mm-mnc-selected__head">
+            <h3>
+              {{
+                locale.isRtl()
+                  ? 'المكوّنات المختارة'
+                  : 'Selected ingredients'
+              }}
+            </h3>
+          </div>
+
+          @if (facade.selectedIngredientCount() === 0) {
+            <p class="mm-mnc-selected__empty">
+              {{
+                locale.isRtl()
+                  ? 'افتح القائمة واختر المكوّنات'
+                  : 'Open the dropdown and pick ingredients'
+              }}
+            </p>
+          } @else {
+            <div class="mm-mnc-selected__list">
+              @for (item of facade.draft().ingredients; track item.rowId) {
+                @let nutrition = facade.rowNutrition(
+                  item.ingredientId,
+                  item.portionId
+                );
+                <article class="mm-mnc-selected__card">
+                  <div class="mm-mnc-selected__main">
+                    <div>
+                      <strong>{{
+                        facade.ingredientLabel(
+                          item.ingredientId,
+                          locale.isRtl()
+                        )
+                      }}</strong>
+                      <small>
+                        {{ facade.rowWeight(item.ingredientId, item.portionId)
+                        }}{{ locale.isRtl() ? ' جم' : ' g' }}
+                      </small>
+                    </div>
+                    <button
+                      type="button"
+                      class="mm-mnc-remove"
+                      (click)="facade.removeIngredient(item.rowId)"
+                      [attr.aria-label]="locale.isRtl() ? 'حذف' : 'Remove'"
+                    >
+                      <ng-icon name="lucideTrash2" class="size-3.5" />
+                    </button>
+                  </div>
+
+                  <div class="mm-mnc-portions" role="group">
+                    @for (option of portions; track option.id) {
+                      <button
+                        type="button"
+                        class="mm-mnc-portion"
+                        [class.is-active]="item.portionId === option.id"
+                        (click)="facade.setPortion(item.rowId, option.id)"
+                      >
+                        {{ optionLabel(option) }}
+                      </button>
+                    }
+                  </div>
+
+                  <div class="mm-mnc-selected__macros">
+                    <span>{{ nutrition.calories }} kcal</span>
+                    <span>P {{ nutrition.proteinGrams }}g</span>
+                    <span>C {{ nutrition.carbsGrams }}g</span>
+                    <span>F {{ nutrition.fatGrams }}g</span>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mm-mnc-allergens">
+          <p>
+            {{
+              locale.isRtl()
+                ? 'مسببات الحساسية (تُحدَّث تلقائيًا من المكوّنات)'
+                : 'Allergens (auto-updated from ingredients)'
+            }}
+          </p>
+          <div class="mm-mnc-allergens__list">
+            @for (option of allergens; track option.id) {
+              <button
+                type="button"
+                class="mm-mnc-chip"
+                [class.is-active]="
+                  facade.draft().allergenKeys.includes(option.id)
+                "
+                (click)="facade.toggleAllergen(option.id)"
+              >
+                {{ optionLabel(option) }}
+              </button>
+            }
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="mm-mnc-preview">
+      <div class="mm-mnc-preview__card">
+        <p class="mm-mnc-preview__label">
+          {{ locale.isRtl() ? 'معاينة مباشرة' : 'Live preview' }}
+        </p>
+        <img
+          class="mm-mnc-preview__image"
+          [src]="previewImage()"
+          [alt]="previewName()"
+        />
+        <div class="mm-mnc-preview__chips">
+          <span>{{ slotPreview() }}</span>
+          <span>{{ programPreview() }}</span>
+          <span>{{ bundlePreview() }}</span>
+        </div>
+        <h3>{{ previewName() }}</h3>
+        <p>{{ previewDescription() }}</p>
+
+        <div class="mm-mnc-preview__nutrition">
+          <article>
+            <small>{{ locale.isRtl() ? 'سعرات' : 'Kcal' }}</small>
+            <strong>{{ facade.nutrition().calories }}</strong>
+          </article>
+          <article>
+            <small>P</small>
+            <strong>{{ facade.nutrition().proteinGrams }}g</strong>
+          </article>
+          <article>
+            <small>C</small>
+            <strong>{{ facade.nutrition().carbsGrams }}g</strong>
+          </article>
+          <article>
+            <small>F</small>
+            <strong>{{ facade.nutrition().fatGrams }}g</strong>
+          </article>
+        </div>
+
+        <div class="mm-mnc-preview__ings">
+          <small>
+            {{
+              locale.isRtl() ? 'المكوّنات المختارة' : 'Selected ingredients'
+            }}
+            ({{ facade.selectedIngredientCount() }})
+          </small>
+          @if (facade.selectedIngredientCount() === 0) {
+            <span class="mm-mnc-preview__empty">
+              {{
+                locale.isRtl()
+                  ? 'لم يتم اختيار مكوّنات بعد'
+                  : 'No ingredients selected yet'
+              }}
+            </span>
+          } @else {
+            <ul>
+              @for (item of facade.draft().ingredients; track item.rowId) {
+                @if (item.ingredientId) {
+                  <li>
+                    <div>
+                      <b>{{
+                        facade.ingredientLabel(
+                          item.ingredientId,
+                          locale.isRtl()
+                        )
+                      }}</b>
+                      <small>
+                        {{
+                          facade.rowNutrition(
+                            item.ingredientId,
+                            item.portionId
+                          ).calories
+                        }}
+                        kcal · P{{
+                          facade.rowNutrition(
+                            item.ingredientId,
+                            item.portionId
+                          ).proteinGrams
+                        }}
+                      </small>
+                    </div>
+                    <span>{{
+                      facade.portionLabel(item.portionId, locale.isRtl())
+                    }}</span>
+                  </li>
+                }
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </aside>
+    </form>
+  </div>
+
+  <div class="mm-mnc-footer">
+    <div class="mm-mnc-footer__copy">
+      <strong>{{ saveLabel() }}</strong>
+      <p>
+        {{
+          facade.canSubmit()
+            ? locale.isRtl()
+              ? 'جاهز للحفظ كمسودة'
+              : 'Ready to save as draft'
+            : locale.isRtl()
+              ? 'أضف صورة ومكوّنًا واحدًا على الأقل وأكمل الاسم والوصف'
+              : 'Add an image, at least one ingredient, and complete name/description'
+        }}
+      </p>
+    </div>
+    <button
+      type="submit"
+      form="meal-create-form"
+      class="mm-mnc-save mm-mnc-save--lg"
+      [disabled]="!facade.canSubmit() || facade.saving()"
+    >
+      <ng-icon name="lucideSave" class="size-4" />
+      {{
+        facade.saving()
+          ? locale.isRtl()
+            ? 'جاري الحفظ...'
+            : 'Saving...'
+          : saveLabel()
+      }}
+    </button>
+  </div>
+</div>
