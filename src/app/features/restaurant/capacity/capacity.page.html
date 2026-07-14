@@ -1,0 +1,193 @@
+<div class="mm-cp-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-capacity-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <div class="mm-ops-scroll">
+      <mm-ops-hero
+        icon="lucideGauge"
+        [eyebrow]="dateLabel()"
+        [title]="title()"
+        [subtitle]="subtitle()"
+      >
+        <ng-container opsMetrics>
+          <div>
+            <small>{{ locale.isRtl() ? 'الحد اليومي' : 'Daily limit' }}</small>
+            <strong>{{ facade.effectiveLimit() }}</strong>
+          </div>
+          <div>
+            <small>{{ locale.isRtl() ? 'مؤكّد اليوم' : 'Confirmed today' }}</small>
+            <strong>{{ facade.confirmedToday() }}</strong>
+          </div>
+          <div [attr.data-tone]="facade.isBusyToday() ? 'muted' : null">
+            <small>{{ locale.isRtl() ? 'المتبقي' : 'Remaining' }}</small>
+            <strong>{{ remainingLabel() }}</strong>
+          </div>
+        </ng-container>
+      </mm-ops-hero>
+
+      <mm-ops-board>
+        <div class="mm-ops-board__head">
+          <div>
+            <h2>{{ locale.isRtl() ? 'حد البوكسات اليومي' : 'Daily box limit' }}</h2>
+            <p>{{ updatedAt() }}</p>
+          </div>
+          <span
+            class="mm-cp-status"
+            [attr.data-tone]="
+              facade.isBusyToday()
+                ? 'busy'
+                : facade.isNearLimit()
+                  ? 'warn'
+                  : 'ok'
+            "
+          >
+            <ng-icon name="lucideActivity" class="size-3.5" />
+            {{ statusLabel() }}
+          </span>
+        </div>
+
+        <div class="mm-cp-progress" [attr.data-tone]="facade.isBusyToday() ? 'busy' : facade.isNearLimit() ? 'warn' : 'ok'">
+          <div class="mm-cp-progress__meta">
+            <span>
+              {{ facade.confirmedToday() }}
+              /
+              {{ facade.effectiveLimit() }}
+              {{ locale.isRtl() ? 'بوكس مؤكد' : 'confirmed boxes' }}
+            </span>
+            <strong>{{ facade.fillPercent() }}%</strong>
+          </div>
+          <i aria-hidden="true">
+            <em [style.width.%]="facade.fillPercent()"></em>
+          </i>
+        </div>
+
+        <div class="mm-cp-form">
+          <label class="mm-cp-field">
+            <span>{{ locale.isRtl() ? 'أقصى بوكسات يوميًا' : 'Max boxes per day' }}</span>
+            <div class="mm-cp-field__control">
+              <ng-icon name="lucidePackage" class="size-4" />
+              <input
+                type="number"
+                min="1"
+                step="1"
+                inputmode="numeric"
+                [ngModel]="facade.draftLimit()"
+                (ngModelChange)="onDraftChange($event == null ? '' : '' + $event)"
+                [attr.aria-label]="locale.isRtl() ? 'حد البوكسات اليومي' : 'Daily box limit'"
+              />
+            </div>
+          </label>
+
+          <div class="mm-cp-form__actions">
+            @if (facade.isDirty()) {
+              <button type="button" class="mm-cp-reset" (click)="resetDraft()">
+                {{ locale.isRtl() ? 'إلغاء' : 'Reset' }}
+              </button>
+            }
+            <button
+              type="button"
+              class="mm-cp-save mm-ops-cta"
+              [disabled]="!canSave()"
+              (click)="save()"
+            >
+              <ng-icon name="lucideSave" class="size-4" />
+              {{ saveLabel() }}
+            </button>
+          </div>
+        </div>
+
+        @if (facade.isDirty()) {
+          <div class="mm-cp-preview">
+            <ng-icon name="lucideInfo" class="size-4" />
+            <div>
+              <strong>
+                {{
+                  locale.isRtl()
+                    ? 'معاينة بعد الحفظ'
+                    : 'Preview after save'
+                }}
+              </strong>
+              <p>
+                {{
+                  locale.isRtl()
+                    ? 'المتبقي المتوقع: ' + facade.remaining() + ' بوكس.'
+                    : 'Expected remaining: ' + facade.remaining() + ' boxes.'
+                }}
+                {{
+                  facade.isBusyToday()
+                    ? locale.isRtl()
+                      ? 'سيظهر المطعم Busy لليوم.'
+                      : 'Restaurant will show as Busy today.'
+                    : ''
+                }}
+              </p>
+            </div>
+          </div>
+        }
+
+        @if (facade.draftBelowConfirmed()) {
+          <div class="mm-cp-warn">
+            <ng-icon name="lucideTriangleAlert" class="size-4" />
+            <div>
+              <strong>
+                {{
+                  locale.isRtl()
+                    ? 'الحد أقل من الطلبات المؤكدة'
+                    : 'Limit is below confirmed orders'
+                }}
+              </strong>
+              <p>{{ note() }}</p>
+            </div>
+          </div>
+        } @else {
+          <p class="mm-cp-note">
+            <ng-icon name="lucideInfo" class="size-3.5" />
+            {{ note() }}
+          </p>
+        }
+
+        <div class="mm-cp-week">
+          <div class="mm-cp-week__head">
+            <h3>{{ locale.isRtl() ? 'نظرة أسبوع' : 'Week glance' }}</h3>
+            <a routerLink="/restaurant/operations/availability" class="mm-cp-link">
+              {{ locale.isRtl() ? 'التوفر و Busy' : 'Availability & Busy' }}
+            </a>
+          </div>
+          <div class="mm-cp-week__grid" role="list">
+            @for (day of facade.week(); track day.id) {
+              <article
+                class="mm-cp-day"
+                role="listitem"
+                [class.is-today]="day.isToday"
+                [attr.data-busy]="day.busy ? 'true' : null"
+              >
+                <small>{{ dayLabel(day) }}</small>
+                <strong>{{ day.confirmed }}/{{ day.limit }}</strong>
+                <i aria-hidden="true"><em [style.width.%]="dayFill(day)"></em></i>
+                <span>
+                  {{
+                    day.busy
+                      ? 'Busy'
+                      : locale.isRtl()
+                        ? 'متاح'
+                        : 'Open'
+                  }}
+                </span>
+              </article>
+            }
+          </div>
+        </div>
+      </mm-ops-board>
+    </div>
+  }
+</div>

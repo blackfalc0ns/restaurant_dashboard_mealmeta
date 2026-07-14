@@ -1,0 +1,32 @@
+<div class="mm-cp-skeleton__inner" aria-hidden="true">
+  <div class="mm-cp-skeleton__hero">
+    <div class="mm-cp-skeleton__hero-main">
+      <span class="mm-ov-bone mm-ov-bone--pill"></span>
+      <span class="mm-ov-bone mm-ov-bone--title"></span>
+      <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+    </div>
+    <div class="mm-cp-skeleton__metrics">
+      @for (_ of [1, 2, 3]; track $index) {
+        <div class="mm-cp-skeleton__metric">
+          <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+          <span class="mm-ov-bone mm-ov-bone--value"></span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="mm-cp-skeleton__board">
+    <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+    <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+    <div class="mm-cp-skeleton__form">
+      <span class="mm-ov-bone mm-cp-skeleton__input"></span>
+      <span class="mm-ov-bone mm-ov-bone--btn"></span>
+    </div>
+    <span class="mm-ov-bone mm-cp-skeleton__bar"></span>
+    <div class="mm-cp-skeleton__week">
+      @for (day of days; track day) {
+        <span class="mm-ov-bone mm-cp-skeleton__day"></span>
+      }
+    </div>
+  </div>
+</div>

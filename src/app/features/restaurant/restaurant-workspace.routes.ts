@@ -105,8 +105,10 @@ const loadServiceRegionDetailPage = () =>
     (m) => m.ServiceRegionDetailPageComponent,
   );
 
+const loadCapacityPage = () =>
+  import('./capacity/capacity.page').then((m) => m.CapacityPageComponent);
+
 const SIDEBAR_LINK_PATHS = [
-  'operations/capacity',
   'operations/availability',
   'delivery/drivers',
   'quality/ratings',
@@ -208,6 +210,10 @@ export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   {
     path: 'operations/service-regions',
     loadComponent: loadServiceRegionsPage,
+  },
+  {
+    path: 'operations/capacity',
+    loadComponent: loadCapacityPage,
   },
   ...SIDEBAR_LINK_PATHS.map((path) => ({
     path,

@@ -1,13 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
-  OnInit,
   computed,
   inject,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -30,7 +28,7 @@ import {
   lucideTruck,
   lucideUserRound,
 } from '@ng-icons/lucide';
-import { timer } from 'rxjs';
+import { map, timer } from 'rxjs';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import {
@@ -192,12 +190,13 @@ const REGIONS: Record<string, RegionInfo> = {
     }),
   ],
 })
-export class ServiceRegionDetailPageComponent implements OnInit {
+export class ServiceRegionDetailPageComponent {
   readonly locale = inject(AppLocaleService);
   private readonly route = inject(ActivatedRoute);
-  private readonly destroyRef = inject(DestroyRef);
 
-  readonly loading = signal(true);
+  readonly loading = toSignal(timer(650).pipe(map(() => false)), {
+    initialValue: true,
+  });
 
   private readonly regionId =
     this.route.snapshot.paramMap.get('regionId') ?? 'hawalli';
@@ -342,12 +341,6 @@ export class ServiceRegionDetailPageComponent implements OnInit {
       .filter((trip) => trip.status !== 'completed')
       .reduce((sum, trip) => sum + trip.boxCount, 0),
   );
-
-  ngOnInit(): void {
-    timer(750)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.loading.set(false));
-  }
 
   toggleStatus(): void {
     this.status.update((value) => (value === 'active' ? 'paused' : 'active'));

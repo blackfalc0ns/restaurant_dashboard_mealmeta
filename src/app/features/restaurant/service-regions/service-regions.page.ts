@@ -1,13 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
-  OnInit,
   computed,
   inject,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -22,7 +20,7 @@ import {
   lucideToggleLeft,
   lucideToggleRight,
 } from '@ng-icons/lucide';
-import { timer } from 'rxjs';
+import { map, timer } from 'rxjs';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import {
@@ -80,11 +78,14 @@ interface ServiceRegion {
     }),
   ],
 })
-export class ServiceRegionsPageComponent implements OnInit {
+export class ServiceRegionsPageComponent {
   readonly locale = inject(AppLocaleService);
-  private readonly destroyRef = inject(DestroyRef);
 
-  readonly loading = signal(true);
+  /** Brief skeleton while the page data is being prepared. */
+  readonly loading = toSignal(timer(650).pipe(map(() => false)), {
+    initialValue: true,
+  });
+
   readonly search = signal('');
   readonly filter = signal<'all' | RegionStatus>('all');
   readonly currentPage = signal(1);
@@ -207,12 +208,6 @@ export class ServiceRegionsPageComponent implements OnInit {
   readonly totalNeighborhoods = computed(() =>
     this.regions().reduce((sum, region) => sum + region.neighborhoods, 0),
   );
-
-  ngOnInit(): void {
-    timer(900)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.loading.set(false));
-  }
 
   text(ar: string, en: string): string {
     return this.locale.isRtl() ? ar : en;
