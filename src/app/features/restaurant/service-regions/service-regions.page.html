@@ -1,0 +1,175 @@
+<div class="mm-ops-page__inner">
+  @if (loading()) {
+    <mm-service-regions-skeleton />
+  } @else {
+    <div class="mm-ops-scroll">
+      <mm-ops-hero
+        icon="lucideGlobe"
+        [eyebrow]="text('الإعدادات التشغيلية', 'Operations settings')"
+        [title]="text('مناطق الخدمة', 'Service regions')"
+        [subtitle]="
+          text(
+            'فعّل المناطق التي يغطيها المطعم لتسليم وجبات الاشتراكات وحدّد نوافذ التسليم.',
+            'Enable coverage areas for subscription meal delivery and set delivery windows.'
+          )
+        "
+      >
+        <ng-container opsMetrics [attr.aria-label]="text('ملخص المناطق', 'Regions summary')">
+          <div>
+            <small>{{ text('مفعّلة', 'Active') }}</small>
+            <strong>{{ activeCount() }}</strong>
+          </div>
+          <div data-tone="muted">
+            <small>{{ text('موقوفة', 'Paused') }}</small>
+            <strong>{{ pausedCount() }}</strong>
+          </div>
+          <div>
+            <small>{{ text('أحياء', 'Areas') }}</small>
+            <strong>{{ totalNeighborhoods() }}</strong>
+          </div>
+        </ng-container>
+      </mm-ops-hero>
+
+      <mm-ops-board>
+        <mm-ops-toolbar>
+          <label class="mm-ops-search">
+            <ng-icon name="lucideSearch" class="size-4" />
+            <input
+              type="search"
+              [placeholder]="text('ابحث عن منطقة...', 'Search regions...')"
+              [ngModel]="search()"
+              (ngModelChange)="onSearch($event)"
+            />
+          </label>
+
+          <mm-ops-filters>
+            <button
+              type="button"
+              [class.is-active]="filter() === 'all'"
+              (click)="setFilter('all')"
+            >
+              {{ text('الكل', 'All') }}
+              <b>{{ regions().length }}</b>
+            </button>
+            <button
+              type="button"
+              [class.is-active]="filter() === 'active'"
+              (click)="setFilter('active')"
+            >
+              {{ text('مفعّلة', 'Active') }}
+              <b>{{ activeCount() }}</b>
+            </button>
+            <button
+              type="button"
+              [class.is-active]="filter() === 'paused'"
+              (click)="setFilter('paused')"
+            >
+              {{ text('موقوفة', 'Paused') }}
+              <b>{{ pausedCount() }}</b>
+            </button>
+          </mm-ops-filters>
+        </mm-ops-toolbar>
+
+        <div class="mm-ops-list" role="list">
+          @for (region of pagedRegions(); track region.id) {
+            <a
+              class="mm-ops-card"
+              role="listitem"
+              [attr.data-status]="region.status"
+              [routerLink]="['/restaurant/operations/service-regions', region.id]"
+            >
+              <div class="mm-ops-card__main">
+                <span class="mm-ops-card__icon">
+                  <ng-icon name="lucideMapPin" class="size-4" />
+                </span>
+                <div>
+                  <strong>{{ text(region.nameAr, region.nameEn) }}</strong>
+                  <small>
+                    {{ region.neighborhoods }}
+                    {{ text('أحياء', 'neighborhoods') }}
+                    ·
+                    {{ updated(region) }}
+                  </small>
+                </div>
+              </div>
+
+              <div class="mm-ops-card__meta">
+                <span class="mm-ops-card__window">
+                  <ng-icon name="lucideClock3" class="size-3.5" />
+                  {{ eta(region) }}
+                </span>
+                <button
+                  type="button"
+                  class="mm-sr-toggle"
+                  [class.is-paused]="region.status === 'paused'"
+                  [attr.aria-label]="
+                    region.status === 'active'
+                      ? text('إيقاف المنطقة', 'Pause region')
+                      : text('تفعيل المنطقة', 'Activate region')
+                  "
+                  (click)="toggle(region, $event)"
+                >
+                  <ng-icon
+                    [name]="
+                      region.status === 'active'
+                        ? 'lucideToggleRight'
+                        : 'lucideToggleLeft'
+                    "
+                    class="size-5"
+                  />
+                  <span>
+                    {{
+                      region.status === 'active'
+                        ? text('مفعّلة', 'Active')
+                        : text('موقوفة', 'Paused')
+                    }}
+                  </span>
+                </button>
+                <span class="mm-ops-card__chevron">
+                  <ng-icon
+                    [name]="
+                      locale.isRtl() ? 'lucideChevronLeft' : 'lucideChevronRight'
+                    "
+                    class="size-4"
+                  />
+                </span>
+              </div>
+            </a>
+          } @empty {
+            <div class="mm-ops-empty">
+              <ng-icon name="lucideSearch" class="size-6" />
+              <strong>{{
+                text('لا توجد مناطق مطابقة', 'No matching regions')
+              }}</strong>
+            </div>
+          }
+        </div>
+
+        @if (filteredRegions().length > 0) {
+          <mm-ops-pager
+            [range]="rangeText()"
+            [currentPage]="currentPage()"
+            [totalPages]="totalPages()"
+            [pages]="pageNumbers()"
+            [rtl]="locale.isRtl()"
+            [prevLabel]="text('السابق', 'Prev')"
+            [nextLabel]="text('التالي', 'Next')"
+            (prev)="prevPage()"
+            (next)="nextPage()"
+            (goTo)="goToPage($event)"
+          />
+        }
+
+        <p class="mm-ops-board__foot">
+          <ng-icon name="lucideShieldCheck" class="size-3.5" />
+          {{
+            text(
+              'تحديثات الحالة تُطبّق فورًا',
+              'Status changes apply instantly'
+            )
+          }}
+        </p>
+      </mm-ops-board>
+    </div>
+  }
+</div>

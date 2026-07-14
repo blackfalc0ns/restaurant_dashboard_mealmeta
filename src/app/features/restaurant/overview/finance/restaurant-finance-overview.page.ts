@@ -22,7 +22,7 @@ import {
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { BRAND_COLORS } from '@/core/brand/brand-colors';
 import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
-import { RestaurantWorkspaceHeaderComponent } from '@/shared/components/restaurant-workspace/restaurant-workspace-ui.component';
+import { RestaurantOpsHeroComponent } from '@/shared/components/restaurant-workspace/restaurant-ops-ui.component';
 import { MmApexChartComponent } from '@/shared/components/apex-chart/mm-apex-chart.component';
 import {
   mmBaseChart,
@@ -55,11 +55,11 @@ import {
     PageStateComponent,
     MmApexChartComponent,
     FinanceOverviewSkeletonComponent,
-    RestaurantWorkspaceHeaderComponent,
+    RestaurantOpsHeroComponent,
   ],
   templateUrl: './restaurant-finance-overview.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'mm-fn-page block' },
+  host: { class: 'mm-fn-page mm-ops-page block' },
   viewProviders: [
     provideIcons({
       lucideBadgeDollarSign,

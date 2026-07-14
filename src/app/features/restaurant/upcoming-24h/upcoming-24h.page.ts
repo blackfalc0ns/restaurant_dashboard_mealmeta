@@ -25,13 +25,12 @@ import {
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
 import {
-  RestaurantWorkspaceFiltersComponent,
-  RestaurantWorkspaceHeaderComponent,
-  RestaurantWorkspacePanelComponent,
-  RestaurantWorkspaceStatComponent,
-  RestaurantWorkspaceStatsComponent,
-  RestaurantWorkspaceToolbarComponent,
-} from '@/shared/components/restaurant-workspace/restaurant-workspace-ui.component';
+  RestaurantOpsBoardComponent,
+  RestaurantOpsFiltersComponent,
+  RestaurantOpsHeroComponent,
+  RestaurantOpsPagerComponent,
+  RestaurantOpsToolbarComponent,
+} from '@/shared/components/restaurant-workspace/restaurant-ops-ui.component';
 
 import { pickLocale } from '../overview/overview-i18n';
 import { Upcoming24hFacade } from './data/upcoming-24h.facade';
@@ -53,16 +52,15 @@ import { Upcoming24hSkeletonComponent } from './upcoming-24h-skeleton.component'
     NgIcon,
     PageStateComponent,
     Upcoming24hSkeletonComponent,
-    RestaurantWorkspaceHeaderComponent,
-    RestaurantWorkspaceStatsComponent,
-    RestaurantWorkspaceStatComponent,
-    RestaurantWorkspaceToolbarComponent,
-    RestaurantWorkspaceFiltersComponent,
-    RestaurantWorkspacePanelComponent,
+    RestaurantOpsHeroComponent,
+    RestaurantOpsBoardComponent,
+    RestaurantOpsToolbarComponent,
+    RestaurantOpsFiltersComponent,
+    RestaurantOpsPagerComponent,
   ],
   templateUrl: './upcoming-24h.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'mm-u24-page block' },
+  host: { class: 'mm-u24-page flex h-full min-h-0 flex-col' },
   viewProviders: [
     provideIcons({
       lucideCheck,

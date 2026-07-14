@@ -1,0 +1,47 @@
+<div class="mm-ops-skeleton__inner" aria-hidden="true">
+  <div class="mm-ops-skeleton__hero">
+    <div class="mm-ops-skeleton__hero-main">
+      <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+      <span class="mm-ov-bone mm-ov-bone--title"></span>
+      <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+    </div>
+    <div class="mm-ops-skeleton__metrics">
+      @for (_ of [1, 2, 3]; track $index) {
+        <div class="mm-ops-skeleton__metric">
+          <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+          <span class="mm-ov-bone mm-ov-bone--value"></span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="mm-ops-skeleton__board">
+    <div class="mm-ops-skeleton__toolbar">
+      <span class="mm-ov-bone mm-ops-skeleton__search"></span>
+      <div class="mm-ops-skeleton__chips">
+        @for (_ of [1, 2, 3]; track $index) {
+          <span class="mm-ov-bone mm-ov-bone--chip"></span>
+        }
+      </div>
+    </div>
+
+    <div class="mm-ops-skeleton__list">
+      @for (_ of [1, 2, 3, 4, 5, 6]; track $index) {
+        <div class="mm-ops-skeleton__card">
+          <div class="mm-ops-skeleton__card-main">
+            <span class="mm-ov-bone mm-ov-bone--avatar"></span>
+            <div>
+              <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+              <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+            </div>
+          </div>
+          <div class="mm-ops-skeleton__card-meta">
+            <span class="mm-ov-bone mm-ov-bone--chip"></span>
+            <span class="mm-ov-bone mm-ov-bone--btn" style="margin-top: 0"></span>
+            <span class="mm-ov-bone mm-ops-skeleton__chevron"></span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

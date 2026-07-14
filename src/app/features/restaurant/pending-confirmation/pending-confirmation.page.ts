@@ -14,6 +14,7 @@ import {
   lucideChevronLeft,
   lucideChevronRight,
   lucideCircleAlert,
+  lucideClipboardList,
   lucideClock,
   lucideSearch,
   lucideTimer,
@@ -23,13 +24,12 @@ import {
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
 import {
-  RestaurantWorkspaceFiltersComponent,
-  RestaurantWorkspaceHeaderComponent,
-  RestaurantWorkspacePanelComponent,
-  RestaurantWorkspaceStatComponent,
-  RestaurantWorkspaceStatsComponent,
-  RestaurantWorkspaceToolbarComponent,
-} from '@/shared/components/restaurant-workspace/restaurant-workspace-ui.component';
+  RestaurantOpsBoardComponent,
+  RestaurantOpsFiltersComponent,
+  RestaurantOpsHeroComponent,
+  RestaurantOpsPagerComponent,
+  RestaurantOpsToolbarComponent,
+} from '@/shared/components/restaurant-workspace/restaurant-ops-ui.component';
 
 import { pickLocale } from '../overview/overview-i18n';
 import { PendingConfirmationFacade } from './data/pending-confirmation.facade';
@@ -50,22 +50,22 @@ import { PendingConfirmationSkeletonComponent } from './pending-confirmation-ske
     NgIcon,
     PageStateComponent,
     PendingConfirmationSkeletonComponent,
-    RestaurantWorkspaceHeaderComponent,
-    RestaurantWorkspaceStatsComponent,
-    RestaurantWorkspaceStatComponent,
-    RestaurantWorkspaceToolbarComponent,
-    RestaurantWorkspaceFiltersComponent,
-    RestaurantWorkspacePanelComponent,
+    RestaurantOpsHeroComponent,
+    RestaurantOpsBoardComponent,
+    RestaurantOpsToolbarComponent,
+    RestaurantOpsFiltersComponent,
+    RestaurantOpsPagerComponent,
   ],
   templateUrl: './pending-confirmation.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'mm-pc-page block' },
+  host: { class: 'mm-pc-page flex h-full min-h-0 flex-col' },
   viewProviders: [
     provideIcons({
       lucideCheck,
       lucideChevronLeft,
       lucideChevronRight,
       lucideCircleAlert,
+      lucideClipboardList,
       lucideClock,
       lucideSearch,
       lucideTimer,

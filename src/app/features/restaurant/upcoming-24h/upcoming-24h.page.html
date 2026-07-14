@@ -12,176 +12,152 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <mm-workspace-header icon="lucidePackage" [eyebrow]="dateLabel()" [title]="title()" [subtitle]="subtitle()">
-      <div workspaceAside class="mm-u24-header__actions">
-        <span class="mm-u24-header__hint">
-          <ng-icon name="lucideTimer" class="size-3.5" />
-          {{ windowHint() }}
-        </span>
-        <a routerLink="/restaurant/orders/labels" class="mm-u24-print">
-          <ng-icon name="lucidePrinter" class="size-4" />
-          {{ printLabel() }}
-        </a>
-      </div>
-    </mm-workspace-header>
-
-    <mm-workspace-stats>
-      @for (card of data.summaries; track card.id) {
-        <mm-workspace-stat [icon]="card.icon" [label]="summaryLabel(card)" [value]="card.value" [hint]="summaryHint(card)" [tone]="card.tone" />
-      }
-    </mm-workspace-stats>
-
-    <mm-workspace-panel>
-      <div class="mm-u24-panel__head">
-        <div>
-          <h2>{{ listTitle() }}</h2>
-          <p>{{ listSubtitle() }}</p>
+    <div class="mm-ops-scroll">
+      <mm-ops-hero icon="lucidePackage" [eyebrow]="dateLabel()" [title]="title()" [subtitle]="subtitle()">
+        <div opsActions>
+          <span class="mm-u24-header__hint">
+            <ng-icon name="lucideTimer" class="size-3.5" />
+            {{ windowHint() }}
+          </span>
+          <a routerLink="/restaurant/orders/labels" class="mm-u24-print mm-ops-cta">
+            <ng-icon name="lucidePrinter" class="size-4" />
+            {{ printLabel() }}
+          </a>
         </div>
-        <span class="mm-u24-count">{{ facade.filteredOrders().length }}</span>
-      </div>
-
-      <mm-workspace-toolbar>
-        <label class="mm-u24-search">
-          <ng-icon name="lucideSearch" class="size-4" />
-          <input type="search" [placeholder]="searchPlaceholder()" [ngModel]="facade.search()" (ngModelChange)="onSearch($event)" />
-        </label>
-        <label class="mm-u24-shift">
-          <span>{{ shiftLabel() }}</span>
-          <select [ngModel]="facade.shift()" (ngModelChange)="onShiftChange($event)">
-            @for (option of shifts; track option.id) { <option [value]="option.id">{{ filterLabel(option) }}</option> }
-          </select>
-        </label>
-        <mm-workspace-filters>
-          @for (option of filters; track option.id) {
-            <button type="button" role="tab" [class.is-active]="facade.filter() === option.id" [attr.aria-selected]="facade.filter() === option.id" (click)="setFilter(option.id)">
-              <span>{{ filterLabel(option) }}</span><b>{{ filterCount(option.id) }}</b>
-            </button>
+        <ng-container opsMetrics>
+          @for (card of data.summaries; track card.id; let i = $index) {
+            @if (i < 3) {
+              <div>
+                <small>{{ summaryLabel(card) }}</small>
+                <strong>{{ card.value }}</strong>
+              </div>
+            }
           }
-        </mm-workspace-filters>
-      </mm-workspace-toolbar>
+        </ng-container>
+      </mm-ops-hero>
 
-      @if (facade.filteredOrders().length === 0) {
-        <p class="mm-u24-empty">{{ emptyLabel() }}</p>
-      } @else {
-        <div class="mm-u24-table" role="table">
-          <div class="mm-u24-table__head" role="row">
-            <span>{{ locale.isRtl() ? 'الطلب' : 'Order' }}</span>
-            <span>{{ locale.isRtl() ? 'الباقة' : 'Package' }}</span>
-            <span>{{ locale.isRtl() ? 'التسليم' : 'Delivery' }}</span>
-            <span>{{ locale.isRtl() ? 'المستندات' : 'Documents' }}</span>
-            <span>{{ locale.isRtl() ? 'إجراء' : 'Action' }}</span>
+      <mm-ops-board>
+        <div class="mm-ops-board__head">
+          <div>
+            <h2>{{ listTitle() }}</h2>
+            <p>{{ listSubtitle() }}</p>
           </div>
-
-          @for (order of facade.pagedOrders(); track order.id) {
-            <article
-              class="mm-u24-row"
-              role="row"
-              [attr.data-status]="order.prepStatus"
-            >
-              <a class="mm-u24-row__identity" [routerLink]="order.route">
-                <strong>{{ order.orderCode }}</strong>
-                <span>{{ order.batchCode }} · {{ order.customerMaskedId }}</span>
-                <small>{{ shiftText(order) }}</small>
-              </a>
-
-              <div class="mm-u24-row__meal">
-                <strong>{{ mealSummary(order) }}</strong>
-                <span>
-                  {{ programLabel(order) }} · {{ boxesLabel(order.boxCount) }}
-                </span>
-                <small>{{ bundleLabel(order) }}</small>
-              </div>
-
-              <div class="mm-u24-row__delivery">
-                <strong>{{ deliveryDate(order) }}</strong>
-                <span>{{ deliverySlot(order) }}</span>
-                <small>{{ hoursLeft(order) }}</small>
-              </div>
-
-              <div class="mm-u24-row__docs">
-                <span class="mm-u24-badge" [attr.data-status]="order.prepStatus">
-                  {{ prepStatusLabel(order.prepStatus) }}
-                </span>
-                <ul class="mm-u24-docs">
-                  <li [class.is-on]="order.invoiceGenerated">
-                    <ng-icon
-                      [name]="order.invoiceGenerated ? 'lucideCheck' : 'lucideX'"
-                      class="size-3"
-                    />
-                    {{ docLabel('invoice') }}
-                  </li>
-                  <li [class.is-on]="order.barcodeGenerated">
-                    <ng-icon
-                      [name]="order.barcodeGenerated ? 'lucideCheck' : 'lucideX'"
-                      class="size-3"
-                    />
-                    {{ docLabel('barcode') }}
-                  </li>
-                  <li [class.is-on]="order.labelsGenerated">
-                    <ng-icon
-                      [name]="order.labelsGenerated ? 'lucideCheck' : 'lucideX'"
-                      class="size-3"
-                    />
-                    {{ docLabel('labels') }}
-                  </li>
-                </ul>
-              </div>
-
-              <div class="mm-u24-row__action">
-                <a class="mm-u24-labels" [routerLink]="order.labelsRoute">
-                  <ng-icon name="lucidePrinter" class="size-3.5" />
-                  {{ labelsActionLabel() }}
-                </a>
-                <a [routerLink]="order.route">{{ detailsLabel() }}</a>
-              </div>
-            </article>
-          }
+          <span class="mm-ops-count">{{ facade.filteredOrders().length }}</span>
         </div>
 
-        <nav class="mm-u24-pager" [attr.aria-label]="rangeText()">
-          <p class="mm-u24-pager__range">{{ rangeText() }}</p>
-          <div class="mm-u24-pager__controls">
-            <button
-              type="button"
-              class="mm-u24-pager__nav"
-              [disabled]="facade.currentPage() <= 1"
-              (click)="prevPage()"
-            >
-              <ng-icon
-                [name]="locale.isRtl() ? 'lucideChevronRight' : 'lucideChevronLeft'"
-                class="size-4"
-              />
-              <span>{{ prevLabel() }}</span>
-            </button>
+        <mm-ops-toolbar>
+          <label class="mm-ops-search">
+            <ng-icon name="lucideSearch" class="size-4" />
+            <input type="search" [placeholder]="searchPlaceholder()" [ngModel]="facade.search()" (ngModelChange)="onSearch($event)" />
+          </label>
+          <label class="mm-ops-select">
+            <span>{{ shiftLabel() }}</span>
+            <select [ngModel]="facade.shift()" (ngModelChange)="onShiftChange($event)">
+              @for (option of shifts; track option.id) { <option [value]="option.id">{{ filterLabel(option) }}</option> }
+            </select>
+          </label>
+          <mm-ops-filters>
+            @for (option of filters; track option.id) {
+              <button type="button" [class.is-active]="facade.filter() === option.id" (click)="setFilter(option.id)">
+                {{ filterLabel(option) }}
+                <b>{{ filterCount(option.id) }}</b>
+              </button>
+            }
+          </mm-ops-filters>
+        </mm-ops-toolbar>
 
-            <div class="mm-u24-pager__pages">
-              @for (pageNum of facade.pageNumbers(); track pageNum) {
-                <button
-                  type="button"
-                  class="mm-u24-pager__page"
-                  [class.is-active]="facade.currentPage() === pageNum"
-                  (click)="goToPage(pageNum)"
-                >
-                  {{ pageNum }}
-                </button>
-              }
+        @if (facade.filteredOrders().length === 0) {
+          <p class="mm-u24-empty">{{ emptyLabel() }}</p>
+        } @else {
+          <div class="mm-u24-table" role="table">
+            <div class="mm-u24-table__head" role="row">
+              <span>{{ locale.isRtl() ? 'الطلب' : 'Order' }}</span>
+              <span>{{ locale.isRtl() ? 'الباقة' : 'Package' }}</span>
+              <span>{{ locale.isRtl() ? 'التسليم' : 'Delivery' }}</span>
+              <span>{{ locale.isRtl() ? 'المستندات' : 'Documents' }}</span>
+              <span>{{ locale.isRtl() ? 'إجراء' : 'Action' }}</span>
             </div>
 
-            <button
-              type="button"
-              class="mm-u24-pager__nav"
-              [disabled]="facade.currentPage() >= facade.totalPages()"
-              (click)="nextPage()"
-            >
-              <span>{{ nextLabel() }}</span>
-              <ng-icon
-                [name]="locale.isRtl() ? 'lucideChevronLeft' : 'lucideChevronRight'"
-                class="size-4"
-              />
-            </button>
+            @for (order of facade.pagedOrders(); track order.id) {
+              <article
+                class="mm-u24-row"
+                role="row"
+                [attr.data-status]="order.prepStatus"
+              >
+                <a class="mm-u24-row__identity" [routerLink]="order.route">
+                  <strong>{{ order.orderCode }}</strong>
+                  <span>{{ order.batchCode }} · {{ order.customerMaskedId }}</span>
+                  <small>{{ shiftText(order) }}</small>
+                </a>
+
+                <div class="mm-u24-row__meal">
+                  <strong>{{ mealSummary(order) }}</strong>
+                  <span>
+                    {{ programLabel(order) }} · {{ boxesLabel(order.boxCount) }}
+                  </span>
+                  <small>{{ bundleLabel(order) }}</small>
+                </div>
+
+                <div class="mm-u24-row__delivery">
+                  <strong>{{ deliveryDate(order) }}</strong>
+                  <span>{{ deliverySlot(order) }}</span>
+                  <small>{{ hoursLeft(order) }}</small>
+                </div>
+
+                <div class="mm-u24-row__docs">
+                  <span class="mm-u24-badge" [attr.data-status]="order.prepStatus">
+                    {{ prepStatusLabel(order.prepStatus) }}
+                  </span>
+                  <ul class="mm-u24-docs">
+                    <li [class.is-on]="order.invoiceGenerated">
+                      <ng-icon
+                        [name]="order.invoiceGenerated ? 'lucideCheck' : 'lucideX'"
+                        class="size-3"
+                      />
+                      {{ docLabel('invoice') }}
+                    </li>
+                    <li [class.is-on]="order.barcodeGenerated">
+                      <ng-icon
+                        [name]="order.barcodeGenerated ? 'lucideCheck' : 'lucideX'"
+                        class="size-3"
+                      />
+                      {{ docLabel('barcode') }}
+                    </li>
+                    <li [class.is-on]="order.labelsGenerated">
+                      <ng-icon
+                        [name]="order.labelsGenerated ? 'lucideCheck' : 'lucideX'"
+                        class="size-3"
+                      />
+                      {{ docLabel('labels') }}
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="mm-u24-row__action">
+                  <a class="mm-u24-labels" [routerLink]="order.labelsRoute">
+                    <ng-icon name="lucidePrinter" class="size-3.5" />
+                    {{ labelsActionLabel() }}
+                  </a>
+                  <a [routerLink]="order.route">{{ detailsLabel() }}</a>
+                </div>
+              </article>
+            }
           </div>
-        </nav>
-      }
-    </mm-workspace-panel>
+
+          <mm-ops-pager
+            [range]="rangeText()"
+            [currentPage]="facade.currentPage()"
+            [totalPages]="facade.totalPages()"
+            [pages]="facade.pageNumbers()"
+            [rtl]="locale.isRtl()"
+            [prevLabel]="prevLabel()"
+            [nextLabel]="nextLabel()"
+            (prev)="prevPage()"
+            (next)="nextPage()"
+            (goTo)="goToPage($event)"
+          />
+        }
+      </mm-ops-board>
+    </div>
   }
 </div>

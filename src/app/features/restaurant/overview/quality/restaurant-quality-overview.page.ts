@@ -21,7 +21,7 @@ import {
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { BRAND_COLORS } from '@/core/brand/brand-colors';
 import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
-import { RestaurantWorkspaceHeaderComponent } from '@/shared/components/restaurant-workspace/restaurant-workspace-ui.component';
+import { RestaurantOpsHeroComponent } from '@/shared/components/restaurant-workspace/restaurant-ops-ui.component';
 import { MmApexChartComponent } from '@/shared/components/apex-chart/mm-apex-chart.component';
 import {
   mmBaseChart,
@@ -53,11 +53,11 @@ import { QualityOverviewSkeletonComponent } from './quality-overview-skeleton.co
     PageStateComponent,
     MmApexChartComponent,
     QualityOverviewSkeletonComponent,
-    RestaurantWorkspaceHeaderComponent,
+    RestaurantOpsHeroComponent,
   ],
   templateUrl: './restaurant-quality-overview.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'mm-ql-page block' },
+  host: { class: 'mm-ql-page mm-ops-page block' },
   viewProviders: [
     provideIcons({
       lucideBadgeCheck,

@@ -12,162 +12,138 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <mm-workspace-header icon="lucideClipboardList" [eyebrow]="dateLabel()" [title]="title()" [subtitle]="subtitle()">
-      <span workspaceAside class="mm-pc-header__hint">
-        <ng-icon name="lucideTimer" class="size-3.5" />
-        {{ windowHint() }}
-      </span>
-    </mm-workspace-header>
-
-    <mm-workspace-stats>
-      @for (card of data.summaries; track card.id) {
-        <mm-workspace-stat [icon]="card.icon" [label]="summaryLabel(card)" [value]="card.value" [hint]="summaryHint(card)" [tone]="card.tone" />
-      }
-    </mm-workspace-stats>
-
-    <mm-workspace-panel>
-      <div class="mm-pc-panel__head">
-        <div>
-          <h2>{{ listTitle() }}</h2>
-          <p>{{ listSubtitle() }}</p>
-        </div>
-        <span class="mm-pc-count">{{ facade.filteredOrders().length }}</span>
-      </div>
-
-      <mm-workspace-toolbar>
-        <label class="mm-pc-search">
-          <ng-icon name="lucideSearch" class="size-4" />
-          <input type="search" [placeholder]="searchPlaceholder()" [ngModel]="facade.search()" (ngModelChange)="onSearch($event)" />
-        </label>
-        <mm-workspace-filters>
-          @for (option of filters; track option.id) {
-            <button type="button" role="tab" [class.is-active]="facade.filter() === option.id" [attr.aria-selected]="facade.filter() === option.id" (click)="setFilter(option.id)">
-              <span>{{ filterLabel(option) }}</span><b>{{ filterCount(option.id) }}</b>
-            </button>
+    <div class="mm-ops-scroll">
+      <mm-ops-hero icon="lucideClipboardList" [eyebrow]="dateLabel()" [title]="title()" [subtitle]="subtitle()">
+        <span opsAside class="mm-pc-header__hint">
+          <ng-icon name="lucideTimer" class="size-3.5" />
+          {{ windowHint() }}
+        </span>
+        <ng-container opsMetrics>
+          @for (card of data.summaries; track card.id; let i = $index) {
+            @if (i < 3) {
+              <div>
+                <small>{{ summaryLabel(card) }}</small>
+                <strong>{{ card.value }}</strong>
+              </div>
+            }
           }
-        </mm-workspace-filters>
-      </mm-workspace-toolbar>
+        </ng-container>
+      </mm-ops-hero>
 
-      @if (facade.filteredOrders().length === 0) {
-        <p class="mm-pc-empty">{{ emptyLabel() }}</p>
-      } @else {
-        <div class="mm-pc-table" role="table">
-          <div class="mm-pc-table__head" role="row">
-            <span>{{ locale.isRtl() ? 'الطلب' : 'Order' }}</span>
-            <span>{{ locale.isRtl() ? 'الباقة' : 'Package' }}</span>
-            <span>{{ locale.isRtl() ? 'التسليم' : 'Delivery' }}</span>
-            <span>{{ locale.isRtl() ? 'العدّاد' : 'Countdown' }}</span>
-            <span>{{ locale.isRtl() ? 'إجراء' : 'Action' }}</span>
+      <mm-ops-board>
+        <div class="mm-ops-board__head">
+          <div>
+            <h2>{{ listTitle() }}</h2>
+            <p>{{ listSubtitle() }}</p>
           </div>
-
-          @for (order of facade.pagedOrders(); track order.id) {
-            <article
-              class="mm-pc-row"
-              role="row"
-              [attr.data-urgency]="order.confirmed ? 'confirmed' : order.urgency"
-            >
-              <a class="mm-pc-row__identity" [routerLink]="order.route">
-                <strong>{{ order.orderCode }}</strong>
-                <span>{{ order.batchCode }} · {{ order.customerMaskedId }}</span>
-                @if (order.isReassigned) {
-                  <small class="mm-pc-row__flag">{{ reassignedLabel() }}</small>
-                }
-              </a>
-
-              <div class="mm-pc-row__meal">
-                <strong>{{ mealSummary(order) }}</strong>
-                <span>
-                  {{ programLabel(order) }} · {{ boxesLabel(order.boxCount) }}
-                </span>
-                <small>{{ bundleLabel(order) }}</small>
-              </div>
-
-              <div class="mm-pc-row__delivery">
-                <strong>{{ deliveryDate(order) }}</strong>
-                <span>{{ deliverySlot(order) }}</span>
-                <small>{{ receivedAt(order) }}</small>
-              </div>
-
-              <div class="mm-pc-row__countdown">
-                @if (order.confirmed) {
-                  <span class="mm-pc-badge" data-urgency="confirmed">
-                    <ng-icon name="lucideCheck" class="size-3.5" />
-                    {{ confirmedLabel() }}
-                  </span>
-                } @else {
-                  <span class="mm-pc-badge" [attr.data-urgency]="order.urgency">
-                    {{ urgencyLabel(order.urgency) }}
-                  </span>
-                  <strong>{{ deadline(order) }}</strong>
-                }
-              </div>
-
-              <div class="mm-pc-row__action">
-                @if (!order.confirmed) {
-                  <button
-                    type="button"
-                    class="mm-pc-confirm"
-                    [disabled]="facade.confirmingId() === order.id"
-                    (click)="confirm(order)"
-                  >
-                    <ng-icon name="lucideCheck" class="size-3.5" />
-                    {{
-                      facade.confirmingId() === order.id
-                        ? (locale.isRtl() ? 'جاري...' : 'Confirming...')
-                        : confirmLabel()
-                    }}
-                  </button>
-                }
-                <a [routerLink]="order.route">{{ detailsLabel() }}</a>
-              </div>
-            </article>
-          }
+          <span class="mm-ops-count">{{ facade.filteredOrders().length }}</span>
         </div>
 
-        <nav class="mm-pc-pager" [attr.aria-label]="rangeText()">
-          <p class="mm-pc-pager__range">{{ rangeText() }}</p>
-          <div class="mm-pc-pager__controls">
-            <button
-              type="button"
-              class="mm-pc-pager__nav"
-              [disabled]="facade.currentPage() <= 1"
-              (click)="prevPage()"
-            >
-              <ng-icon
-                [name]="locale.isRtl() ? 'lucideChevronRight' : 'lucideChevronLeft'"
-                class="size-4"
-              />
-              <span>{{ prevLabel() }}</span>
-            </button>
+        <mm-ops-toolbar>
+          <label class="mm-ops-search">
+            <ng-icon name="lucideSearch" class="size-4" />
+            <input type="search" [placeholder]="searchPlaceholder()" [ngModel]="facade.search()" (ngModelChange)="onSearch($event)" />
+          </label>
+          <mm-ops-filters>
+            @for (option of filters; track option.id) {
+              <button type="button" [class.is-active]="facade.filter() === option.id" (click)="setFilter(option.id)">
+                {{ filterLabel(option) }}
+                <b>{{ filterCount(option.id) }}</b>
+              </button>
+            }
+          </mm-ops-filters>
+        </mm-ops-toolbar>
 
-            <div class="mm-pc-pager__pages">
-              @for (pageNum of facade.pageNumbers(); track pageNum) {
-                <button
-                  type="button"
-                  class="mm-pc-pager__page"
-                  [class.is-active]="facade.currentPage() === pageNum"
-                  (click)="goToPage(pageNum)"
-                >
-                  {{ pageNum }}
-                </button>
-              }
+        @if (facade.filteredOrders().length === 0) {
+          <p class="mm-pc-empty">{{ emptyLabel() }}</p>
+        } @else {
+          <div class="mm-pc-table" role="table">
+            <div class="mm-pc-table__head" role="row">
+              <span>{{ locale.isRtl() ? 'الطلب' : 'Order' }}</span>
+              <span>{{ locale.isRtl() ? 'الباقة' : 'Package' }}</span>
+              <span>{{ locale.isRtl() ? 'التسليم' : 'Delivery' }}</span>
+              <span>{{ locale.isRtl() ? 'العدّاد' : 'Countdown' }}</span>
+              <span>{{ locale.isRtl() ? 'إجراء' : 'Action' }}</span>
             </div>
 
-            <button
-              type="button"
-              class="mm-pc-pager__nav"
-              [disabled]="facade.currentPage() >= facade.totalPages()"
-              (click)="nextPage()"
-            >
-              <span>{{ nextLabel() }}</span>
-              <ng-icon
-                [name]="locale.isRtl() ? 'lucideChevronLeft' : 'lucideChevronRight'"
-                class="size-4"
-              />
-            </button>
+            @for (order of facade.pagedOrders(); track order.id) {
+              <article
+                class="mm-pc-row"
+                role="row"
+                [attr.data-urgency]="order.confirmed ? 'confirmed' : order.urgency"
+              >
+                <a class="mm-pc-row__identity" [routerLink]="order.route">
+                  <strong>{{ order.orderCode }}</strong>
+                  <span>{{ order.batchCode }} · {{ order.customerMaskedId }}</span>
+                  @if (order.isReassigned) {
+                    <small class="mm-pc-row__flag">{{ reassignedLabel() }}</small>
+                  }
+                </a>
+
+                <div class="mm-pc-row__meal">
+                  <strong>{{ mealSummary(order) }}</strong>
+                  <span>
+                    {{ programLabel(order) }} · {{ boxesLabel(order.boxCount) }}
+                  </span>
+                  <small>{{ bundleLabel(order) }}</small>
+                </div>
+
+                <div class="mm-pc-row__delivery">
+                  <strong>{{ deliveryDate(order) }}</strong>
+                  <span>{{ deliverySlot(order) }}</span>
+                  <small>{{ receivedAt(order) }}</small>
+                </div>
+
+                <div class="mm-pc-row__countdown">
+                  @if (order.confirmed) {
+                    <span class="mm-pc-badge" data-urgency="confirmed">
+                      <ng-icon name="lucideCheck" class="size-3.5" />
+                      {{ confirmedLabel() }}
+                    </span>
+                  } @else {
+                    <span class="mm-pc-badge" [attr.data-urgency]="order.urgency">
+                      {{ urgencyLabel(order.urgency) }}
+                    </span>
+                    <strong>{{ deadline(order) }}</strong>
+                  }
+                </div>
+
+                <div class="mm-pc-row__action">
+                  @if (!order.confirmed) {
+                    <button
+                      type="button"
+                      class="mm-pc-confirm"
+                      [disabled]="facade.confirmingId() === order.id"
+                      (click)="confirm(order)"
+                    >
+                      <ng-icon name="lucideCheck" class="size-3.5" />
+                      {{
+                        facade.confirmingId() === order.id
+                          ? (locale.isRtl() ? 'جاري...' : 'Confirming...')
+                          : confirmLabel()
+                      }}
+                    </button>
+                  }
+                  <a [routerLink]="order.route">{{ detailsLabel() }}</a>
+                </div>
+              </article>
+            }
           </div>
-        </nav>
-      }
-    </mm-workspace-panel>
+
+          <mm-ops-pager
+            [range]="rangeText()"
+            [currentPage]="facade.currentPage()"
+            [totalPages]="facade.totalPages()"
+            [pages]="facade.pageNumbers()"
+            [rtl]="locale.isRtl()"
+            [prevLabel]="prevLabel()"
+            [nextLabel]="nextLabel()"
+            (prev)="prevPage()"
+            (next)="nextPage()"
+            (goTo)="goToPage($event)"
+          />
+        }
+      </mm-ops-board>
+    </div>
   }
 </div>

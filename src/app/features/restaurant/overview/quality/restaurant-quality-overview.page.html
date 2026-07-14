@@ -12,11 +12,23 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <mm-workspace-header icon="lucidePackageCheck" eyebrow="MealMate" [title]="title()" [subtitle]="subtitle()">
-      <a workspaceAside routerLink="/restaurant/quality/ratings" class="mm-ql-header__cta">
-        {{ locale.isRtl() ? 'كل التقييمات' : 'All ratings' }}
-      </a>
-    </mm-workspace-header>
+    <div class="mm-ops-scroll">
+      <mm-ops-hero icon="lucidePackageCheck" eyebrow="MealMate" [title]="title()" [subtitle]="subtitle()">
+        <a opsAside routerLink="/restaurant/quality/ratings" class="mm-ql-header__cta">
+          {{ locale.isRtl() ? 'كل التقييمات' : 'All ratings' }}
+        </a>
+
+        <ng-container opsMetrics>
+          @for (metric of data.metrics; track metric.id; let i = $index) {
+            @if (i < 3) {
+              <div>
+                <small>{{ metricLabel(metric) }}</small>
+                <strong>{{ metric.value }}</strong>
+              </div>
+            }
+          }
+        </ng-container>
+      </mm-ops-hero>
 
     <section class="mm-ql-metrics">
       @for (metric of data.metrics; track metric.id) {
@@ -177,5 +189,6 @@
         }
       </ul>
     </section>
+    </div>
   }
 </div>

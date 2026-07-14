@@ -26,13 +26,12 @@ import {
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
 import {
-  RestaurantWorkspaceFiltersComponent,
-  RestaurantWorkspaceHeaderComponent,
-  RestaurantWorkspacePanelComponent,
-  RestaurantWorkspaceStatComponent,
-  RestaurantWorkspaceStatsComponent,
-  RestaurantWorkspaceToolbarComponent,
-} from '@/shared/components/restaurant-workspace/restaurant-workspace-ui.component';
+  RestaurantOpsBoardComponent,
+  RestaurantOpsFiltersComponent,
+  RestaurantOpsHeroComponent,
+  RestaurantOpsPagerComponent,
+  RestaurantOpsToolbarComponent,
+} from '@/shared/components/restaurant-workspace/restaurant-ops-ui.component';
 
 import { pickLocale } from '../overview/overview-i18n';
 import { IngredientsFacade } from './data/ingredients.facade';
@@ -54,16 +53,15 @@ import {
     NgIcon,
     PageStateComponent,
     IngredientsSkeletonComponent,
-    RestaurantWorkspaceHeaderComponent,
-    RestaurantWorkspaceStatsComponent,
-    RestaurantWorkspaceStatComponent,
-    RestaurantWorkspaceToolbarComponent,
-    RestaurantWorkspaceFiltersComponent,
-    RestaurantWorkspacePanelComponent,
+    RestaurantOpsHeroComponent,
+    RestaurantOpsBoardComponent,
+    RestaurantOpsToolbarComponent,
+    RestaurantOpsFiltersComponent,
+    RestaurantOpsPagerComponent,
   ],
   templateUrl: './ingredients.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'mm-ig-page block' },
+  host: { class: 'mm-ig-page flex h-full min-h-0 flex-col' },
   viewProviders: [
     provideIcons({
       lucideCheck,

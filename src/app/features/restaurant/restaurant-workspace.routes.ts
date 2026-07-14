@@ -95,8 +95,17 @@ const loadIngredientCreatePage = () =>
 const loadPricingPage = () =>
   import('./pricing/pricing.page').then((m) => m.PricingPageComponent);
 
+const loadServiceRegionsPage = () =>
+  import('./service-regions/service-regions.page').then(
+    (m) => m.ServiceRegionsPageComponent,
+  );
+
+const loadServiceRegionDetailPage = () =>
+  import('./service-regions/service-region-detail.page').then(
+    (m) => m.ServiceRegionDetailPageComponent,
+  );
+
 const SIDEBAR_LINK_PATHS = [
-  'operations/service-regions',
   'operations/capacity',
   'operations/availability',
   'delivery/drivers',
@@ -191,6 +200,14 @@ export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   {
     path: 'operations/pricing',
     loadComponent: loadPricingPage,
+  },
+  {
+    path: 'operations/service-regions/:regionId',
+    loadComponent: loadServiceRegionDetailPage,
+  },
+  {
+    path: 'operations/service-regions',
+    loadComponent: loadServiceRegionsPage,
   },
   ...SIDEBAR_LINK_PATHS.map((path) => ({
     path,

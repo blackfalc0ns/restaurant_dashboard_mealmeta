@@ -12,16 +12,28 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <mm-workspace-header icon="lucideBadgeDollarSign" eyebrow="MealMate" [title]="title()" [subtitle]="subtitle()">
-      <label workspaceAside class="mm-fn-period">
-        <span>{{ periodLabel() }}</span>
-        <select [value]="facade.period()" (change)="onPeriodChange($event)">
-          @for (option of periods; track option.id) {
-            <option [value]="option.id">{{ periodOptionLabel(option) }}</option>
+    <div class="mm-ops-scroll">
+      <mm-ops-hero icon="lucideBadgeDollarSign" eyebrow="MealMate" [title]="title()" [subtitle]="subtitle()">
+        <label opsAside class="mm-fn-period">
+          <span>{{ periodLabel() }}</span>
+          <select [value]="facade.period()" (change)="onPeriodChange($event)">
+            @for (option of periods; track option.id) {
+              <option [value]="option.id">{{ periodOptionLabel(option) }}</option>
+            }
+          </select>
+        </label>
+
+        <ng-container opsMetrics>
+          @for (metric of data.metrics; track metric.id; let i = $index) {
+            @if (i < 3) {
+              <div>
+                <small>{{ metricLabel(metric) }}</small>
+                <strong>{{ metric.valueKd | number: '1.3-3' }}</strong>
+              </div>
+            }
           }
-        </select>
-      </label>
-    </mm-workspace-header>
+        </ng-container>
+      </mm-ops-hero>
 
     <section class="mm-fn-metrics">
       @for (metric of data.metrics; track metric.id) {
@@ -143,5 +155,6 @@
         </a>
       </article>
     </section>
+    </div>
   }
 </div>

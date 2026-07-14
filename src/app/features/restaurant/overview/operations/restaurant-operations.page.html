@@ -12,16 +12,28 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <mm-workspace-header icon="lucideCookingPot" [eyebrow]="dateLabel()" [title]="title()" [subtitle]="subtitle()">
-      <div
-        workspaceAside
-        class="mm-op-busy"
-        [class.is-busy]="data.busy"
-      >
-        <ng-icon name="lucideActivity" class="size-4" />
-        <span>{{ data.busy ? busyOn() : busyOff() }}</span>
-      </div>
-    </mm-workspace-header>
+    <div class="mm-ops-scroll">
+      <mm-ops-hero icon="lucideCookingPot" [eyebrow]="dateLabel()" [title]="title()" [subtitle]="subtitle()">
+        <div
+          opsAside
+          class="mm-op-busy"
+          [class.is-busy]="data.busy"
+        >
+          <ng-icon name="lucideActivity" class="size-4" />
+          <span>{{ data.busy ? busyOn() : busyOff() }}</span>
+        </div>
+
+        <ng-container opsMetrics>
+          @for (metric of data.metrics; track metric.id; let i = $index) {
+            @if (i < 3) {
+              <div>
+                <small>{{ metricLabel(metric) }}</small>
+                <strong>{{ metric.value }}</strong>
+              </div>
+            }
+          }
+        </ng-container>
+      </mm-ops-hero>
 
     <section class="mm-op-metrics">
       @for (metric of data.metrics; track metric.id) {
@@ -164,6 +176,7 @@
           </ol>
         </article>
       </aside>
+    </div>
     </div>
   }
 </div>

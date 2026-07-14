@@ -12,37 +12,56 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <mm-workspace-header icon="lucideArchive" eyebrow="MealMate" [title]="title()" [subtitle]="subtitle()" />
+    <div class="mm-ops-scroll">
+      <mm-ops-hero icon="lucideArchive" eyebrow="MealMate" [title]="title()" [subtitle]="subtitle()">
+        <ng-container opsMetrics>
+          @for (card of data.summaries; track card.id; let i = $index) {
+            @if (i < 3) {
+              <div>
+                <small>{{ summaryLabel(card) }}</small>
+                <strong>{{ card.value }}</strong>
+              </div>
+            }
+          }
+        </ng-container>
+      </mm-ops-hero>
 
-    <a class="mm-ac-attention" [routerLink]="data.attention.route">
-      <span class="mm-ac-attention__icon">
-        <ng-icon name="lucideSiren" class="size-5" />
-      </span>
-      <div class="mm-ac-attention__copy">
-        <strong>{{ attentionTitle() }}</strong>
-        <span>{{ attentionDetail() }}</span>
-      </div>
-      <span class="mm-ac-attention__cta">
-        {{ attentionAction() }}
-        <ng-icon name="lucideArrowRight" class="size-3.5" />
-      </span>
-    </a>
-
-    <mm-workspace-stats>
-      @for (card of data.summaries; track card.id) {
-        <mm-workspace-stat [icon]="card.icon" [label]="summaryLabel(card)" [value]="card.value" [hint]="summaryHint(card)" [tone]="card.tone" />
-      }
-    </mm-workspace-stats>
-
-    <mm-workspace-toolbar>
-      <mm-workspace-filters>
-        @for (option of filters; track option.id) {
-          <button type="button" role="tab" [class.is-active]="facade.filter() === option.id" [attr.aria-selected]="facade.filter() === option.id" (click)="setFilter(option.id)">
-            <span>{{ filterLabel(option) }}</span><b>{{ filterCount(option.id) }}</b>
-          </button>
+      <section class="mm-ac-summary">
+        @for (card of data.summaries; track card.id) {
+          <article class="mm-ac-summary__card" [attr.data-tone]="card.tone">
+            <span class="mm-ac-summary__icon"><ng-icon [name]="card.icon" class="size-4" /></span>
+            <div class="mm-ac-summary__copy">
+              <small>{{ summaryLabel(card) }}</small>
+              <strong>{{ card.value }}</strong>
+              <span>{{ summaryHint(card) }}</span>
+            </div>
+          </article>
         }
-      </mm-workspace-filters>
-    </mm-workspace-toolbar>
+      </section>
+
+      <a class="mm-ac-attention" [routerLink]="data.attention.route">
+        <span class="mm-ac-attention__icon">
+          <ng-icon name="lucideSiren" class="size-5" />
+        </span>
+        <div class="mm-ac-attention__copy">
+          <strong>{{ attentionTitle() }}</strong>
+          <span>{{ attentionDetail() }}</span>
+        </div>
+        <span class="mm-ac-attention__cta">
+          {{ attentionAction() }}
+          <ng-icon name="lucideArrowRight" class="size-3.5" />
+        </span>
+      </a>
+
+      <mm-ops-toolbar>
+        <mm-ops-filters>
+          @for (option of filters; track option.id) {
+            <button type="button" role="tab" [class.is-active]="facade.filter() === option.id" [attr.aria-selected]="facade.filter() === option.id" (click)="setFilter(option.id)">
+              <span>{{ filterLabel(option) }}</span><b>{{ filterCount(option.id) }}</b>
+            </button>
+          }
+        </mm-ops-filters>
+      </mm-ops-toolbar>
 
     <div class="mm-ac-layout">
       <section class="mm-ac-panel">
@@ -221,6 +240,7 @@
           </div>
         </section>
       </aside>
+    </div>
     </div>
   }
 </div>

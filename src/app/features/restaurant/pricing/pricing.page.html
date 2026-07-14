@@ -12,30 +12,34 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <div class="mm-px-scroll">
-      <mm-workspace-header
+    <div class="mm-ops-scroll">
+      <mm-ops-hero
         icon="lucideBadgeDollarSign"
         [eyebrow]="dateLabel()"
         [title]="title()"
         [subtitle]="subtitle()"
       >
-          <div workspaceActions>
-            <a [routerLink]="menuRoute()" class="mm-px-menu-link">
-              <ng-icon name="lucideUtensilsCrossed" class="size-4" />
-              {{ menuLinkLabel() }}
-            </a>
-            <span class="mm-px-hero__rule">
-              <ng-icon name="lucideInfo" class="size-3.5" />
-              {{ locale.isRtl() ? 'الأسعار الجديدة لا تغيّر الطلبات المقفولة' : 'New prices do not change locked orders' }}
-            </span>
-          </div>
-      </mm-workspace-header>
-
-      <mm-workspace-stats>
-        @for (card of activeSummaries(); track card.id; let i = $index) {
-          <mm-workspace-stat [icon]="card.icon" [label]="summaryLabel(card)" [value]="card.value" [hint]="summaryHint(card)" [tone]="card.tone" />
-        }
-      </mm-workspace-stats>
+        <div opsActions>
+          <a [routerLink]="menuRoute()" class="mm-px-menu-link">
+            <ng-icon name="lucideUtensilsCrossed" class="size-4" />
+            {{ menuLinkLabel() }}
+          </a>
+          <span class="mm-px-hero__rule">
+            <ng-icon name="lucideInfo" class="size-3.5" />
+            {{ locale.isRtl() ? 'الأسعار الجديدة لا تغيّر الطلبات المقفولة' : 'New prices do not change locked orders' }}
+          </span>
+        </div>
+        <ng-container opsMetrics>
+          @for (card of activeSummaries(); track card.id; let i = $index) {
+            @if (i < 3) {
+              <div>
+                <small>{{ summaryLabel(card) }}</small>
+                <strong>{{ card.value }}</strong>
+              </div>
+            }
+          }
+        </ng-container>
+      </mm-ops-hero>
 
       <aside class="mm-px-note">
         <span class="mm-px-note__icon"><ng-icon name="lucideInfo" class="size-4" /></span>
@@ -45,21 +49,17 @@
         </div>
       </aside>
 
-      <mm-workspace-panel>
-        <div class="mm-px-workspace__head">
+      <mm-ops-board>
+        <div class="mm-ops-board__head">
           <div>
-            <p class="mm-px-section-kicker">
-              <ng-icon name="lucidePackage" class="size-3.5" />
-              {{ locale.isRtl() ? 'تسعير الاشتراكات' : 'Subscription pricing' }}
-            </p>
             <h2>{{ listTitle() }}</h2>
             <p>{{ listSubtitle() }}</p>
           </div>
-          <span class="mm-px-count">{{ listCount() }} {{ locale.isRtl() ? 'عنصر' : 'items' }}</span>
+          <span class="mm-ops-count">{{ listCount() }}</span>
         </div>
 
-        <mm-workspace-toolbar>
-          <label class="mm-px-search">
+        <mm-ops-toolbar>
+          <label class="mm-ops-search">
             <ng-icon name="lucideSearch" class="size-4" />
             <input
               type="search"
@@ -69,7 +69,7 @@
             />
           </label>
 
-          <label class="mm-px-select">
+          <label class="mm-ops-select">
             <span>{{ programLabel() }}</span>
             <select [ngModel]="facade.program()" (ngModelChange)="onProgramChange($event)">
               <option value="all">{{ locale.isRtl() ? 'كل الأنواع' : 'All types' }}</option>
@@ -78,7 +78,7 @@
               }
             </select>
           </label>
-          <label class="mm-px-select">
+          <label class="mm-ops-select">
             <span>{{ bundleLabel() }}</span>
             <select [ngModel]="facade.bundle()" (ngModelChange)="onBundleChange($event)">
               <option value="all">{{ locale.isRtl() ? 'كل الباقات' : 'All bundles' }}</option>
@@ -88,21 +88,19 @@
             </select>
           </label>
 
-          <mm-workspace-filters>
+          <mm-ops-filters>
             @for (option of filters; track option.id) {
               <button
                 type="button"
-                role="tab"
                 [class.is-active]="facade.filter() === option.id"
-                [attr.aria-selected]="facade.filter() === option.id"
                 (click)="setFilter(option.id)"
               >
                 {{ filterLabel(option) }}
                 <b>{{ filterCount(option.id) }}</b>
               </button>
             }
-          </mm-workspace-filters>
-        </mm-workspace-toolbar>
+          </mm-ops-filters>
+        </mm-ops-toolbar>
 
         @if (listCount() === 0) {
           <div class="mm-px-empty">
@@ -175,24 +173,20 @@
         }
 
         @if (listCount() > 0) {
-          <nav class="mm-px-pager" [attr.aria-label]="rangeText()">
-            <p>{{ rangeText() }}</p>
-            <div>
-              <button type="button" [disabled]="facade.currentPage() <= 1" (click)="prevPage()">
-                <ng-icon [name]="locale.isRtl() ? 'lucideChevronRight' : 'lucideChevronLeft'" class="size-4" />
-                {{ prevLabel() }}
-              </button>
-              @for (pageNum of facade.pageNumbers(); track pageNum) {
-                <button type="button" class="mm-px-pager__page" [class.is-active]="facade.currentPage() === pageNum" (click)="goToPage(pageNum)">{{ pageNum }}</button>
-              }
-              <button type="button" [disabled]="facade.currentPage() >= facade.totalPages()" (click)="nextPage()">
-                {{ nextLabel() }}
-                <ng-icon [name]="locale.isRtl() ? 'lucideChevronLeft' : 'lucideChevronRight'" class="size-4" />
-              </button>
-            </div>
-          </nav>
+          <mm-ops-pager
+            [range]="rangeText()"
+            [currentPage]="facade.currentPage()"
+            [totalPages]="facade.totalPages()"
+            [pages]="facade.pageNumbers()"
+            [rtl]="locale.isRtl()"
+            [prevLabel]="prevLabel()"
+            [nextLabel]="nextLabel()"
+            (prev)="prevPage()"
+            (next)="nextPage()"
+            (goTo)="goToPage($event)"
+          />
         }
-      </mm-workspace-panel>
+      </mm-ops-board>
     </div>
 
     <footer class="mm-px-savebar" [class.is-dirty]="facade.isDirty()">

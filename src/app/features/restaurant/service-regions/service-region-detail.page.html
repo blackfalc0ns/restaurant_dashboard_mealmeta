@@ -1,0 +1,315 @@
+<div class="mm-ops-page__inner">
+  @if (loading()) {
+    <mm-service-region-detail-skeleton />
+  } @else {
+  <div class="mm-ops-scroll">
+    <mm-ops-detail-hero
+      icon="lucideMapPin"
+      [title]="regionName()"
+      [subtitle]="
+        text(
+          'متابعة تغطية المنطقة ورحلات تسليم بوكسات الاشتراكات.',
+          'Monitor region coverage and subscription box delivery trips.'
+        )
+      "
+      [kicker]="text('منطقة خدمة', 'Service region')"
+      [status]="status()"
+    >
+      <a
+        opsBack
+        class="mm-ops-back"
+        routerLink="/restaurant/operations/service-regions"
+      >
+        <ng-icon
+          [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+          class="size-3.5"
+        />
+        {{ text('العودة للمناطق', 'Back to regions') }}
+      </a>
+
+      <span opsBadge class="mm-ops-badge" [attr.data-status]="status()">
+        {{ statusLabel() }}
+      </span>
+
+      <button
+        opsActions
+        type="button"
+        class="mm-ops-cta"
+        [class.mm-ops-cta--warn]="status() === 'active'"
+        (click)="toggleStatus()"
+      >
+        <ng-icon
+          [name]="status() === 'active' ? 'lucidePause' : 'lucidePlay'"
+          class="size-4"
+        />
+        {{ actionLabel() }}
+      </button>
+
+      <div opsStats class="contents">
+        <div>
+          <ng-icon name="lucideClock3" class="size-4" />
+          <div>
+            <small>{{ text('نافذة التسليم', 'Delivery window') }}</small>
+            <strong>{{ deliveryWindow() }}</strong>
+          </div>
+        </div>
+        <div>
+          <ng-icon name="lucideMapPinned" class="size-4" />
+          <div>
+            <small>{{ text('الأحياء', 'Neighborhoods') }}</small>
+            <strong>{{ region().neighborhoods.length }}</strong>
+          </div>
+        </div>
+        <div>
+          <ng-icon name="lucideTruck" class="size-4" />
+          <div>
+            <small>{{ text('رحلات نشطة', 'Live trips') }}</small>
+            <strong>{{ liveTrips() }}</strong>
+          </div>
+        </div>
+        <div>
+          <ng-icon name="lucideBoxes" class="size-4" />
+          <div>
+            <small>{{ text('بوكس اليوم', 'Boxes today') }}</small>
+            <strong>{{ totalBoxesLive() }}</strong>
+          </div>
+        </div>
+      </div>
+    </mm-ops-detail-hero>
+
+    <mm-ops-split>
+      <mm-ops-main>
+        <mm-ops-section-head
+          [kicker]="text('رحلات المنطقة', 'Region trips')"
+          kickerIcon="lucideRoute"
+          [title]="text('تسليم البوكسات', 'Box deliveries')"
+        >
+          <span opsHeadAside class="mm-ops-readonly">
+            <ng-icon name="lucideNavigation" class="size-3.5" />
+            {{ text('متابعة فقط · تطبيق التوصيل', 'Read only · delivery app') }}
+          </span>
+        </mm-ops-section-head>
+
+        <div class="mm-sr-feed">
+          @for (trip of trips; track trip.id) {
+            <article
+              class="mm-sr-feed-item"
+              [attr.data-status]="trip.status"
+              [class.is-open]="isExpanded(trip.id)"
+            >
+              <button
+                type="button"
+                class="mm-sr-feed-row"
+                (click)="toggleTrip(trip.id)"
+              >
+                <span class="mm-sr-feed-row__icon">
+                  <ng-icon name="lucideTruck" class="size-4" />
+                </span>
+
+                <div class="mm-sr-feed-row__id">
+                  <strong>{{ trip.code }}</strong>
+                  <small>
+                    {{ text(trip.scheduledAtAr, trip.scheduledAtEn) }}
+                  </small>
+                </div>
+
+                <b class="mm-sr-trip-status" [attr.data-status]="trip.status">
+                  {{ tripStatusLabel(trip.status) }}
+                </b>
+
+                <div class="mm-sr-feed-row__driver">
+                  @if (trip.driver; as driver) {
+                    <span>{{ driver.name.slice(0, 1) }}</span>
+                    <div>
+                      <strong>{{ driver.name }}</strong>
+                      <small>{{
+                        text(driver.vehicleAr, driver.vehicleEn)
+                      }}</small>
+                    </div>
+                  } @else {
+                    <em>{{ text('بدون مندوب', 'Unassigned') }}</em>
+                  }
+                </div>
+
+                <div class="mm-sr-feed-row__scan">
+                  <div class="mm-sr-trip-progress">
+                    <span [style.width.%]="scanPct(trip)"></span>
+                  </div>
+                  <small
+                    >{{ trip.scannedBoxes }}/{{ trip.boxCount }} ·
+                    {{ scanPct(trip) }}%</small
+                  >
+                </div>
+
+                <div class="mm-sr-feed-row__route">
+                  <ng-icon name="lucideMapPinned" class="size-3.5" />
+                  <span
+                    >{{ routePreview(trip)
+                    }}@if (trip.neighborhoods.length > 2) {
+                      +{{ trip.neighborhoods.length - 2 }}
+                    }</span
+                  >
+                </div>
+
+                <ng-icon
+                  class="mm-sr-feed-row__chevron size-4"
+                  [name]="
+                    isExpanded(trip.id)
+                      ? 'lucideChevronUp'
+                      : 'lucideChevronDown'
+                  "
+                />
+              </button>
+
+              @if (isExpanded(trip.id)) {
+                <div class="mm-sr-feed-detail">
+                  <div class="mm-sr-feed-detail__grid">
+                    <section>
+                      <div class="mm-sr-feed-detail__label">
+                        <ng-icon name="lucideBoxes" class="size-3.5" />
+                        {{ text('بوكسات الرحلة', 'Trip boxes') }}
+                      </div>
+                      <div class="mm-sr-box-codes">
+                        @for (boxCode of trip.boxCodes; track boxCode) {
+                          <span>{{ boxCode }}</span>
+                        }
+                        @if (trip.boxCount > trip.boxCodes.length) {
+                          <span class="mm-sr-box-codes__more"
+                            >+{{ trip.boxCount - trip.boxCodes.length }}</span
+                          >
+                        }
+                      </div>
+                    </section>
+
+                    <section>
+                      <div class="mm-sr-feed-detail__label">
+                        <ng-icon name="lucideUserRound" class="size-3.5" />
+                        {{ text('المندوب', 'Courier') }}
+                      </div>
+                      @if (trip.driver; as driver) {
+                        <p class="mm-sr-feed-detail__copy">
+                          <strong>{{ driver.name }}</strong>
+                          <small class="mm-sr-phone" dir="ltr">{{
+                            driver.phone
+                          }}</small>
+                          <small>{{
+                            text(driver.vehicleAr, driver.vehicleEn)
+                          }}</small>
+                        </p>
+                      } @else {
+                        <p class="mm-sr-trip__unassigned">
+                          {{
+                            text(
+                              'بانتظار تعيين مندوب',
+                              'Waiting for courier assignment'
+                            )
+                          }}
+                        </p>
+                      }
+                    </section>
+
+                    <section>
+                      <div class="mm-sr-feed-detail__label">
+                        <ng-icon name="lucideMapPinned" class="size-3.5" />
+                        {{ text('المسار', 'Route') }}
+                      </div>
+                      <div class="mm-sr-trip-stops">
+                        @for (
+                          area of trip.neighborhoods;
+                          track area;
+                          let i = $index
+                        ) {
+                          <span
+                            ><i>{{ i + 1 }}</i
+                            >{{ area }}</span
+                          >
+                        }
+                      </div>
+                    </section>
+                  </div>
+
+                  <footer class="mm-sr-feed-detail__foot">
+                    <span>
+                      <ng-icon name="lucideCircleCheck" class="size-3.5" />
+                      {{ text('أنشأها', 'Created by') }}
+                      {{ text(trip.createdByAr, trip.createdByEn) }}
+                    </span>
+                    <span>{{ text(trip.createdAtAr, trip.createdAtEn) }}</span>
+                  </footer>
+                </div>
+              }
+            </article>
+          }
+        </div>
+      </mm-ops-main>
+
+      <mm-ops-side>
+        <mm-ops-side-card>
+          <mm-ops-section-head
+            [compact]="true"
+            [kicker]="text('التغطية', 'Coverage')"
+            kickerIcon="lucideMapPin"
+            [title]="text('إعدادات المنطقة', 'Region settings')"
+          />
+
+          <div class="mm-sr-meta">
+            <div class="mm-sr-meta__item">
+              <span>{{ text('الحالة', 'Status') }}</span>
+              <strong class="mm-sr-chip" [attr.data-status]="status()">
+                <ng-icon
+                  [name]="status() === 'active' ? 'lucideCheck' : 'lucidePause'"
+                  class="size-3.5"
+                />
+                {{ statusLabel() }}
+              </strong>
+            </div>
+            <div class="mm-sr-meta__item">
+              <span>{{ text('أيام التسليم', 'Delivery days') }}</span>
+              <strong>
+                {{ text('السبت – الخميس', 'Sat – Thu') }}
+              </strong>
+            </div>
+            <div class="mm-sr-meta__item">
+              <span>{{ text('النافذة', 'Window') }}</span>
+              <strong>{{ deliveryWindow() }}</strong>
+            </div>
+          </div>
+
+          <div class="mm-sr-areas">
+            <div class="mm-sr-areas__label">
+              <ng-icon name="lucideMapPinned" class="size-3.5" />
+              {{ text('الأحياء المشمولة', 'Covered neighborhoods') }}
+            </div>
+            <div class="mm-sr-areas__list">
+              @for (area of region().neighborhoods; track area) {
+                <span>{{ area }}</span>
+              }
+            </div>
+          </div>
+        </mm-ops-side-card>
+
+        <mm-ops-side-card>
+          <mm-ops-section-head
+            [compact]="true"
+            [kicker]="text('السجل', 'Log')"
+            kickerIcon="lucideHistory"
+            [title]="text('آخر الإجراءات', 'Recent actions')"
+          />
+
+          <ol class="mm-sr-timeline">
+            @for (event of audit; track event.id; let last = $last) {
+              <li [class.is-last]="last">
+                <span class="mm-sr-timeline__dot"></span>
+                <div>
+                  <strong>{{ text(event.titleAr, event.titleEn) }}</strong>
+                  <small>{{ text(event.timeAr, event.timeEn) }}</small>
+                </div>
+              </li>
+            }
+          </ol>
+        </mm-ops-side-card>
+      </mm-ops-side>
+    </mm-ops-split>
+  </div>
+  }
+</div>

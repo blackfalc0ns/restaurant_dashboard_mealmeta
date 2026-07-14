@@ -9,6 +9,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
+  lucideArchive,
   lucideArrowRight,
   lucideChevronLeft,
   lucideChevronRight,
@@ -30,12 +31,10 @@ import {
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
 import {
-  RestaurantWorkspaceFiltersComponent,
-  RestaurantWorkspaceHeaderComponent,
-  RestaurantWorkspaceStatComponent,
-  RestaurantWorkspaceStatsComponent,
-  RestaurantWorkspaceToolbarComponent,
-} from '@/shared/components/restaurant-workspace/restaurant-workspace-ui.component';
+  RestaurantOpsFiltersComponent,
+  RestaurantOpsHeroComponent,
+  RestaurantOpsToolbarComponent,
+} from '@/shared/components/restaurant-workspace/restaurant-ops-ui.component';
 
 import { pickLocale } from '../overview-i18n';
 import { ActivitySkeletonComponent } from './activity-skeleton.component';
@@ -58,17 +57,16 @@ import {
     NgIcon,
     PageStateComponent,
     ActivitySkeletonComponent,
-    RestaurantWorkspaceHeaderComponent,
-    RestaurantWorkspaceStatsComponent,
-    RestaurantWorkspaceStatComponent,
-    RestaurantWorkspaceToolbarComponent,
-    RestaurantWorkspaceFiltersComponent,
+    RestaurantOpsHeroComponent,
+    RestaurantOpsToolbarComponent,
+    RestaurantOpsFiltersComponent,
   ],
   templateUrl: './restaurant-activity.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'mm-ac-page block' },
+  host: { class: 'mm-ac-page mm-ops-page block' },
   viewProviders: [
     provideIcons({
+      lucideArchive,
       lucideArrowRight,
       lucideChevronLeft,
       lucideChevronRight,

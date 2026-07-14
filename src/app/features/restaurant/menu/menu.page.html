@@ -12,212 +12,188 @@
   }
 
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
-    <mm-workspace-header
-      icon="lucideUtensilsCrossed"
-      [eyebrow]="dateLabel()"
-      [title]="title()"
-      [subtitle]="subtitle()"
-    >
-      <div workspaceActions>
-        <a [routerLink]="ingredientsRoute()" class="mm-mn-ingredients mm-mn-ingredients--ghost">
-          <ng-icon name="lucideCookingPot" class="size-4" />
-          {{ ingredientsLinkLabel() }}
-        </a>
-        <a routerLink="/restaurant/operations/menu/create" class="mm-mn-create">
-          <ng-icon name="lucidePlus" class="size-4" />
-          {{ createLabel() }}
-        </a>
-      </div>
-    </mm-workspace-header>
-
-    <mm-workspace-stats>
-      @for (card of data.summaries; track card.id) {
-        <mm-workspace-stat [icon]="card.icon" [label]="summaryLabel(card)" [value]="card.value" [hint]="summaryHint(card)" [tone]="card.tone" />
-      }
-    </mm-workspace-stats>
-
-    <mm-workspace-panel>
-      <div class="mm-mn-panel__head">
-        <div>
-          <h2>{{ listTitle() }}</h2>
-          <p>{{ listSubtitle() }}</p>
+    <div class="mm-ops-scroll">
+      <mm-ops-hero
+        icon="lucideUtensilsCrossed"
+        [eyebrow]="dateLabel()"
+        [title]="title()"
+        [subtitle]="subtitle()"
+      >
+        <div opsActions>
+          <a [routerLink]="ingredientsRoute()" class="mm-mn-ingredients mm-mn-ingredients--ghost">
+            <ng-icon name="lucideCookingPot" class="size-4" />
+            {{ ingredientsLinkLabel() }}
+          </a>
+          <a routerLink="/restaurant/operations/menu/create" class="mm-mn-create mm-ops-cta">
+            <ng-icon name="lucidePlus" class="size-4" />
+            {{ createLabel() }}
+          </a>
         </div>
-        <span class="mm-mn-count">{{ facade.filteredMeals().length }}</span>
-      </div>
-
-      <mm-workspace-toolbar>
-        <label class="mm-mn-search">
-          <ng-icon name="lucideSearch" class="size-4" />
-          <input type="search" [placeholder]="searchPlaceholder()" [ngModel]="facade.search()" (ngModelChange)="onSearch($event)" />
-        </label>
-        <label class="mm-mn-select">
-          <span>{{ slotLabel() }}</span>
-          <select [ngModel]="facade.slot()" (ngModelChange)="onSlotChange($event)">
-            @for (option of slots; track option.id) { <option [value]="option.id">{{ filterLabel(option) }}</option> }
-          </select>
-        </label>
-        <label class="mm-mn-select">
-          <span>{{ programLabel() }}</span>
-          <select [ngModel]="facade.program()" (ngModelChange)="onProgramChange($event)">
-            @for (option of programs; track option.id) { <option [value]="option.id">{{ filterLabel(option) }}</option> }
-          </select>
-        </label>
-        <mm-workspace-filters>
-          @for (option of filters; track option.id) {
-            <button type="button" role="tab" class="mm-mn-tabs__btn" [class.is-active]="facade.filter() === option.id" [attr.aria-selected]="facade.filter() === option.id" (click)="setFilter(option.id)">
-              <span>{{ filterLabel(option) }}</span><b>{{ filterCount(option.id) }}</b>
-            </button>
+        <ng-container opsMetrics>
+          @for (card of data.summaries; track card.id; let i = $index) {
+            @if (i < 3) {
+              <div>
+                <small>{{ summaryLabel(card) }}</small>
+                <strong>{{ card.value }}</strong>
+              </div>
+            }
           }
-        </mm-workspace-filters>
-      </mm-workspace-toolbar>
+        </ng-container>
+      </mm-ops-hero>
 
-      @if (facade.filteredMeals().length === 0) {
-        <p class="mm-mn-empty">{{ emptyLabel() }}</p>
-      } @else {
-        <div class="mm-mn-table" role="table">
-          <div class="mm-mn-table__head" role="row">
-            <span>{{ locale.isRtl() ? 'الوجبة' : 'Meal' }}</span>
-            <span>{{ locale.isRtl() ? 'الفئة / البرنامج' : 'Slot / Program' }}</span>
-            <span>{{ locale.isRtl() ? 'التغذية' : 'Nutrition' }}</span>
-            <span>{{ locale.isRtl() ? 'الحالة' : 'Status' }}</span>
-            <span>{{ locale.isRtl() ? 'إجراء' : 'Action' }}</span>
+      <mm-ops-board>
+        <div class="mm-ops-board__head">
+          <div>
+            <h2>{{ listTitle() }}</h2>
+            <p>{{ listSubtitle() }}</p>
           </div>
-
-          @for (meal of facade.pagedMeals(); track meal.id) {
-            <article
-              class="mm-mn-row"
-              role="row"
-              [attr.data-status]="meal.status"
-            >
-              <a
-                class="mm-mn-row__meal"
-                [routerLink]="mealRoute(meal)"
-              >
-                <img
-                  [src]="meal.imageUrl"
-                  [alt]="mealName(meal)"
-                  loading="lazy"
-                />
-                <div>
-                  <strong>{{ mealName(meal) }}</strong>
-                  <span>{{ mealDescription(meal) }}</span>
-                  <small>{{ mealUpdated(meal) }}</small>
-                </div>
-              </a>
-
-              <div class="mm-mn-row__program">
-                <strong>{{ mealSlot(meal) }}</strong>
-                <span>{{ mealProgram(meal) }} · {{ mealBundle(meal) }}</span>
-                <small
-                  >{{ meal.ingredientCount }} {{ ingredientsUnit() }}</small
-                >
-              </div>
-
-              <div class="mm-mn-row__nutrition">
-                <div class="mm-mn-row__facts">
-                  <span>{{ meal.calories }} {{ kcalUnit() }}</span>
-                  <span>{{ meal.proteinGrams }}g P</span>
-                  <span>{{ meal.carbsGrams }}g C</span>
-                  <span>{{ meal.fatGrams }}g F</span>
-                </div>
-                @if (meal.allergyFlags.length) {
-                  <div class="mm-mn-row__allergens">
-                    <ng-icon name="lucideTriangleAlert" class="size-3" />
-                    @for (flag of meal.allergyFlags; track $index) {
-                      <span>{{ allergenLabel(flag) }}</span>
-                    }
-                  </div>
-                } @else {
-                  <small>{{ mealPrep(meal) }}</small>
-                }
-              </div>
-
-              <div class="mm-mn-row__status">
-                <span class="mm-mn-badge" [attr.data-status]="meal.status">
-                  {{ statusLabel(meal.status) }}
-                </span>
-                <small>{{ mealPrep(meal) }}</small>
-              </div>
-
-              <div class="mm-mn-row__action">
-                <a class="mm-mn-open" [routerLink]="mealRoute(meal)">
-                  <ng-icon name="lucideEye" class="size-3.5" />
-                  {{ openLabel() }}
-                </a>
-                @if (meal.status === 'draft') {
-                  <span class="mm-mn-locked">{{ draftLockedLabel() }}</span>
-                } @else {
-                  <button
-                    type="button"
-                    class="mm-mn-toggle"
-                    [attr.data-status]="meal.status"
-                    [disabled]="facade.togglingId() === meal.id"
-                    (click)="toggleMeal(meal)"
-                  >
-                    <ng-icon
-                      [name]="
-                        meal.status === 'active' ? 'lucidePause' : 'lucidePlay'
-                      "
-                      class="size-3.5"
-                    />
-                    {{
-                      facade.togglingId() === meal.id
-                        ? locale.isRtl()
-                          ? 'جاري...'
-                          : 'Updating...'
-                        : toggleLabel(meal)
-                    }}
-                  </button>
-                }
-              </div>
-            </article>
-          }
+          <span class="mm-ops-count">{{ facade.filteredMeals().length }}</span>
         </div>
 
-        <nav class="mm-mn-pager" [attr.aria-label]="rangeText()">
-          <p class="mm-mn-pager__range">{{ rangeText() }}</p>
-          <div class="mm-mn-pager__controls">
-            <button
-              type="button"
-              class="mm-mn-pager__nav"
-              [disabled]="facade.currentPage() <= 1"
-              (click)="prevPage()"
-            >
-              <ng-icon
-                [name]="locale.isRtl() ? 'lucideChevronRight' : 'lucideChevronLeft'"
-                class="size-4"
-              />
-              <span>{{ prevLabel() }}</span>
-            </button>
+        <mm-ops-toolbar>
+          <label class="mm-ops-search">
+            <ng-icon name="lucideSearch" class="size-4" />
+            <input type="search" [placeholder]="searchPlaceholder()" [ngModel]="facade.search()" (ngModelChange)="onSearch($event)" />
+          </label>
+          <label class="mm-ops-select">
+            <span>{{ slotLabel() }}</span>
+            <select [ngModel]="facade.slot()" (ngModelChange)="onSlotChange($event)">
+              @for (option of slots; track option.id) { <option [value]="option.id">{{ filterLabel(option) }}</option> }
+            </select>
+          </label>
+          <label class="mm-ops-select">
+            <span>{{ programLabel() }}</span>
+            <select [ngModel]="facade.program()" (ngModelChange)="onProgramChange($event)">
+              @for (option of programs; track option.id) { <option [value]="option.id">{{ filterLabel(option) }}</option> }
+            </select>
+          </label>
+          <mm-ops-filters>
+            @for (option of filters; track option.id) {
+              <button type="button" [class.is-active]="facade.filter() === option.id" (click)="setFilter(option.id)">
+                {{ filterLabel(option) }}
+                <b>{{ filterCount(option.id) }}</b>
+              </button>
+            }
+          </mm-ops-filters>
+        </mm-ops-toolbar>
 
-            <div class="mm-mn-pager__pages">
-              @for (pageNum of facade.pageNumbers(); track pageNum) {
-                <button
-                  type="button"
-                  class="mm-mn-pager__page"
-                  [class.is-active]="facade.currentPage() === pageNum"
-                  (click)="goToPage(pageNum)"
-                >
-                  {{ pageNum }}
-                </button>
-              }
+        @if (facade.filteredMeals().length === 0) {
+          <p class="mm-mn-empty">{{ emptyLabel() }}</p>
+        } @else {
+          <div class="mm-mn-table" role="table">
+            <div class="mm-mn-table__head" role="row">
+              <span>{{ locale.isRtl() ? 'الوجبة' : 'Meal' }}</span>
+              <span>{{ locale.isRtl() ? 'الفئة / البرنامج' : 'Slot / Program' }}</span>
+              <span>{{ locale.isRtl() ? 'التغذية' : 'Nutrition' }}</span>
+              <span>{{ locale.isRtl() ? 'الحالة' : 'Status' }}</span>
+              <span>{{ locale.isRtl() ? 'إجراء' : 'Action' }}</span>
             </div>
 
-            <button
-              type="button"
-              class="mm-mn-pager__nav"
-              [disabled]="facade.currentPage() >= facade.totalPages()"
-              (click)="nextPage()"
-            >
-              <span>{{ nextLabel() }}</span>
-              <ng-icon
-                [name]="locale.isRtl() ? 'lucideChevronLeft' : 'lucideChevronRight'"
-                class="size-4"
-              />
-            </button>
+            @for (meal of facade.pagedMeals(); track meal.id) {
+              <article
+                class="mm-mn-row"
+                role="row"
+                [attr.data-status]="meal.status"
+              >
+                <a
+                  class="mm-mn-row__meal"
+                  [routerLink]="mealRoute(meal)"
+                >
+                  <img
+                    [src]="meal.imageUrl"
+                    [alt]="mealName(meal)"
+                    loading="lazy"
+                  />
+                  <div>
+                    <strong>{{ mealName(meal) }}</strong>
+                    <span>{{ mealDescription(meal) }}</span>
+                    <small>{{ mealUpdated(meal) }}</small>
+                  </div>
+                </a>
+
+                <div class="mm-mn-row__program">
+                  <strong>{{ mealSlot(meal) }}</strong>
+                  <span>{{ mealProgram(meal) }} · {{ mealBundle(meal) }}</span>
+                  <small
+                    >{{ meal.ingredientCount }} {{ ingredientsUnit() }}</small
+                  >
+                </div>
+
+                <div class="mm-mn-row__nutrition">
+                  <div class="mm-mn-row__facts">
+                    <span>{{ meal.calories }} {{ kcalUnit() }}</span>
+                    <span>{{ meal.proteinGrams }}g P</span>
+                    <span>{{ meal.carbsGrams }}g C</span>
+                    <span>{{ meal.fatGrams }}g F</span>
+                  </div>
+                  @if (meal.allergyFlags.length) {
+                    <div class="mm-mn-row__allergens">
+                      <ng-icon name="lucideTriangleAlert" class="size-3" />
+                      @for (flag of meal.allergyFlags; track $index) {
+                        <span>{{ allergenLabel(flag) }}</span>
+                      }
+                    </div>
+                  } @else {
+                    <small>{{ mealPrep(meal) }}</small>
+                  }
+                </div>
+
+                <div class="mm-mn-row__status">
+                  <span class="mm-mn-badge" [attr.data-status]="meal.status">
+                    {{ statusLabel(meal.status) }}
+                  </span>
+                  <small>{{ mealPrep(meal) }}</small>
+                </div>
+
+                <div class="mm-mn-row__action">
+                  <a class="mm-mn-open" [routerLink]="mealRoute(meal)">
+                    <ng-icon name="lucideEye" class="size-3.5" />
+                    {{ openLabel() }}
+                  </a>
+                  @if (meal.status === 'draft') {
+                    <span class="mm-mn-locked">{{ draftLockedLabel() }}</span>
+                  } @else {
+                    <button
+                      type="button"
+                      class="mm-mn-toggle"
+                      [attr.data-status]="meal.status"
+                      [disabled]="facade.togglingId() === meal.id"
+                      (click)="toggleMeal(meal)"
+                    >
+                      <ng-icon
+                        [name]="
+                          meal.status === 'active' ? 'lucidePause' : 'lucidePlay'
+                        "
+                        class="size-3.5"
+                      />
+                      {{
+                        facade.togglingId() === meal.id
+                          ? locale.isRtl()
+                            ? 'جاري...'
+                            : 'Updating...'
+                          : toggleLabel(meal)
+                      }}
+                    </button>
+                  }
+                </div>
+              </article>
+            }
           </div>
-        </nav>
-      }
-    </mm-workspace-panel>
+
+          <mm-ops-pager
+            [range]="rangeText()"
+            [currentPage]="facade.currentPage()"
+            [totalPages]="facade.totalPages()"
+            [pages]="facade.pageNumbers()"
+            [rtl]="locale.isRtl()"
+            [prevLabel]="prevLabel()"
+            [nextLabel]="nextLabel()"
+            (prev)="prevPage()"
+            (next)="nextPage()"
+            (goTo)="goToPage($event)"
+          />
+        }
+      </mm-ops-board>
+    </div>
   }
 </div>
