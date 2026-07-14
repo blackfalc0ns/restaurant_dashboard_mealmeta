@@ -209,7 +209,7 @@ export class ServiceRegionsPageComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    timer(650)
+    timer(900)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.loading.set(false));
   }

@@ -344,7 +344,7 @@ export class ServiceRegionDetailPageComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    timer(550)
+    timer(750)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.loading.set(false));
   }
