@@ -17,6 +17,7 @@ import {
   lucidePhone,
   lucidePlay,
   lucideSearch,
+  lucideRoute,
   lucideTriangleAlert,
   lucideUsers,
 } from '@ng-icons/lucide';
@@ -33,6 +34,7 @@ import {
 
 import { pickLocale } from '../overview/overview-i18n';
 import { DriversFacade } from './data/drivers.facade';
+import { TripsFacade } from '../trips/data/trips.facade';
 import { DriversSkeletonComponent } from './drivers-skeleton.component';
 import {
   DriverFilter,
@@ -67,6 +69,7 @@ import {
       lucidePause,
       lucidePhone,
       lucidePlay,
+      lucideRoute,
       lucideSearch,
       lucideTriangleAlert,
       lucideUsers,
@@ -75,6 +78,7 @@ import {
 })
 export class DriversPageComponent implements OnInit {
   readonly facade = inject(DriversFacade);
+  readonly tripsFacade = inject(TripsFacade);
   readonly locale = inject(AppLocaleService);
 
   readonly filters: { id: DriverFilter; labelAr: string; labelEn: string }[] = [
@@ -138,6 +142,7 @@ export class DriversPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.facade.load();
+    this.tripsFacade.ensureLoaded();
   }
 
   onSearch(value: string): void {
@@ -178,6 +183,10 @@ export class DriversPageComponent implements OnInit {
 
   driverNote(driver: RestaurantDriver): string {
     return driver.note ? pickLocale(driver.note, this.locale.locale()) : '';
+  }
+
+  activeTrips(driver: RestaurantDriver): number {
+    return this.tripsFacade.activeTripsByDriverId(driver.id).length;
   }
 
   statusLabel(status: DriverStatus): string {

@@ -116,8 +116,19 @@ const loadDriverDetailPage = () =>
     (m) => m.DriverDetailPageComponent,
   );
 
+const loadRatingsPage = () =>
+  import('./ratings/ratings.page').then((m) => m.RatingsPageComponent);
+
+const loadTripsPage = () =>
+  import('./trips/trips.page').then((m) => m.TripsPageComponent);
+
+const loadTripCreatePage = () =>
+  import('./trips/trip-create.page').then((m) => m.TripCreatePageComponent);
+
+const loadTripDetailPage = () =>
+  import('./trips/trip-detail.page').then((m) => m.TripDetailPageComponent);
+
 const SIDEBAR_LINK_PATHS = [
-  'quality/ratings',
   'finance/dues',
   'finance/deductions',
   'finance/invoices',
@@ -233,6 +244,22 @@ export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   {
     path: 'delivery/drivers',
     loadComponent: loadDriversPage,
+  },
+  {
+    path: 'delivery/trips/create',
+    loadComponent: loadTripCreatePage,
+  },
+  {
+    path: 'delivery/trips/:tripId',
+    loadComponent: loadTripDetailPage,
+  },
+  {
+    path: 'delivery/trips',
+    loadComponent: loadTripsPage,
+  },
+  {
+    path: 'quality/ratings',
+    loadComponent: loadRatingsPage,
   },
   ...SIDEBAR_LINK_PATHS.map((path) => ({
     path,

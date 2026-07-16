@@ -242,6 +242,75 @@
               }
             </div>
           </section>
+
+          <section class="mm-dr-panel">
+            <div class="mm-dr-panel__head">
+              <span class="mm-dr-panel__icon">
+                <ng-icon name="lucideRoute" class="size-4" />
+              </span>
+              <div>
+                <small>{{ text('الرحلات', 'Trips') }}</small>
+                <h2>{{ text('رحلات هذا المندوب', 'Trips for this driver') }}</h2>
+              </div>
+              <span class="mm-ops-count">{{ driverTrips().length }}</span>
+            </div>
+
+            @if (driverTrips().length === 0) {
+              <p class="mm-dr-trips-empty">
+                {{
+                  text(
+                    'لا توجد رحلات مرتبطة بهذا المندوب بعد.',
+                    'No trips linked to this driver yet.'
+                  )
+                }}
+              </p>
+              <a
+                class="mm-dr-trips-cta"
+                routerLink="/restaurant/delivery/trips/create"
+              >
+                {{ text('إنشاء رحلة وتعيينه', 'Create a trip & assign') }}
+              </a>
+            } @else {
+              <ul class="mm-dr-trips">
+                @for (trip of driverTrips(); track trip.id) {
+                  <li>
+                    <a
+                      class="mm-dr-trip"
+                      [attr.data-status]="trip.status"
+                      [routerLink]="['/restaurant/delivery/trips', trip.id]"
+                    >
+                      <div class="mm-dr-trip__main">
+                        <div class="mm-dr-trip__topline">
+                          <strong dir="ltr">{{ trip.code }}</strong>
+                          <span
+                            class="mm-tp-badge"
+                            [attr.data-status]="trip.status"
+                          >
+                            {{ tripStatusLabel(trip.status) }}
+                          </span>
+                        </div>
+                        <p>{{ tripZone(trip) }} · {{ tripShift(trip) }}</p>
+                        <div class="mm-dr-trip__meta">
+                          <span>
+                            {{ trip.customerCount }}
+                            {{ text('عملاء', 'customers') }}
+                          </span>
+                          <span>
+                            {{ trip.boxCount }}
+                            {{ text('بوكس', 'boxes') }}
+                          </span>
+                        </div>
+                      </div>
+                      <ng-icon
+                        [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                        class="size-4"
+                      />
+                    </a>
+                  </li>
+                }
+              </ul>
+            }
+          </section>
         </mm-ops-main>
 
         <mm-ops-side>
@@ -271,6 +340,10 @@
               <div class="mm-dr-meta__item">
                 <span>{{ text('اليوم', 'Today') }}</span>
                 <strong>{{ driver.deliveriesToday }} {{ text('توصيلة', 'deliveries') }}</strong>
+              </div>
+              <div class="mm-dr-meta__item">
+                <span>{{ text('رحلات نشطة', 'Active trips') }}</span>
+                <strong>{{ activeTripCount() }}</strong>
               </div>
               <div class="mm-dr-meta__item">
                 <span>{{ text('الأسبوع', 'Week') }}</span>

@@ -118,6 +118,13 @@
                     {{ driver.deliveriesWeek }}
                     {{ locale.isRtl() ? 'هذا الأسبوع' : 'this week' }}
                   </span>
+                  @if (activeTrips(driver) > 0) {
+                    <span class="mm-dr-row__trips">
+                      <ng-icon name="lucideRoute" class="size-3" />
+                      {{ activeTrips(driver) }}
+                      {{ locale.isRtl() ? 'رحلات نشطة' : 'active trips' }}
+                    </span>
+                  }
                 </div>
 
                 <div class="mm-dr-row__status">

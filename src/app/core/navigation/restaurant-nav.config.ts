@@ -155,6 +155,13 @@ export const RESTAURANT_NAV_SECTIONS: RestaurantNavSection[] = [
     icon: 'lucideTruck',
     items: [
       {
+        id: 'trips',
+        labelAr: 'الرحلات',
+        labelEn: 'Trips',
+        route: '/restaurant/delivery/trips',
+        icon: 'lucideRoute',
+      },
+      {
         id: 'drivers',
         labelAr: 'السائقون',
         labelEn: 'Drivers',

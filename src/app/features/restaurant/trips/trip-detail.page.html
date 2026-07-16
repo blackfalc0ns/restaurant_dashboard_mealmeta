@@ -1,0 +1,258 @@
+<div class="mm-tp-detail__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-trips-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (notFound()) {
+    <mm-page-state
+      viewState="empty"
+      [emptyMessage]="text('الرحلة غير موجودة.', 'Trip not found.')"
+    />
+  }
+
+  @if (trip(); as trip) {
+    <div class="mm-ops-scroll">
+      <mm-ops-detail-hero
+        icon="lucideRoute"
+        [title]="trip.code"
+        [subtitle]="zone(trip)"
+        [kicker]="text('رحلة توصيل', 'Delivery trip')"
+        [status]="trip.status"
+      >
+        <a opsBack class="mm-ops-back" routerLink="/restaurant/delivery/trips">
+          <ng-icon
+            [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+            class="size-3.5"
+          />
+          {{ text('العودة للرحلات', 'Back to trips') }}
+        </a>
+
+        <span opsBadge class="mm-tp-badge" [attr.data-status]="trip.status">
+          {{ statusLabel(trip.status) }}
+        </span>
+
+        <div opsStats class="contents">
+          <div class="mm-tp-stat">
+            <ng-icon name="lucideUsers" class="size-4" />
+            <div>
+              <small>{{ text('عملاء', 'Customers') }}</small>
+              <strong>{{ trip.customerCount }}</strong>
+            </div>
+          </div>
+          <div class="mm-tp-stat">
+            <ng-icon name="lucidePackage" class="size-4" />
+            <div>
+              <small>{{ text('بوكسات', 'Boxes') }}</small>
+              <strong>{{ trip.boxCount }}</strong>
+            </div>
+          </div>
+          <div class="mm-tp-stat">
+            <ng-icon name="lucideTimer" class="size-4" />
+            <div>
+              <small>{{ text('الوردية', 'Shift') }}</small>
+              <strong>{{ shift(trip) }}</strong>
+            </div>
+          </div>
+        </div>
+      </mm-ops-detail-hero>
+
+      @if (note(trip); as tripNote) {
+        <div class="mm-tp-callout" [attr.data-status]="trip.status">
+          <span>
+            <ng-icon [name]="calloutIcon(trip.status)" class="size-4" />
+          </span>
+          <p>{{ tripNote }}</p>
+        </div>
+      }
+
+      <section class="mm-tp-progress">
+        <div class="mm-tp-progress__head">
+          <div>
+            <small>{{ text('تقدّم الرحلة', 'Trip progress') }}</small>
+            <strong>
+              {{ deliveredCount() }}/{{ trip.stops.length }}
+              {{ text('محطات مكتملة', 'stops done') }}
+            </strong>
+          </div>
+          <b>{{ progressPercent() }}%</b>
+        </div>
+        <div class="mm-tp-progress__track" aria-hidden="true">
+          <i [style.width.%]="progressPercent()"></i>
+        </div>
+        <div class="mm-tp-progress__route" aria-hidden="true">
+          @for (stop of trip.stops; track stop.id; let last = $last) {
+            <span class="mm-tp-progress__dot" [attr.data-status]="stop.status">
+              <ng-icon [name]="stopIcon(stop.status)" class="size-3" />
+            </span>
+            @if (!last) {
+              <em class="mm-tp-progress__line"></em>
+            }
+          }
+        </div>
+      </section>
+
+      <mm-ops-split>
+        <mm-ops-main>
+          <section class="mm-tp-panel">
+            <div class="mm-tp-panel__head">
+              <span class="mm-tp-panel__icon">
+                <ng-icon name="lucideMapPinned" class="size-4" />
+              </span>
+              <div>
+                <small>{{ text('محطات الرحلة', 'Trip stops') }}</small>
+                <h2>
+                  {{ text('ترتيب التوصيل في هذه الرحلة', 'Delivery order on this trip') }}
+                </h2>
+              </div>
+              <span class="mm-ops-count">{{ trip.stops.length }}</span>
+            </div>
+
+            <ol class="mm-tp-stops">
+              @for (stop of trip.stops; track stop.id; let i = $index; let last = $last) {
+                <li [attr.data-status]="stop.status" [class.is-last]="last">
+                  <span class="mm-tp-stops__marker" aria-hidden="true">
+                    <ng-icon [name]="stopIcon(stop.status)" class="size-3.5" />
+                  </span>
+                  <article class="mm-tp-stops__card">
+                    <div class="mm-tp-stops__topline">
+                      <div class="mm-tp-stops__identity">
+                        <b class="mm-tp-stops__step">
+                          {{ text('محطة', 'Stop') }} {{ i + 1 }}
+                        </b>
+                        <strong dir="ltr">{{ stop.orderCode }}</strong>
+                      </div>
+                      <span
+                        class="mm-tp-stop-badge"
+                        [attr.data-status]="stop.status"
+                      >
+                        {{ stopStatusLabel(stop.status) }}
+                      </span>
+                    </div>
+
+                    <p class="mm-tp-stops__meal">{{ stopMeal(stop) }}</p>
+
+                    <div class="mm-tp-stops__chips">
+                      <span dir="ltr">{{ stop.customerMaskedId }}</span>
+                      <span>
+                        <ng-icon name="lucideMapPinned" class="size-3.5" />
+                        {{ stopZone(stop) }}
+                      </span>
+                      <span>
+                        <ng-icon name="lucidePackage" class="size-3.5" />
+                        {{ stop.boxCount }}
+                        {{ text('بوكس', 'box') }}
+                      </span>
+                      <span>
+                        <ng-icon name="lucideClock3" class="size-3.5" />
+                        {{ stopSlot(stop) }}
+                      </span>
+                    </div>
+                  </article>
+                </li>
+              }
+            </ol>
+          </section>
+        </mm-ops-main>
+
+        <mm-ops-side>
+          <mm-ops-side-card>
+            <div class="mm-tp-side-head">
+              <span><ng-icon name="lucideUserRound" class="size-4" /></span>
+              <div>
+                <small>{{ text('السائق', 'Driver') }}</small>
+                <strong>{{ text('معيّن من مسئول التوصيل', 'Assigned by dispatch') }}</strong>
+              </div>
+            </div>
+
+            <div class="mm-tp-side-driver">
+              <span class="mm-tp-avatar" aria-hidden="true">
+                {{ driverInitial(trip) }}
+              </span>
+              <div>
+                <strong>{{ driverName(trip) }}</strong>
+                @if (trip.driverCode) {
+                  <span dir="ltr">{{ trip.driverCode }}</span>
+                }
+                @if (linkedDriver(); as driver) {
+                  <small>
+                    {{ pickVehicle(driver) }}
+                    ·
+                    <bdi>{{ driver.plateNumber }}</bdi>
+                  </small>
+                }
+              </div>
+            </div>
+
+            @if (trip.driverId) {
+              <a
+                class="mm-tp-side-link"
+                [routerLink]="['/restaurant/delivery/drivers', trip.driverId]"
+              >
+                {{ text('عرض ملف السائق', 'View driver profile') }}
+              </a>
+            }
+          </mm-ops-side-card>
+
+          <mm-ops-side-card>
+            <div class="mm-tp-side-head">
+              <span><ng-icon name="lucideRoute" class="size-4" /></span>
+              <div>
+                <small>{{ text('التشغيل', 'Operations') }}</small>
+                <strong>{{ text('ملخص الرحلة', 'Trip summary') }}</strong>
+              </div>
+            </div>
+
+            <div class="mm-tp-meta">
+              <div class="mm-tp-meta__item">
+                <span>{{ text('الحالة', 'Status') }}</span>
+                <strong class="mm-tp-badge" [attr.data-status]="trip.status">
+                  {{ statusLabel(trip.status) }}
+                </strong>
+              </div>
+              <div class="mm-tp-meta__item">
+                <span>{{ text('مسئول التوصيل', 'Dispatch officer') }}</span>
+                <strong>{{ dispatcher(trip) }}</strong>
+              </div>
+              <div class="mm-tp-meta__item">
+                <span>{{ text('المنطقة', 'Zone') }}</span>
+                <strong>{{ zone(trip) }}</strong>
+              </div>
+              <div class="mm-tp-meta__item">
+                <span>{{ text('أُنشئت', 'Created') }}</span>
+                <strong>{{ createdAt(trip) }}</strong>
+              </div>
+              <div class="mm-tp-meta__item">
+                <span>{{ text('بدأت', 'Started') }}</span>
+                <strong>{{ startedAt(trip) }}</strong>
+              </div>
+              <div class="mm-tp-meta__item">
+                <span>{{ text('اكتملت', 'Completed') }}</span>
+                <strong>{{ completedAt(trip) }}</strong>
+              </div>
+            </div>
+          </mm-ops-side-card>
+
+          <mm-ops-side-card class="mm-tp-side-help">
+            <p class="mm-tp-side-note">
+              <ng-icon name="lucideInfo" class="size-3.5" />
+              {{
+                text(
+                  'الرحلة تجمع عدة عملاء وبوكسات تحت سائق واحد يختاره مسئول التوصيل.',
+                  'A trip groups multiple customers and boxes under one driver chosen by dispatch.'
+                )
+              }}
+            </p>
+          </mm-ops-side-card>
+        </mm-ops-side>
+      </mm-ops-split>
+    </div>
+  }
+</div>

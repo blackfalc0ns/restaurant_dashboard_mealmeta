@@ -1,0 +1,183 @@
+<div class="mm-rt-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-ratings-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <div class="mm-ops-scroll">
+      <mm-ops-hero
+        icon="lucideStar"
+        [eyebrow]="dateLabel()"
+        [title]="title()"
+        [subtitle]="subtitle()"
+      >
+        <ng-container opsMetrics>
+          @for (card of data.summaries; track card.id) {
+            <div>
+              <small>{{ summaryLabel(card) }}</small>
+              <strong>{{ card.value }}</strong>
+            </div>
+          }
+        </ng-container>
+      </mm-ops-hero>
+
+      <section class="mm-rt-scorebar">
+        <div class="mm-rt-scorebar__avg">
+          <strong>{{ data.averageRating | number: '1.1-1' }}</strong>
+          <div class="mm-rt-stars" aria-hidden="true">
+            @for (filled of avgStars(); track $index) {
+              <ng-icon name="lucideStar" class="size-3.5" [class.is-filled]="filled" />
+            }
+          </div>
+          <small>
+            {{
+              locale.isRtl()
+                ? `من ${data.ratingsCount} تقييم`
+                : `From ${data.ratingsCount} ratings`
+            }}
+          </small>
+        </div>
+
+        <div class="mm-rt-highlight">
+          <header>
+            <ng-icon name="lucideTrendingUp" class="size-3.5" />
+            <h3>{{ locale.isRtl() ? 'الأعلى تقييمًا' : 'Top rated' }}</h3>
+          </header>
+          <ul>
+            @for (meal of data.topMeals; track meal.id) {
+              <li>
+                <span>{{ mealName(meal) }}</span>
+                <b>
+                  <ng-icon name="lucideArrowUp" class="size-3" />
+                  {{ meal.averageStars | number: '1.1-1' }}
+                  <small>({{ meal.ratingsCount }})</small>
+                </b>
+              </li>
+            }
+          </ul>
+        </div>
+
+        <div class="mm-rt-highlight mm-rt-highlight--low">
+          <header>
+            <ng-icon name="lucideTrendingDown" class="size-3.5" />
+            <h3>{{ locale.isRtl() ? 'الأدنى تقييمًا' : 'Lowest rated' }}</h3>
+          </header>
+          <ul>
+            @for (meal of data.lowestMeals; track meal.id) {
+              <li>
+                <span>{{ mealName(meal) }}</span>
+                <b>
+                  <ng-icon name="lucideArrowDown" class="size-3" />
+                  {{ meal.averageStars | number: '1.1-1' }}
+                  <small>({{ meal.ratingsCount }})</small>
+                </b>
+              </li>
+            }
+          </ul>
+        </div>
+      </section>
+
+      <mm-ops-board>
+        <div class="mm-ops-board__head">
+          <div>
+            <h2>{{ locale.isRtl() ? 'كل التقييمات' : 'All ratings' }}</h2>
+            <p>
+              {{
+                locale.isRtl()
+                  ? 'تعليقات العملاء على الوجبات بعد التسليم'
+                  : 'Customer notes on meals after delivery'
+              }}
+            </p>
+          </div>
+          <span class="mm-ops-count">{{ facade.filteredRatings().length }}</span>
+        </div>
+
+        <mm-ops-toolbar>
+          <label class="mm-ops-search">
+            <ng-icon name="lucideSearch" class="size-4" />
+            <input
+              type="search"
+              [placeholder]="searchPlaceholder()"
+              [ngModel]="facade.search()"
+              (ngModelChange)="onSearch($event)"
+            />
+          </label>
+          <mm-ops-filters>
+            @for (option of filters; track option.id) {
+              <button
+                type="button"
+                [class.is-active]="facade.filter() === option.id"
+                (click)="setFilter(option.id)"
+              >
+                {{ filterLabel(option) }}
+                <b>{{ filterCount(option.id) }}</b>
+              </button>
+            }
+          </mm-ops-filters>
+        </mm-ops-toolbar>
+
+        @if (facade.filteredRatings().length === 0) {
+          <p class="mm-rt-empty">{{ emptyLabel() }}</p>
+        } @else {
+          <ul class="mm-rt-list">
+            @for (item of facade.pagedRatings(); track item.id) {
+              <li class="mm-rt-card" [attr.data-stars]="item.stars">
+                <div class="mm-rt-card__avatar" aria-hidden="true">
+                  {{ mealName(item).charAt(0) }}
+                </div>
+                <div class="mm-rt-card__body">
+                  <div class="mm-rt-card__top">
+                    <strong>{{ mealName(item) }}</strong>
+                    <time>{{ ratingTime(item) }}</time>
+                  </div>
+                  <div class="mm-rt-stars" aria-hidden="true">
+                    @for (filled of starFlags(item.stars); track $index) {
+                      <ng-icon
+                        name="lucideStar"
+                        class="size-3.5"
+                        [class.is-filled]="filled"
+                      />
+                    }
+                  </div>
+                  <p class="mm-rt-card__comment">“{{ ratingComment(item) }}”</p>
+                  <div class="mm-rt-card__meta">
+                    <span dir="ltr">{{ item.orderRef }}</span>
+                    <span>{{ programLabel(item) }}</span>
+                  </div>
+                </div>
+              </li>
+            }
+          </ul>
+
+          @if (facade.totalPages() > 1) {
+            <mm-ops-pager
+              [range]="rangeText()"
+              [currentPage]="facade.currentPage()"
+              [totalPages]="facade.totalPages()"
+              [pages]="facade.pageNumbers()"
+              [rtl]="locale.isRtl()"
+              [prevLabel]="prevLabel()"
+              [nextLabel]="nextLabel()"
+              (prev)="prevPage()"
+              (next)="nextPage()"
+              (goTo)="goToPage($event)"
+            />
+          }
+        }
+
+        <p class="mm-rt-note">
+          <ng-icon name="lucideInfo" class="size-3.5" />
+          {{ note() }}
+        </p>
+      </mm-ops-board>
+    </div>
+  }
+</div>

@@ -1,0 +1,218 @@
+<div class="mm-tp-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-trips-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <div class="mm-ops-scroll">
+      <mm-ops-hero
+        icon="lucideRoute"
+        [eyebrow]="dateLabel()"
+        [title]="title()"
+        [subtitle]="subtitle()"
+      >
+        <a
+          opsAside
+          routerLink="/restaurant/delivery/trips/create"
+          class="mm-tp-create"
+        >
+          <ng-icon name="lucidePlus" class="size-4" />
+          {{ locale.isRtl() ? 'إنشاء رحلة' : 'Create trip' }}
+        </a>
+
+        <ng-container opsMetrics>
+          @for (card of data.summaries; track card.id) {
+            <div>
+              <small>{{ summaryLabel(card) }}</small>
+              <strong>{{ card.value }}</strong>
+            </div>
+          }
+        </ng-container>
+      </mm-ops-hero>
+
+      @if (data.candidates.length > 0) {
+        <a routerLink="/restaurant/delivery/trips/create" class="mm-tp-ready">
+          <span class="mm-tp-ready__icon" aria-hidden="true">
+            <ng-icon name="lucidePackage" class="size-4" />
+          </span>
+          <div class="mm-tp-ready__copy">
+            <strong>
+              {{
+                locale.isRtl()
+                  ? `${readyBoxCount()} بوكس جاهز للتجميع`
+                  : `${readyBoxCount()} boxes ready to group`
+              }}
+            </strong>
+            <p>
+              {{
+                locale.isRtl()
+                  ? `${data.candidates.length} محطات بانتظار رحلة — اختر السائق وأرسل`
+                  : `${data.candidates.length} stops waiting for a trip — pick a driver and send`
+              }}
+            </p>
+          </div>
+          <span class="mm-tp-ready__cta">
+            {{ locale.isRtl() ? 'تجميع الآن' : 'Group now' }}
+            <ng-icon
+              [name]="locale.isRtl() ? 'lucideChevronLeft' : 'lucideChevronRight'"
+              class="size-3.5"
+            />
+          </span>
+        </a>
+      }
+
+      <mm-ops-board>
+        <div class="mm-ops-board__head">
+          <div>
+            <h2>{{ locale.isRtl() ? 'رحلات اليوم' : 'Today’s trips' }}</h2>
+            <p>
+              {{
+                locale.isRtl()
+                  ? 'كل رحلة = سائق واحد + عدة محطات/بوكسات'
+                  : 'Each trip = one driver + multiple stops/boxes'
+              }}
+            </p>
+          </div>
+          <span class="mm-ops-count">{{ facade.filteredTrips().length }}</span>
+        </div>
+
+        <mm-ops-toolbar>
+          <label class="mm-ops-search">
+            <ng-icon name="lucideSearch" class="size-4" />
+            <input
+              type="search"
+              [placeholder]="searchPlaceholder()"
+              [ngModel]="facade.search()"
+              (ngModelChange)="onSearch($event)"
+            />
+          </label>
+          <mm-ops-filters>
+            @for (option of filters; track option.id) {
+              <button
+                type="button"
+                [class.is-active]="facade.filter() === option.id"
+                (click)="setFilter(option.id)"
+              >
+                {{ filterLabel(option) }}
+                <b>{{ filterCount(option.id) }}</b>
+              </button>
+            }
+          </mm-ops-filters>
+        </mm-ops-toolbar>
+
+        @if (facade.filteredTrips().length === 0) {
+          <p class="mm-tp-empty">{{ emptyLabel() }}</p>
+        } @else {
+          <div class="mm-tp-list">
+            @for (trip of facade.pagedTrips(); track trip.id) {
+              <a
+                class="mm-tp-card"
+                [attr.data-status]="trip.status"
+                [routerLink]="['/restaurant/delivery/trips', trip.id]"
+              >
+                <span class="mm-tp-card__accent" aria-hidden="true"></span>
+
+                <div class="mm-tp-card__main">
+                  <div class="mm-tp-card__topline">
+                    <span class="mm-tp-code" dir="ltr">{{ trip.code }}</span>
+                    <span class="mm-tp-shift">{{ shift(trip) }}</span>
+                    <span class="mm-tp-badge" [attr.data-status]="trip.status">
+                      {{ statusLabel(trip.status) }}
+                    </span>
+                  </div>
+
+                  <h3 class="mm-tp-card__zone">
+                    <ng-icon name="lucideMapPinned" class="size-4" />
+                    {{ zone(trip) }}
+                  </h3>
+
+                  <div class="mm-tp-route" aria-hidden="true">
+                    @for (stop of trip.stops; track stop.id; let last = $last) {
+                      <i
+                        class="mm-tp-route__dot"
+                        [attr.data-status]="stop.status"
+                      ></i>
+                      @if (!last) {
+                        <span class="mm-tp-route__line"></span>
+                      }
+                    }
+                  </div>
+
+                  <div class="mm-tp-card__meta">
+                    <span>
+                      <ng-icon name="lucideUsers" class="size-3.5" />
+                      {{ trip.customerCount }}
+                      {{ locale.isRtl() ? 'عملاء' : 'customers' }}
+                    </span>
+                    <span>
+                      <ng-icon name="lucidePackage" class="size-3.5" />
+                      {{ trip.boxCount }}
+                      {{ locale.isRtl() ? 'بوكس' : 'boxes' }}
+                    </span>
+                    <span>
+                      <ng-icon name="lucideClock3" class="size-3.5" />
+                      {{ createdAt(trip) }}
+                    </span>
+                    @if (trip.status === 'in_progress' || trip.status === 'completed') {
+                      <span class="mm-tp-card__progress">
+                        {{ deliveredCount(trip) }}/{{ trip.stops.length }}
+                        {{ locale.isRtl() ? 'تم التسليم' : 'delivered' }}
+                      </span>
+                    }
+                  </div>
+                </div>
+
+                <div class="mm-tp-card__driver">
+                  <span class="mm-tp-avatar" aria-hidden="true">
+                    {{ driverInitial(trip) }}
+                  </span>
+                  <div>
+                    <strong>{{ driverName(trip) }}</strong>
+                    @if (trip.driverCode) {
+                      <small dir="ltr">{{ trip.driverCode }}</small>
+                    }
+                  </div>
+                </div>
+
+                <span class="mm-tp-card__chevron" aria-hidden="true">
+                  <ng-icon
+                    [name]="locale.isRtl() ? 'lucideChevronLeft' : 'lucideChevronRight'"
+                    class="size-4"
+                  />
+                </span>
+              </a>
+            }
+          </div>
+
+          @if (facade.totalPages() > 1) {
+            <mm-ops-pager
+              [range]="rangeText()"
+              [currentPage]="facade.currentPage()"
+              [totalPages]="facade.totalPages()"
+              [pages]="facade.pageNumbers()"
+              [rtl]="locale.isRtl()"
+              [prevLabel]="prevLabel()"
+              [nextLabel]="nextLabel()"
+              (prev)="prevPage()"
+              (next)="nextPage()"
+              (goTo)="goToPage($event)"
+            />
+          }
+        }
+
+        <p class="mm-tp-note">
+          <ng-icon name="lucideInfo" class="size-3.5" />
+          {{ note() }}
+        </p>
+      </mm-ops-board>
+    </div>
+  }
+</div>

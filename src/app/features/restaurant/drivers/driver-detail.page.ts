@@ -23,6 +23,7 @@ import {
   lucidePause,
   lucidePhone,
   lucidePlay,
+  lucideRoute,
   lucideShieldAlert,
   lucideTriangleAlert,
   lucideUserRound,
@@ -41,6 +42,8 @@ import {
 
 import { pickLocale } from '../overview/overview-i18n';
 import { DriversFacade } from './data/drivers.facade';
+import { TripsFacade } from '../trips/data/trips.facade';
+import { DeliveryTrip, TripStatus } from '../trips/models/trip.model';
 import { DriverDetailSkeletonComponent } from './driver-detail-skeleton.component';
 import {
   DriverDocument,
@@ -83,6 +86,7 @@ import {
       lucidePause,
       lucidePhone,
       lucidePlay,
+      lucideRoute,
       lucideShieldAlert,
       lucideTriangleAlert,
       lucideUserRound,
@@ -91,6 +95,7 @@ import {
 })
 export class DriverDetailPageComponent implements OnInit {
   readonly facade = inject(DriversFacade);
+  readonly tripsFacade = inject(TripsFacade);
   readonly locale = inject(AppLocaleService);
   private readonly route = inject(ActivatedRoute);
 
@@ -112,8 +117,21 @@ export class DriverDetailPageComponent implements OnInit {
       !this.driver(),
   );
 
+  readonly driverTrips = computed(() => {
+    const id = this.driverId();
+    if (!id) return [];
+    return this.tripsFacade.tripsByDriverId(id);
+  });
+
+  readonly activeTripCount = computed(() => {
+    const id = this.driverId();
+    if (!id) return 0;
+    return this.tripsFacade.activeTripsByDriverId(id).length;
+  });
+
   ngOnInit(): void {
     this.facade.ensureLoaded();
+    this.tripsFacade.ensureLoaded();
   }
 
   text(ar: string, en: string): string {
@@ -236,5 +254,29 @@ export class DriverDetailPageComponent implements OnInit {
   toggle(driver: RestaurantDriver): void {
     if (!this.canToggle(driver) || this.isToggling(driver)) return;
     this.facade.toggleEnabled(driver.id);
+  }
+
+  tripZone(trip: DeliveryTrip): string {
+    return pickLocale(trip.zoneLabel, this.locale.locale());
+  }
+
+  tripShift(trip: DeliveryTrip): string {
+    return pickLocale(trip.shiftLabel, this.locale.locale());
+  }
+
+  tripStatusLabel(status: TripStatus): string {
+    const rtl = this.locale.isRtl();
+    switch (status) {
+      case 'draft':
+        return rtl ? 'مسودة' : 'Draft';
+      case 'assigned':
+        return rtl ? 'مسنَدة' : 'Assigned';
+      case 'in_progress':
+        return rtl ? 'قيد التنفيذ' : 'In progress';
+      case 'completed':
+        return rtl ? 'مكتملة' : 'Completed';
+      case 'cancelled':
+        return rtl ? 'ملغاة' : 'Cancelled';
+    }
   }
 }
