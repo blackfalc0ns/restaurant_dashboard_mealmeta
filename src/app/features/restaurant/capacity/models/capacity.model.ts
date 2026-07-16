@@ -1,13 +1,21 @@
 import { LocalizedText } from '../../overview/models/restaurant-overview.model';
 
+export type BusyKind = 'none' | 'capacity' | 'manual';
+
 export interface CapacityDaySnapshot {
   id: string;
   dateIso: string;
   weekdayLabel: LocalizedText;
+  dateLabel: LocalizedText;
   confirmed: number;
   limit: number;
+  /** True when capacity full or manual Busy is on. */
   busy: boolean;
+  busyKind: BusyKind;
+  manualBusy: boolean;
   isToday: boolean;
+  isPast: boolean;
+  canToggleManual: boolean;
 }
 
 export interface RestaurantCapacityData {
@@ -18,6 +26,7 @@ export interface RestaurantCapacityData {
   confirmedToday: number;
   nearLimitThreshold: number;
   updatedAtLabel: LocalizedText;
-  note: LocalizedText;
-  week: CapacityDaySnapshot[];
+  capacityNote: LocalizedText;
+  busyNote: LocalizedText;
+  days: CapacityDaySnapshot[];
 }

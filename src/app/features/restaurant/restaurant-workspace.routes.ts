@@ -108,9 +108,15 @@ const loadServiceRegionDetailPage = () =>
 const loadCapacityPage = () =>
   import('./capacity/capacity.page').then((m) => m.CapacityPageComponent);
 
+const loadDriversPage = () =>
+  import('./drivers/drivers.page').then((m) => m.DriversPageComponent);
+
+const loadDriverDetailPage = () =>
+  import('./drivers/driver-detail.page').then(
+    (m) => m.DriverDetailPageComponent,
+  );
+
 const SIDEBAR_LINK_PATHS = [
-  'operations/availability',
-  'delivery/drivers',
   'quality/ratings',
   'finance/dues',
   'finance/deductions',
@@ -214,6 +220,19 @@ export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   {
     path: 'operations/capacity',
     loadComponent: loadCapacityPage,
+  },
+  {
+    path: 'operations/availability',
+    redirectTo: 'operations/capacity',
+    pathMatch: 'full',
+  },
+  {
+    path: 'delivery/drivers/:driverId',
+    loadComponent: loadDriverDetailPage,
+  },
+  {
+    path: 'delivery/drivers',
+    loadComponent: loadDriversPage,
   },
   ...SIDEBAR_LINK_PATHS.map((path) => ({
     path,

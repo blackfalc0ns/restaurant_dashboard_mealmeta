@@ -1,0 +1,188 @@
+<div class="mm-dr-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-drivers-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <div class="mm-ops-scroll">
+      <mm-ops-hero
+        icon="lucideUsers"
+        [eyebrow]="dateLabel()"
+        [title]="title()"
+        [subtitle]="subtitle()"
+      >
+        <ng-container opsMetrics>
+          @for (card of data.summaries; track card.id) {
+            <div>
+              <small>{{ summaryLabel(card) }}</small>
+              <strong>{{ card.value }}</strong>
+            </div>
+          }
+        </ng-container>
+      </mm-ops-hero>
+
+      <mm-ops-board>
+        <div class="mm-ops-board__head">
+          <div>
+            <h2>{{ locale.isRtl() ? 'سائقو المطعم' : 'Restaurant drivers' }}</h2>
+            <p>{{ locale.isRtl() ? 'إدارة التفعيل والاعتماد والرخص' : 'Manage activation, approval, and licenses' }}</p>
+          </div>
+          <span class="mm-ops-count">{{ facade.filteredDrivers().length }}</span>
+        </div>
+
+        <mm-ops-toolbar>
+          <label class="mm-ops-search">
+            <ng-icon name="lucideSearch" class="size-4" />
+            <input
+              type="search"
+              [placeholder]="searchPlaceholder()"
+              [ngModel]="facade.search()"
+              (ngModelChange)="onSearch($event)"
+            />
+          </label>
+          <mm-ops-filters>
+            @for (option of filters; track option.id) {
+              <button
+                type="button"
+                [class.is-active]="facade.filter() === option.id"
+                (click)="setFilter(option.id)"
+              >
+                {{ filterLabel(option) }}
+                <b>{{ filterCount(option.id) }}</b>
+              </button>
+            }
+          </mm-ops-filters>
+        </mm-ops-toolbar>
+
+        @if (facade.filteredDrivers().length === 0) {
+          <p class="mm-dr-empty">{{ emptyLabel() }}</p>
+        } @else {
+          <div class="mm-dr-table" role="table">
+            <div class="mm-dr-table__head" role="row">
+              <span>{{ locale.isRtl() ? 'السائق' : 'Driver' }}</span>
+              <span>{{ locale.isRtl() ? 'المركبة' : 'Vehicle' }}</span>
+              <span>{{ locale.isRtl() ? 'الرخصة' : 'License' }}</span>
+              <span>{{ locale.isRtl() ? 'التوصيلات' : 'Deliveries' }}</span>
+              <span>{{ locale.isRtl() ? 'الحالة' : 'Status' }}</span>
+              <span>{{ locale.isRtl() ? 'إجراء' : 'Action' }}</span>
+            </div>
+
+            @for (driver of facade.pagedDrivers(); track driver.id) {
+              <a
+                class="mm-dr-row"
+                role="row"
+                [attr.data-status]="driver.status"
+                [routerLink]="['/restaurant/delivery/drivers', driver.id]"
+              >
+                <div class="mm-dr-row__driver">
+                  <strong>{{ driverName(driver) }}</strong>
+                  <span class="mm-dr-row__phone" dir="ltr">
+                    <ng-icon name="lucidePhone" class="size-3" />
+                    {{ driver.phone }}
+                  </span>
+                  <small>{{ updatedAt(driver) }}</small>
+                </div>
+
+                <div class="mm-dr-row__vehicle">
+                  <strong>
+                    <ng-icon name="lucideCar" class="size-3.5" />
+                    {{ vehicleLabel(driver) }}
+                  </strong>
+                  <span dir="ltr">{{ driver.plateNumber }}</span>
+                </div>
+
+                <div class="mm-dr-row__license">
+                  <strong>
+                    <ng-icon name="lucideIdCard" class="size-3.5" />
+                    {{ driver.licenseNumber }}
+                  </strong>
+                  <span [class.is-alert]="driver.licenseExpiringSoon">
+                    {{ licenseExpiry(driver) }}
+                  </span>
+                </div>
+
+                <div class="mm-dr-row__stats">
+                  <strong>
+                    {{ driver.deliveriesToday }}
+                    <small>{{ locale.isRtl() ? 'اليوم' : 'today' }}</small>
+                  </strong>
+                  <span>
+                    {{ driver.deliveriesWeek }}
+                    {{ locale.isRtl() ? 'هذا الأسبوع' : 'this week' }}
+                  </span>
+                </div>
+
+                <div class="mm-dr-row__status">
+                  <span class="mm-dr-badge" [attr.data-status]="driver.status">
+                    {{ statusLabel(driver.status) }}
+                  </span>
+                  @if (driverNote(driver); as note) {
+                    <small>{{ note }}</small>
+                  }
+                </div>
+
+                <div class="mm-dr-row__action">
+                  @if (canToggle(driver)) {
+                    <button
+                      type="button"
+                      class="mm-dr-toggle"
+                      [attr.data-mode]="driver.status === 'disabled' ? 'enable' : 'disable'"
+                      [disabled]="isToggling(driver)"
+                      (click)="toggle($event, driver)"
+                    >
+                      @if (isToggling(driver)) {
+                        <ng-icon name="lucideLoaderCircle" class="size-3.5 animate-spin" />
+                      } @else if (driver.status === 'disabled') {
+                        <ng-icon name="lucidePlay" class="size-3.5" />
+                      } @else {
+                        <ng-icon name="lucidePause" class="size-3.5" />
+                      }
+                      {{ toggleLabel(driver) }}
+                    </button>
+                  } @else if (driver.status === 'pending') {
+                    <small class="mm-dr-row__hint">
+                      {{ locale.isRtl() ? 'بانتظار الأدمن' : 'Awaiting admin' }}
+                    </small>
+                  } @else if (driver.status === 'rejected') {
+                    <small class="mm-dr-row__hint mm-dr-row__hint--warn">
+                      <ng-icon name="lucideTriangleAlert" class="size-3" />
+                      {{ locale.isRtl() ? 'أعد رفع الوثائق' : 'Re-upload docs' }}
+                    </small>
+                  }
+                </div>
+              </a>
+            }
+          </div>
+
+          @if (facade.totalPages() > 1) {
+            <mm-ops-pager
+              [range]="rangeText()"
+              [currentPage]="facade.currentPage()"
+              [totalPages]="facade.totalPages()"
+              [pages]="facade.pageNumbers()"
+              [rtl]="locale.isRtl()"
+              [prevLabel]="prevLabel()"
+              [nextLabel]="nextLabel()"
+              (prev)="prevPage()"
+              (next)="nextPage()"
+              (goTo)="goToPage($event)"
+            />
+          }
+        }
+
+        <p class="mm-dr-note">
+          <ng-icon name="lucideInfo" class="size-3.5" />
+          {{ note() }}
+        </p>
+      </mm-ops-board>
+    </div>
+  }
+</div>

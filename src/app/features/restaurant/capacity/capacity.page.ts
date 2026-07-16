@@ -7,14 +7,19 @@ import {
   inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideActivity,
+  lucideBan,
+  lucideCalendarDays,
   lucideGauge,
   lucideInfo,
+  lucideLoaderCircle,
+  lucideLockOpen,
   lucidePackage,
+  lucidePackagePlus,
   lucideSave,
+  lucideShieldCheck,
   lucideTriangleAlert,
 } from '@ng-icons/lucide';
 
@@ -28,14 +33,13 @@ import {
 import { pickLocale } from '../overview/overview-i18n';
 import { CapacityFacade } from './data/capacity.facade';
 import { CapacitySkeletonComponent } from './capacity-skeleton.component';
-import { CapacityDaySnapshot } from './models/capacity.model';
+import { BusyKind, CapacityDaySnapshot } from './models/capacity.model';
 
 @Component({
   selector: 'mm-capacity-page',
   standalone: true,
   imports: [
     FormsModule,
-    RouterLink,
     NgIcon,
     PageStateComponent,
     CapacitySkeletonComponent,
@@ -48,10 +52,16 @@ import { CapacityDaySnapshot } from './models/capacity.model';
   viewProviders: [
     provideIcons({
       lucideActivity,
+      lucideBan,
+      lucideCalendarDays,
       lucideGauge,
       lucideInfo,
+      lucideLoaderCircle,
+      lucideLockOpen,
       lucidePackage,
+      lucidePackagePlus,
       lucideSave,
+      lucideShieldCheck,
       lucideTriangleAlert,
     }),
   ],
@@ -76,9 +86,14 @@ export class CapacityPageComponent implements OnInit {
     return data ? pickLocale(data.dateLabel, this.locale.locale()) : '';
   });
 
-  readonly note = computed(() => {
+  readonly capacityNote = computed(() => {
     const data = this.facade.data();
-    return data ? pickLocale(data.note, this.locale.locale()) : '';
+    return data ? pickLocale(data.capacityNote, this.locale.locale()) : '';
+  });
+
+  readonly busyNote = computed(() => {
+    const data = this.facade.data();
+    return data ? pickLocale(data.busyNote, this.locale.locale()) : '';
   });
 
   readonly updatedAt = computed(() => {
@@ -87,26 +102,34 @@ export class CapacityPageComponent implements OnInit {
   });
 
   readonly remainingLabel = computed(() =>
-    this.facade.isBusyToday()
+    this.facade.isAtCapacityToday()
       ? this.locale.isRtl()
         ? 'مكتمل'
         : 'Full'
       : String(this.facade.remaining()),
   );
 
-  readonly statusLabel = computed(() =>
-    this.facade.isBusyToday()
-      ? this.locale.isRtl()
-        ? 'Busy اليوم'
-        : 'Busy today'
-      : this.facade.isNearLimit()
-        ? this.locale.isRtl()
-          ? 'قرب الحد'
-          : 'Near limit'
-        : this.locale.isRtl()
-          ? 'متاح'
-          : 'Available',
-  );
+  readonly statusLabel = computed(() => {
+    const today = this.facade.today();
+    if (today?.busyKind === 'manual') {
+      return this.locale.isRtl() ? 'مشغول يدويًا' : 'Manual Busy';
+    }
+    if (this.facade.isAtCapacityToday()) {
+      return this.locale.isRtl() ? 'مشغول تلقائيًا' : 'Auto Busy';
+    }
+    if (this.facade.isNearLimit()) {
+      return this.locale.isRtl() ? 'قرب الحد' : 'Near limit';
+    }
+    return this.locale.isRtl() ? 'متاح' : 'Available';
+  });
+
+  readonly statusTone = computed((): 'ok' | 'warn' | 'busy' | 'manual' => {
+    const today = this.facade.today();
+    if (today?.busyKind === 'manual') return 'manual';
+    if (this.facade.isAtCapacityToday()) return 'busy';
+    if (this.facade.isNearLimit()) return 'warn';
+    return 'ok';
+  });
 
   readonly saveLabel = computed(() =>
     this.facade.saving()
@@ -123,7 +146,7 @@ export class CapacityPageComponent implements OnInit {
     return (
       this.facade.isDirty() &&
       draft !== null &&
-      draft >= 1 &&
+      draft > this.facade.currentLimit() &&
       !this.facade.saving()
     );
   });
@@ -146,12 +169,60 @@ export class CapacityPageComponent implements OnInit {
     this.facade.resetDraft();
   }
 
-  dayLabel(day: CapacityDaySnapshot): string {
+  increaseBy(amount: number): void {
+    this.facade.increaseDraft(amount);
+  }
+
+  weekdayLabel(day: CapacityDaySnapshot): string {
     return pickLocale(day.weekdayLabel, this.locale.locale());
+  }
+
+  dateLabelFor(day: CapacityDaySnapshot): string {
+    return pickLocale(day.dateLabel, this.locale.locale());
   }
 
   dayFill(day: CapacityDaySnapshot): number {
     if (day.limit <= 0) return 0;
     return Math.min(100, Math.round((day.confirmed / day.limit) * 100));
+  }
+
+  busyLabel(kind: BusyKind): string {
+    const rtl = this.locale.isRtl();
+    if (kind === 'manual') return rtl ? 'مشغول يدويًا' : 'Manual Busy';
+    if (kind === 'capacity') return rtl ? 'مشغول تلقائيًا' : 'Auto Busy';
+    return rtl ? 'متاح' : 'Open';
+  }
+
+  busyTone(kind: BusyKind): 'ok' | 'busy' | 'manual' {
+    if (kind === 'manual') return 'manual';
+    if (kind === 'capacity') return 'busy';
+    return 'ok';
+  }
+
+  isToggling(day: CapacityDaySnapshot): boolean {
+    return this.facade.togglingDate() === day.dateIso;
+  }
+
+  canMarkBusy(day: CapacityDaySnapshot): boolean {
+    return (
+      day.canToggleManual &&
+      !day.manualBusy &&
+      day.busyKind !== 'capacity' &&
+      !this.isToggling(day)
+    );
+  }
+
+  canClearBusy(day: CapacityDaySnapshot): boolean {
+    return day.canToggleManual && day.manualBusy && !this.isToggling(day);
+  }
+
+  toggleBusy(day: CapacityDaySnapshot): void {
+    if (day.manualBusy) {
+      this.facade.clearManualBusy(day.dateIso);
+      return;
+    }
+    if (this.canMarkBusy(day)) {
+      this.facade.setManualBusy(day.dateIso);
+    }
   }
 }

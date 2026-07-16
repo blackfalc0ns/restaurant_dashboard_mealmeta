@@ -1,0 +1,355 @@
+<div class="mm-dr-detail__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-driver-detail-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (notFound()) {
+    <mm-page-state
+      viewState="empty"
+      [emptyMessage]="text('السائق غير موجود.', 'Driver not found.')"
+    />
+  }
+
+  @if (driver(); as driver) {
+    <div class="mm-ops-scroll">
+      <mm-ops-detail-hero
+        icon="lucideUserRound"
+        [title]="name(driver)"
+        [subtitle]="vehicleType(driver) + ' · ' + vehicleColor(driver)"
+        [kicker]="text('سائق مطعم', 'Restaurant driver')"
+        [status]="driver.status"
+      >
+        <a opsBack class="mm-ops-back" routerLink="/restaurant/delivery/drivers">
+          <ng-icon
+            [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+            class="size-3.5"
+          />
+          {{ text('العودة للسائقين', 'Back to drivers') }}
+        </a>
+
+        <span opsBadge class="mm-dr-badge" [attr.data-status]="driver.status">
+          {{ statusLabel(driver.status) }}
+        </span>
+
+        @if (canToggle(driver)) {
+          <button
+            opsActions
+            type="button"
+            class="mm-ops-cta"
+            [class.mm-ops-cta--warn]="driver.status !== 'disabled'"
+            [disabled]="isToggling(driver)"
+            (click)="toggle(driver)"
+          >
+            @if (isToggling(driver)) {
+              <ng-icon name="lucideLoaderCircle" class="size-4 animate-spin" />
+            } @else {
+              <ng-icon
+                [name]="driver.status === 'disabled' ? 'lucidePlay' : 'lucidePause'"
+                class="size-4"
+              />
+            }
+            {{ toggleLabel(driver) }}
+          </button>
+        }
+
+        <div opsStats class="contents">
+          <div class="mm-dr-stat">
+            <ng-icon name="lucidePhone" class="size-4" />
+            <div class="mm-dr-stat__copy">
+              <small>{{ text('الهاتف', 'Phone') }}</small>
+              <strong><bdi>{{ driver.phone }}</bdi></strong>
+            </div>
+          </div>
+          <div class="mm-dr-stat">
+            <ng-icon name="lucideCar" class="size-4" />
+            <div class="mm-dr-stat__copy">
+              <small>{{ text('توصيلات اليوم', 'Deliveries today') }}</small>
+              <strong>{{ driver.deliveriesToday }}</strong>
+            </div>
+          </div>
+          <div class="mm-dr-stat">
+            <ng-icon name="lucideHistory" class="size-4" />
+            <div class="mm-dr-stat__copy">
+              <small>{{ text('هذا الأسبوع', 'This week') }}</small>
+              <strong>{{ driver.deliveriesWeek }}</strong>
+            </div>
+          </div>
+          <div class="mm-dr-stat">
+            <ng-icon name="lucideIdCard" class="size-4" />
+            <div class="mm-dr-stat__copy">
+              <small>{{ text('الرخصة', 'License') }}</small>
+              <strong [class.is-alert]="driver.licenseExpiringSoon">
+                {{ licenseExpiry(driver) }}
+              </strong>
+            </div>
+          </div>
+        </div>
+      </mm-ops-detail-hero>
+
+      @if (note(driver); as driverNote) {
+        <div class="mm-dr-callout" [attr.data-status]="driver.status">
+          <span>
+            <ng-icon
+              [name]="
+                driver.status === 'rejected' || driver.status === 'license_alert'
+                  ? 'lucideTriangleAlert'
+                  : 'lucideInfo'
+              "
+              class="size-4"
+            />
+          </span>
+          <p>{{ driverNote }}</p>
+        </div>
+      }
+
+      <mm-ops-split>
+        <mm-ops-main>
+          <section class="mm-dr-panel">
+            <div class="mm-dr-panel__head">
+              <span class="mm-dr-panel__icon">
+                <ng-icon name="lucideUserRound" class="size-4" />
+              </span>
+              <div>
+                <small>{{ text('البيانات الشخصية', 'Personal details') }}</small>
+                <h2>{{ text('ملف السائق', 'Driver profile') }}</h2>
+              </div>
+            </div>
+
+            <div class="mm-dr-profile">
+              <div class="mm-dr-avatar" aria-hidden="true">
+                {{ initials(driver) }}
+              </div>
+              <div class="mm-dr-profile__copy">
+                <strong>{{ name(driver) }}</strong>
+                <span class="mm-dr-profile__joined">{{ joinedAt(driver) }}</span>
+                <div class="mm-dr-chips">
+                  <span>
+                    <ng-icon name="lucidePhone" class="size-3.5" />
+                    <bdi>{{ driver.phone }}</bdi>
+                  </span>
+                  <span>
+                    <ng-icon name="lucideMail" class="size-3.5" />
+                    <bdi>{{ driver.email }}</bdi>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="mm-dr-panel">
+            <div class="mm-dr-panel__head">
+              <span class="mm-dr-panel__icon">
+                <ng-icon name="lucideCar" class="size-4" />
+              </span>
+              <div>
+                <small>{{ text('الرخصة والمركبة', 'License & vehicle') }}</small>
+                <h2>{{ text('بيانات التشغيل', 'Operating details') }}</h2>
+              </div>
+            </div>
+
+            <div class="mm-dr-detail-grid">
+              <div class="mm-dr-detail-field">
+                <span class="mm-dr-detail-field__icon">
+                  <ng-icon name="lucideIdCard" class="size-3.5" />
+                </span>
+                <div>
+                  <small>{{ text('رقم الرخصة', 'License number') }}</small>
+                  <strong>{{ driver.licenseNumber }}</strong>
+                </div>
+              </div>
+              <div class="mm-dr-detail-field" [class.is-alert]="driver.licenseExpiringSoon">
+                <span class="mm-dr-detail-field__icon">
+                  <ng-icon name="lucideTriangleAlert" class="size-3.5" />
+                </span>
+                <div>
+                  <small>{{ text('انتهاء الرخصة', 'License expiry') }}</small>
+                  <strong>{{ licenseExpiry(driver) }}</strong>
+                </div>
+              </div>
+              <div class="mm-dr-detail-field">
+                <span class="mm-dr-detail-field__icon">
+                  <ng-icon name="lucideCar" class="size-3.5" />
+                </span>
+                <div>
+                  <small>{{ text('نوع المركبة', 'Vehicle type') }}</small>
+                  <strong>{{ vehicleType(driver) }}</strong>
+                </div>
+              </div>
+              <div class="mm-dr-detail-field">
+                <span class="mm-dr-detail-field__icon">
+                  <ng-icon name="lucideCar" class="size-3.5" />
+                </span>
+                <div>
+                  <small>{{ text('اللون', 'Color') }}</small>
+                  <strong>{{ vehicleColor(driver) }}</strong>
+                </div>
+              </div>
+              <div class="mm-dr-detail-field">
+                <span class="mm-dr-detail-field__icon">
+                  <ng-icon name="lucideFileText" class="size-3.5" />
+                </span>
+                <div>
+                  <small>{{ text('رقم اللوحة', 'Plate number') }}</small>
+                  <strong><bdi>{{ driver.plateNumber }}</bdi></strong>
+                </div>
+              </div>
+              <div class="mm-dr-detail-field">
+                <span class="mm-dr-detail-field__icon">
+                  <ng-icon name="lucideFileText" class="size-3.5" />
+                </span>
+                <div>
+                  <small>{{ text('رقم المحرك', 'Engine number') }}</small>
+                  <strong><bdi>{{ driver.engineNumber }}</bdi></strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="mm-dr-panel">
+            <div class="mm-dr-panel__head">
+              <span class="mm-dr-panel__icon">
+                <ng-icon name="lucideFileText" class="size-4" />
+              </span>
+              <div>
+                <small>{{ text('الوثائق', 'Documents') }}</small>
+                <h2>{{ text('التحقق المبدئي', 'Initial verification') }}</h2>
+              </div>
+            </div>
+
+            <div class="mm-dr-docs">
+              @for (doc of driver.documents; track doc.id) {
+                <article class="mm-dr-doc" [attr.data-status]="doc.status">
+                  <span class="mm-dr-doc__icon">
+                    <ng-icon name="lucideFileText" class="size-4" />
+                  </span>
+                  <div class="mm-dr-doc__copy">
+                    <strong>{{ docLabel(doc) }}</strong>
+                    <span>{{ doc.fileName }}</span>
+                    <small>{{ docUpdated(doc) }}</small>
+                  </div>
+                  <b class="mm-dr-doc__status" [attr.data-status]="doc.status">
+                    {{ docStatusLabel(doc.status) }}
+                  </b>
+                </article>
+              }
+            </div>
+          </section>
+        </mm-ops-main>
+
+        <mm-ops-side>
+          <mm-ops-side-card>
+            <div class="mm-dr-side-head">
+              <span><ng-icon name="lucideIdCard" class="size-4" /></span>
+              <div>
+                <small>{{ text('الملخص', 'Summary') }}</small>
+                <strong>{{ text('حالة التشغيل', 'Operating status') }}</strong>
+              </div>
+            </div>
+
+            <div class="mm-dr-meta">
+              <div class="mm-dr-meta__item">
+                <span>{{ text('الحالة', 'Status') }}</span>
+                <strong class="mm-dr-badge" [attr.data-status]="driver.status">
+                  {{ statusLabel(driver.status) }}
+                </strong>
+              </div>
+              <div class="mm-dr-meta__item">
+                <span>{{ text('آخر نشاط', 'Last activity') }}</span>
+                <strong class="mm-dr-meta__active">
+                  <ng-icon name="lucideClock3" class="size-3.5" />
+                  {{ updatedAt(driver) }}
+                </strong>
+              </div>
+              <div class="mm-dr-meta__item">
+                <span>{{ text('اليوم', 'Today') }}</span>
+                <strong>{{ driver.deliveriesToday }} {{ text('توصيلة', 'deliveries') }}</strong>
+              </div>
+              <div class="mm-dr-meta__item">
+                <span>{{ text('الأسبوع', 'Week') }}</span>
+                <strong>{{ driver.deliveriesWeek }} {{ text('توصيلة', 'deliveries') }}</strong>
+              </div>
+              <div class="mm-dr-meta__item">
+                <span>{{ text('اللوحة', 'Plate') }}</span>
+                <strong><bdi>{{ driver.plateNumber }}</bdi></strong>
+              </div>
+            </div>
+          </mm-ops-side-card>
+
+          <mm-ops-side-card class="mm-dr-activity">
+            <div class="mm-dr-side-head">
+              <span><ng-icon name="lucideHistory" class="size-4" /></span>
+              <div>
+                <small>{{ text('النشاط', 'Activity') }}</small>
+                <strong>{{ text('سجل الحالة', 'Status timeline') }}</strong>
+              </div>
+              <b class="mm-dr-activity__count">{{ driver.timeline.length }}</b>
+            </div>
+
+            <ol class="mm-dr-timeline">
+              @for (event of driver.timeline; track event.id; let last = $last; let i = $index) {
+                <li
+                  [attr.data-tone]="event.tone"
+                  [class.is-last]="last"
+                  [class.is-first]="i === 0"
+                >
+                  <span class="mm-dr-timeline__marker" aria-hidden="true">
+                    <ng-icon [name]="toneIcon(event.tone)" class="size-3.5" />
+                  </span>
+                  <div class="mm-dr-timeline__card">
+                    <strong>{{ eventTitle(event) }}</strong>
+                    <span class="mm-dr-timeline__time">
+                      <ng-icon name="lucideClock3" class="size-3" />
+                      {{ eventTime(event) }}
+                    </span>
+                  </div>
+                </li>
+              }
+            </ol>
+          </mm-ops-side-card>
+
+          <mm-ops-side-card class="mm-dr-side-help">
+            <p class="mm-dr-side-note">
+              <ng-icon name="lucideInfo" class="size-3.5" />
+              {{
+                text(
+                  'الاعتماد النهائي للأدمن. المطعم يفعّل/يعطّل السائق المعتمد فقط.',
+                  'Final approval is by admin. The restaurant can only enable/disable an approved driver.'
+                )
+              }}
+            </p>
+            @if (driver.status === 'rejected') {
+              <p class="mm-dr-side-note mm-dr-side-note--warn">
+                <ng-icon name="lucideTriangleAlert" class="size-3.5" />
+                {{
+                  text(
+                    'أعد رفع الوثائق بعد التصحيح لإعادة الإرسال للأدمن.',
+                    'Re-upload corrected documents to resubmit to admin.'
+                  )
+                }}
+              </p>
+            }
+            @if (driver.status === 'pending') {
+              <p class="mm-dr-side-note mm-dr-side-note--warn">
+                <ng-icon name="lucideMail" class="size-3.5" />
+                {{
+                  text(
+                    'لا يمكن إسناد طلبات حتى تتم موافقة الأدمن.',
+                    'Orders cannot be assigned until admin approves.'
+                  )
+                }}
+              </p>
+            }
+          </mm-ops-side-card>
+        </mm-ops-side>
+      </mm-ops-split>
+    </div>
+  }
+</div>
