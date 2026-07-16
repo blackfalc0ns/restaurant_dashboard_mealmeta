@@ -1,0 +1,156 @@
+<div class="mm-due-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-dues-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <div class="mm-ops-scroll">
+      <mm-ops-hero
+        icon="lucideHandCoins"
+        [eyebrow]="dateLabel()"
+        [title]="title()"
+        [subtitle]="subtitle()"
+      >
+        <ng-container opsMetrics>
+          @for (card of data.summaries; track card.id) {
+            <div>
+              <small>{{ summaryLabel(card) }}</small>
+              <strong>{{ card.valueKd | number: '1.2-2' }} <b>KD</b></strong>
+              @if (summaryHint(card); as hint) {
+                <em>{{ hint }}</em>
+              }
+            </div>
+          }
+        </ng-container>
+      </mm-ops-hero>
+
+      <div class="mm-due-callout">
+        <span><ng-icon name="lucideBadgePercent" class="size-4" /></span>
+        <p>{{ commissionNote() }}</p>
+        <a routerLink="/restaurant/finance/deductions" class="mm-due-callout__link">
+          {{ text('الخصومات والتسويات', 'Deductions & adjustments') }}
+        </a>
+      </div>
+
+      <mm-ops-board>
+        <div class="mm-ops-board__head">
+          <div>
+            <h2>{{ text('سجل المستحقات', 'Dues ledger') }}</h2>
+            <p>
+              {{
+                text(
+                  'كل بند = فترة تسليم + عمولة المطعم المستقطعة',
+                  'Each line = delivery period + withheld restaurant commission'
+                )
+              }}
+            </p>
+          </div>
+          <span class="mm-ops-count">{{ facade.filteredLines().length }}</span>
+        </div>
+
+        <mm-ops-toolbar>
+          <label class="mm-ops-search">
+            <ng-icon name="lucideSearch" class="size-4" />
+            <input
+              type="search"
+              [placeholder]="searchPlaceholder()"
+              [ngModel]="facade.search()"
+              (ngModelChange)="onSearch($event)"
+            />
+          </label>
+          <mm-ops-filters>
+            @for (option of filters; track option.id) {
+              <button
+                type="button"
+                [class.is-active]="facade.filter() === option.id"
+                (click)="setFilter(option.id)"
+              >
+                {{ filterLabel(option) }}
+                <b>{{ filterCount(option.id) }}</b>
+              </button>
+            }
+          </mm-ops-filters>
+        </mm-ops-toolbar>
+
+        @if (facade.filteredLines().length === 0) {
+          <p class="mm-due-empty">{{ emptyLabel() }}</p>
+        } @else {
+          <div class="mm-due-list">
+            @for (line of facade.pagedLines(); track line.id) {
+              <article class="mm-due-card" [attr.data-status]="line.status">
+                <div class="mm-due-card__main">
+                  <div class="mm-due-card__topline">
+                    <span class="mm-due-code" dir="ltr">{{ line.code }}</span>
+                    <span class="mm-due-kind">{{ kindLabel(line.kind) }}</span>
+                    <span class="mm-due-badge" [attr.data-status]="line.status">
+                      {{ statusLabel(line.status) }}
+                    </span>
+                  </div>
+
+                  <h3>{{ lineTitle(line) }}</h3>
+                  <p>{{ lineDetail(line) }}</p>
+
+                  <div class="mm-due-card__meta">
+                    <span>{{ period(line) }}</span>
+                    <span>
+                      <ng-icon name="lucidePackage" class="size-3.5" />
+                      {{ line.boxesDelivered }}
+                      {{ text('صندوق', 'boxes') }}
+                    </span>
+                    <span>{{ updatedAt(line) }}</span>
+                  </div>
+                </div>
+
+                <div class="mm-due-card__amounts">
+                  <div>
+                    <small>{{ text('إجمالي', 'Gross') }}</small>
+                    <strong>{{ line.grossKd | number: '1.2-2' }} KD</strong>
+                  </div>
+                  <div class="mm-due-card__commission">
+                    <small>
+                      {{ text('عمولة', 'Commission') }}
+                      {{ line.commissionRatePct }}%
+                    </small>
+                    <strong>−{{ line.commissionKd | number: '1.2-2' }} KD</strong>
+                  </div>
+                  <div class="mm-due-card__net">
+                    <small>{{ text('صافي', 'Net') }}</small>
+                    <strong>{{ line.netKd | number: '1.2-2' }} KD</strong>
+                  </div>
+                </div>
+              </article>
+            }
+          </div>
+
+          @if (facade.totalPages() > 1) {
+            <mm-ops-pager
+              [range]="rangeText()"
+              [currentPage]="facade.currentPage()"
+              [totalPages]="facade.totalPages()"
+              [pages]="facade.pageNumbers()"
+              [rtl]="locale.isRtl()"
+              [prevLabel]="prevLabel()"
+              [nextLabel]="nextLabel()"
+              (prev)="prevPage()"
+              (next)="nextPage()"
+              (goTo)="goToPage($event)"
+            />
+          }
+        }
+
+        <p class="mm-due-note">
+          <ng-icon name="lucideInfo" class="size-3.5" />
+          {{ note() }}
+        </p>
+      </mm-ops-board>
+    </div>
+  }
+</div>

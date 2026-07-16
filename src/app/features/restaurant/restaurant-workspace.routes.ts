@@ -135,8 +135,10 @@ const loadDispatchOfficerDetailPage = () =>
     (m) => m.DispatchOfficerDetailPageComponent,
   );
 
+const loadDuesPage = () =>
+  import('./dues/dues.page').then((m) => m.DuesPageComponent);
+
 const SIDEBAR_LINK_PATHS = [
-  'finance/dues',
   'finance/deductions',
   'finance/invoices',
   'finance/payouts',
@@ -281,6 +283,10 @@ export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   {
     path: 'quality/ratings',
     loadComponent: loadRatingsPage,
+  },
+  {
+    path: 'finance/dues',
+    loadComponent: loadDuesPage,
   },
   ...SIDEBAR_LINK_PATHS.map((path) => ({
     path,

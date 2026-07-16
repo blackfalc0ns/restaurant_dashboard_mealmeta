@@ -13011,4 +13011,179 @@
     @apply h-[4.5rem] w-full rounded-xl;
   }
 
+  /* ─── Dues & commissions ─────────────────────────────────────────────── */
+
+  .mm-due-page {
+    @apply w-full;
+  }
+
+  .mm-due-page__inner {
+    @apply flex min-h-0 flex-1 flex-col;
+  }
+
+  .mm-due-page .mm-ops-hero__metrics em {
+    @apply mt-0.5 block text-[0.625rem] font-medium not-italic text-mm-ink-muted;
+  }
+
+  .mm-due-page .mm-ops-hero__metrics strong b {
+    @apply text-[0.6875rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-due-callout {
+    @apply mb-4 flex flex-wrap items-start gap-3 rounded-[1.15rem] border border-[#d9ebe1] bg-[#f8fbf9] px-4 py-3.5 text-[0.8125rem] font-medium leading-relaxed text-mm-secondary;
+  }
+
+  .mm-due-callout > span {
+    @apply grid size-8 shrink-0 place-items-center rounded-full bg-white text-mm-primary shadow-sm;
+  }
+
+  .mm-due-callout p {
+    @apply m-0 min-w-[12rem] flex-1;
+  }
+
+  .mm-due-callout__link {
+    @apply inline-flex items-center self-center rounded-xl border border-mm-primary/20 bg-white px-3 py-2 text-[0.6875rem] font-extrabold text-mm-primary no-underline transition hover:bg-[#edf8f1];
+  }
+
+  .mm-due-empty {
+    @apply rounded-xl border border-dashed border-[#d9ebe1] bg-[#f8fbf9] px-4 py-8 text-center text-[0.8125rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-due-list {
+    @apply flex flex-col gap-3;
+  }
+
+  .mm-due-card {
+    @apply grid gap-4 rounded-[1.25rem] border border-[#e4eee8] bg-white p-4 shadow-[0_16px_36px_-32px_rgba(1,83,41,0.45)] md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:p-5;
+  }
+
+  .mm-due-card[data-status='pending'] {
+    @apply border-[#cfe9da] bg-[#f3fbf6];
+  }
+
+  .mm-due-card[data-status='scheduled'] {
+    @apply border-[#b7dff5] bg-[#f3faff];
+  }
+
+  .mm-due-card[data-status='held'] {
+    @apply border-[#f5ddb0] bg-[#fffdf8];
+  }
+
+  .mm-due-card__topline {
+    @apply mb-2 flex flex-wrap items-center gap-2;
+  }
+
+  .mm-due-code {
+    @apply rounded-lg bg-[#edf8f1] px-2 py-1 font-mono text-[0.6875rem] font-extrabold tracking-wide text-mm-primary;
+  }
+
+  .mm-due-kind {
+    @apply rounded-full border border-[#d9ebe1] bg-[#f8fbf9] px-2.5 py-1 text-[0.625rem] font-extrabold text-mm-ink-muted;
+  }
+
+  .mm-due-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-1 text-[0.625rem] font-extrabold;
+  }
+
+  .mm-due-badge[data-status='pending'] {
+    @apply bg-[#edf8f1] text-mm-primary;
+  }
+
+  .mm-due-badge[data-status='scheduled'] {
+    @apply bg-[#e8f5fc] text-[#0284c7];
+  }
+
+  .mm-due-badge[data-status='paid'] {
+    @apply bg-[#eef2f0] text-mm-secondary;
+  }
+
+  .mm-due-badge[data-status='held'] {
+    @apply bg-[#fff7e8] text-[#d97706];
+  }
+
+  .mm-due-card h3 {
+    @apply m-0 text-[0.9375rem] font-black text-mm-secondary;
+  }
+
+  .mm-due-card__main > p {
+    @apply m-0 mt-1 text-[0.75rem] font-medium text-mm-ink-muted;
+  }
+
+  .mm-due-card__meta {
+    @apply mt-3 flex flex-wrap gap-2;
+  }
+
+  .mm-due-card__meta > span {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-[#e4eee8] bg-[#f8fbf9] px-2.5 py-1 text-[0.6875rem] font-bold text-mm-secondary;
+  }
+
+  .mm-due-card__amounts {
+    @apply grid min-w-[12rem] gap-2 sm:grid-cols-3 md:min-w-[18rem];
+  }
+
+  .mm-due-card__amounts > div {
+    @apply rounded-xl border border-[#e8f0eb] bg-[#fbfdfc] px-3 py-2.5;
+  }
+
+  .mm-due-card__amounts small {
+    @apply block text-[0.625rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-due-card__amounts strong {
+    @apply mt-0.5 block text-[0.8125rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-due-card__commission strong {
+    @apply text-[#b45309];
+  }
+
+  .mm-due-card__net {
+    @apply !border-[#cfe9da] !bg-[#edf8f1];
+  }
+
+  .mm-due-card__net strong {
+    @apply !text-mm-primary;
+  }
+
+  .mm-due-note {
+    @apply mt-4 inline-flex items-start gap-2 text-[0.75rem] font-medium text-mm-ink-muted;
+  }
+
+  .mm-due-skeleton__inner {
+    @apply flex w-full flex-col gap-4 pb-4;
+  }
+
+  .mm-due-skeleton__hero {
+    @apply flex flex-wrap items-end justify-between gap-4 rounded-[1.4rem] border border-[rgba(4,153,78,0.12)] bg-white p-5 md:p-6;
+    background-image: linear-gradient(145deg, #ffffff 0%, #f3fbf6 58%, #edf8f1 100%);
+  }
+
+  .mm-due-skeleton__hero-main {
+    @apply min-w-[14rem] flex-1;
+  }
+
+  .mm-due-skeleton__metrics {
+    @apply flex flex-wrap gap-3;
+  }
+
+  .mm-due-skeleton__metric {
+    @apply min-w-[5.5rem] rounded-xl border border-[#e4eee8] bg-[#f8fbf9] p-3;
+  }
+
+  .mm-due-skeleton__board {
+    @apply rounded-[1.35rem] border border-[rgba(4,153,78,0.1)] bg-white p-4 md:p-5;
+  }
+
+  .mm-due-skeleton__toolbar {
+    @apply mb-4 flex flex-wrap gap-2;
+  }
+
+  .mm-due-skeleton__rows {
+    @apply flex flex-col gap-2.5;
+  }
+
+  .mm-due-skeleton__row {
+    @apply h-[5.5rem] w-full rounded-[1.25rem];
+  }
+
 }
