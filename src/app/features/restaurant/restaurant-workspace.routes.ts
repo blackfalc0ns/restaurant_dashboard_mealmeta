@@ -130,11 +130,6 @@ const loadDispatchOfficersPage = () =>
     (m) => m.DispatchOfficersPageComponent,
   );
 
-const loadDispatchOfficerCreatePage = () =>
-  import('./dispatch/dispatch-officer-create.page').then(
-    (m) => m.DispatchOfficerCreatePageComponent,
-  );
-
 const loadDispatchOfficerDetailPage = () =>
   import('./dispatch/dispatch-officer-detail.page').then(
     (m) => m.DispatchOfficerDetailPageComponent,
@@ -259,7 +254,8 @@ export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   },
   {
     path: 'delivery/dispatch/create',
-    loadComponent: loadDispatchOfficerCreatePage,
+    redirectTo: 'delivery/dispatch',
+    pathMatch: 'full',
   },
   {
     path: 'delivery/dispatch/:officerId',

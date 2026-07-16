@@ -1,65 +1,48 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  OnInit,
   computed,
   inject,
+  output,
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
-  lucideArrowLeft,
-  lucideArrowRight,
   lucideCheck,
-  lucideClipboardList,
   lucideLoaderCircle,
   lucideSmartphone,
   lucideTriangleAlert,
+  lucideX,
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
-import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
-import {
-  RestaurantOpsBoardComponent,
-  RestaurantOpsDetailHeroComponent,
-} from '@/shared/components/restaurant-workspace/restaurant-ops-ui.component';
 
 import { DispatchOfficersFacade } from './data/dispatch-officers.facade';
-import { DispatchOfficersSkeletonComponent } from './dispatch-officers-skeleton.component';
 
 @Component({
-  selector: 'mm-dispatch-officer-create-page',
+  selector: 'mm-dispatch-officer-create-modal',
   standalone: true,
-  imports: [
-    FormsModule,
-    RouterLink,
-    NgIcon,
-    PageStateComponent,
-    DispatchOfficersSkeletonComponent,
-    RestaurantOpsDetailHeroComponent,
-    RestaurantOpsBoardComponent,
-  ],
-  templateUrl: './dispatch-officer-create.page.html',
+  imports: [FormsModule, NgIcon],
+  templateUrl: './dispatch-officer-create-modal.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'mm-dsp-create-page flex h-full min-h-0 flex-col' },
+  host: { class: 'contents' },
   viewProviders: [
     provideIcons({
-      lucideArrowLeft,
-      lucideArrowRight,
       lucideCheck,
-      lucideClipboardList,
       lucideLoaderCircle,
       lucideSmartphone,
       lucideTriangleAlert,
+      lucideX,
     }),
   ],
 })
-export class DispatchOfficerCreatePageComponent implements OnInit {
+export class DispatchOfficerCreateModalComponent {
   readonly facade = inject(DispatchOfficersFacade);
   readonly locale = inject(AppLocaleService);
-  private readonly router = inject(Router);
+
+  readonly closed = output<void>();
+  readonly created = output<string>();
 
   readonly nameAr = signal('');
   readonly nameEn = signal('');
@@ -81,12 +64,14 @@ export class DispatchOfficerCreatePageComponent implements OnInit {
       : 'Enter name, phone, and email.';
   });
 
-  ngOnInit(): void {
-    this.facade.ensureLoaded();
-  }
-
   text(ar: string, en: string): string {
     return this.locale.isRtl() ? ar : en;
+  }
+
+  close(): void {
+    if (this.facade.creating()) return;
+    this.facade.createError.set(null);
+    this.closed.emit();
   }
 
   submit(): void {
@@ -97,9 +82,7 @@ export class DispatchOfficerCreatePageComponent implements OnInit {
         phone: this.phone(),
         email: this.email(),
       },
-      (id) => {
-        void this.router.navigate(['/restaurant/delivery/dispatch', id]);
-      },
+      (id) => this.created.emit(id),
     );
   }
 }

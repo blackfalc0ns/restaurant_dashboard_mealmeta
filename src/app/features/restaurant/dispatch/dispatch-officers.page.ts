@@ -4,9 +4,10 @@ import {
   OnInit,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideClipboardList,
@@ -34,6 +35,7 @@ import {
 
 import { pickLocale } from '../overview/overview-i18n';
 import { DispatchOfficersFacade } from './data/dispatch-officers.facade';
+import { DispatchOfficerCreateModalComponent } from './dispatch-officer-create-modal.component';
 import { DispatchOfficersSkeletonComponent } from './dispatch-officers-skeleton.component';
 import {
   DispatchOfficer,
@@ -50,6 +52,7 @@ import {
     NgIcon,
     PageStateComponent,
     DispatchOfficersSkeletonComponent,
+    DispatchOfficerCreateModalComponent,
     RestaurantOpsHeroComponent,
     RestaurantOpsBoardComponent,
     RestaurantOpsToolbarComponent,
@@ -78,6 +81,9 @@ import {
 export class DispatchOfficersPageComponent implements OnInit {
   readonly facade = inject(DispatchOfficersFacade);
   readonly locale = inject(AppLocaleService);
+  private readonly router = inject(Router);
+
+  readonly createOpen = signal(false);
 
   readonly filters: {
     id: DispatchOfficerFilter;
@@ -142,6 +148,20 @@ export class DispatchOfficersPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.facade.load();
+  }
+
+  openCreate(): void {
+    this.facade.createError.set(null);
+    this.createOpen.set(true);
+  }
+
+  closeCreate(): void {
+    this.createOpen.set(false);
+  }
+
+  onCreated(officerId: string): void {
+    this.createOpen.set(false);
+    void this.router.navigate(['/restaurant/delivery/dispatch', officerId]);
   }
 
   onSearch(value: string): void {

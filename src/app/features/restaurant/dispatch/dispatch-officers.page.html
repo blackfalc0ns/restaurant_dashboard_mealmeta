@@ -19,14 +19,15 @@
         [title]="title()"
         [subtitle]="subtitle()"
       >
-        <a
+        <button
           opsAside
-          routerLink="/restaurant/delivery/dispatch/create"
+          type="button"
           class="mm-dsp-create"
+          (click)="openCreate()"
         >
           <ng-icon name="lucidePlus" class="size-4" />
           {{ locale.isRtl() ? 'إضافة مسئول توصيل' : 'Add dispatch officer' }}
-        </a>
+        </button>
 
         <ng-container opsMetrics>
           @for (card of data.summaries; track card.id) {
@@ -196,5 +197,12 @@
         </p>
       </mm-ops-board>
     </div>
+  }
+
+  @if (createOpen()) {
+    <mm-dispatch-officer-create-modal
+      (closed)="closeCreate()"
+      (created)="onCreated($event)"
+    />
   }
 </div>

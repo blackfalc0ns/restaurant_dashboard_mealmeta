@@ -1,0 +1,124 @@
+<div
+  class="mm-dsp-modal"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="text('إضافة مسئول توصيل', 'Add dispatch officer')"
+>
+  <button
+    type="button"
+    class="mm-dsp-modal__backdrop"
+    [attr.aria-label]="text('إغلاق', 'Close')"
+    (click)="close()"
+  ></button>
+
+  <div class="mm-dsp-modal__panel">
+    <div class="mm-dsp-modal__head">
+      <div>
+        <h2>{{ text('إضافة مسئول توصيل', 'Add dispatch officer') }}</h2>
+        <p>
+          {{
+            text(
+              'إنشاء حساب يستخدم تطبيق الموبايل لإنشاء الرحلات.',
+              'Create an account that uses the mobile app to create trips.'
+            )
+          }}
+        </p>
+      </div>
+      <button
+        type="button"
+        class="mm-dsp-modal__close"
+        [attr.aria-label]="text('إغلاق', 'Close')"
+        [disabled]="facade.creating()"
+        (click)="close()"
+      >
+        <ng-icon name="lucideX" class="size-4" />
+      </button>
+    </div>
+
+    <div class="mm-dsp-modal__body">
+      <div class="mm-dsp-callout">
+        <span><ng-icon name="lucideSmartphone" class="size-4" /></span>
+        <p>
+          {{
+            text(
+              'بعد الإنشاء يستلم مسئول التوصيل دعوة ويسجّل دخولًا في تطبيق الموبايل.',
+              'After creation, the officer receives an invite and signs into the mobile app.'
+            )
+          }}
+        </p>
+      </div>
+
+      @if (errorMessage()) {
+        <p class="mm-dsp-alert">
+          <ng-icon name="lucideTriangleAlert" class="size-3.5" />
+          {{ errorMessage() }}
+        </p>
+      }
+
+      <div class="mm-dsp-form">
+        <label>
+          <span>{{ text('الاسم (عربي)', 'Name (Arabic)') }}</span>
+          <input
+            type="text"
+            [ngModel]="nameAr()"
+            (ngModelChange)="nameAr.set($event)"
+            [placeholder]="text('مثال: نورة العجمي', 'e.g. Noura Al-Ajmi')"
+          />
+        </label>
+        <label>
+          <span>{{ text('الاسم (إنجليزي)', 'Name (English)') }}</span>
+          <input
+            type="text"
+            [ngModel]="nameEn()"
+            (ngModelChange)="nameEn.set($event)"
+            placeholder="Noura Al-Ajmi"
+          />
+        </label>
+        <label>
+          <span>{{ text('الهاتف', 'Phone') }}</span>
+          <input
+            type="tel"
+            dir="ltr"
+            [ngModel]="phone()"
+            (ngModelChange)="phone.set($event)"
+            placeholder="+965 5xxx xxxx"
+          />
+        </label>
+        <label>
+          <span>{{ text('البريد', 'Email') }}</span>
+          <input
+            type="email"
+            dir="ltr"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+            placeholder="dispatch@restaurant.kw"
+          />
+        </label>
+      </div>
+    </div>
+
+    <div class="mm-dsp-modal__foot">
+      <button
+        type="button"
+        class="mm-dsp-modal__cancel"
+        [disabled]="facade.creating()"
+        (click)="close()"
+      >
+        {{ text('إلغاء', 'Cancel') }}
+      </button>
+      <button
+        type="button"
+        class="mm-ops-cta"
+        [disabled]="!canSubmit()"
+        (click)="submit()"
+      >
+        @if (facade.creating()) {
+          <ng-icon name="lucideLoaderCircle" class="size-4 animate-spin" />
+        } @else {
+          <ng-icon name="lucideCheck" class="size-4" />
+        }
+        {{ text('إنشاء الحساب', 'Create account') }}
+      </button>
+    </div>
+  </div>
+</div>
