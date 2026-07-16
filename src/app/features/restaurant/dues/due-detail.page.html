@@ -1,0 +1,247 @@
+<div class="mm-due-detail__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-dues-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (notFound()) {
+    <mm-page-state
+      viewState="empty"
+      [emptyMessage]="text('البند غير موجود.', 'Due line not found.')"
+    />
+  }
+
+  @if (line(); as line) {
+    <div class="mm-ops-scroll">
+      <mm-ops-detail-hero
+        icon="lucideHandCoins"
+        [title]="title(line)"
+        [subtitle]="detail(line)"
+        [kicker]="kindLabel(line.kind) + ' · ' + line.code"
+        [status]="line.status"
+      >
+        <a opsBack class="mm-ops-back" routerLink="/restaurant/finance/dues">
+          <ng-icon
+            [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+            class="size-3.5"
+          />
+          {{ text('العودة للمستحقات', 'Back to dues') }}
+        </a>
+
+        <span opsBadge class="mm-due-badge" [attr.data-status]="line.status">
+          {{ statusLabel(line.status) }}
+        </span>
+
+        <div opsStats class="contents">
+          <div class="mm-due-stat">
+            <ng-icon name="lucidePackage" class="size-4" />
+            <div class="mm-due-stat__copy">
+              <small>{{ text('الصناديق', 'Boxes') }}</small>
+              <strong>{{ line.boxesDelivered }}</strong>
+            </div>
+          </div>
+          <div class="mm-due-stat">
+            <ng-icon name="lucideReceipt" class="size-4" />
+            <div class="mm-due-stat__copy">
+              <small>{{ text('الإجمالي', 'Gross') }}</small>
+              <strong>{{ line.grossKd | number: '1.2-2' }} KD</strong>
+            </div>
+          </div>
+          <div class="mm-due-stat">
+            <ng-icon name="lucideBadgePercent" class="size-4" />
+            <div class="mm-due-stat__copy">
+              <small>{{ text('العمولة', 'Commission') }}</small>
+              <strong>−{{ line.commissionKd | number: '1.2-2' }} KD</strong>
+            </div>
+          </div>
+          <div class="mm-due-stat">
+            <ng-icon name="lucideHandCoins" class="size-4" />
+            <div class="mm-due-stat__copy">
+              <small>{{ text('الصافي', 'Net') }}</small>
+              <strong>{{ line.netKd | number: '1.2-2' }} KD</strong>
+            </div>
+          </div>
+        </div>
+      </mm-ops-detail-hero>
+
+      @if (lineNote(line); as note) {
+        <div class="mm-due-callout" [attr.data-status]="line.status">
+          <span><ng-icon name="lucideInfo" class="size-4" /></span>
+          <p>{{ note }}</p>
+        </div>
+      }
+
+      <mm-ops-split>
+        <mm-ops-main>
+          <section class="mm-due-panel">
+            <div class="mm-due-panel__head">
+              <span class="mm-due-panel__icon">
+                <ng-icon name="lucideReceipt" class="size-4" />
+              </span>
+              <div>
+                <small>{{ text('التفصيل المالي', 'Financial breakdown') }}</small>
+                <h2>{{ text('بيانات البند', 'Line details') }}</h2>
+              </div>
+            </div>
+
+            <div class="mm-due-detail-grid">
+              <div class="mm-due-detail-field">
+                <small>{{ text('رقم البند', 'Line code') }}</small>
+                <strong dir="ltr">{{ line.code }}</strong>
+              </div>
+              <div class="mm-due-detail-field">
+                <small>{{ text('النوع', 'Type') }}</small>
+                <strong>{{ kindLabel(line.kind) }}</strong>
+              </div>
+              <div class="mm-due-detail-field">
+                <small>{{ text('الفترة', 'Period') }}</small>
+                <strong>{{ period(line) }}</strong>
+              </div>
+              <div class="mm-due-detail-field">
+                <small>{{ text('آخر تحديث', 'Last update') }}</small>
+                <strong>{{ updatedAt(line) }}</strong>
+              </div>
+              <div class="mm-due-detail-field">
+                <small>{{ text('صناديق مسلّمة', 'Boxes delivered') }}</small>
+                <strong>{{ line.boxesDelivered }}</strong>
+              </div>
+              <div class="mm-due-detail-field">
+                <small>{{ text('متوسط سعر الصندوق', 'Avg box price') }}</small>
+                <strong>{{ avgBoxPrice(line) | number: '1.2-2' }} KD</strong>
+              </div>
+              <div class="mm-due-detail-field">
+                <small>{{ text('نسبة العمولة', 'Commission rate') }}</small>
+                <strong>{{ line.commissionRatePct }}%</strong>
+              </div>
+              <div class="mm-due-detail-field mm-due-detail-field--warn">
+                <small>{{ text('عمولة المطعم', 'Restaurant commission') }}</small>
+                <strong>−{{ line.commissionKd | number: '1.2-2' }} KD</strong>
+              </div>
+              <div class="mm-due-detail-field mm-due-detail-field--ok">
+                <small>{{ text('صافي بعد العمولة', 'Net after commission') }}</small>
+                <strong>{{ line.netKd | number: '1.2-2' }} KD</strong>
+              </div>
+              @if (line.transferRef) {
+                <div class="mm-due-detail-field">
+                  <small>{{ text('مرجع التحويل', 'Transfer ref') }}</small>
+                  <strong dir="ltr">{{ line.transferRef }}</strong>
+                </div>
+              }
+            </div>
+          </section>
+
+          @if (line.deliveryDays?.length) {
+            <section class="mm-due-panel">
+              <div class="mm-due-panel__head">
+                <span class="mm-due-panel__icon">
+                  <ng-icon name="lucidePackage" class="size-4" />
+                </span>
+                <div>
+                  <small>{{ text('التسليم اليومي', 'Daily deliveries') }}</small>
+                  <h2>{{ text('تفصيل الفترة', 'Period breakdown') }}</h2>
+                </div>
+                <span class="mm-ops-count">{{ line.deliveryDays!.length }}</span>
+              </div>
+
+              <div class="mm-due-days">
+                @for (day of line.deliveryDays; track day.id) {
+                  <article class="mm-due-day">
+                    <div>
+                      <strong>{{ dayLabel(day) }}</strong>
+                      <small>
+                        {{ day.boxes }}
+                        {{ text('صندوق', 'boxes') }}
+                      </small>
+                    </div>
+                    <b>{{ day.amountKd | number: '1.2-2' }} KD</b>
+                  </article>
+                }
+              </div>
+            </section>
+          }
+        </mm-ops-main>
+
+        <mm-ops-side>
+          <mm-ops-side-card>
+            <div class="mm-due-side-head">
+              <ng-icon name="lucideHandCoins" class="size-4" />
+              <strong>{{ text('ملخص المبالغ', 'Amount summary') }}</strong>
+            </div>
+            <div class="mm-due-meta">
+              <div class="mm-due-meta__item">
+                <span>{{ text('الحالة', 'Status') }}</span>
+                <strong>{{ statusLabel(line.status) }}</strong>
+              </div>
+              <div class="mm-due-meta__item">
+                <span>{{ text('الإجمالي', 'Gross') }}</span>
+                <strong>{{ line.grossKd | number: '1.2-2' }} KD</strong>
+              </div>
+              <div class="mm-due-meta__item">
+                <span>{{ text('العمولة', 'Commission') }}</span>
+                <strong>−{{ line.commissionKd | number: '1.2-2' }} KD</strong>
+              </div>
+              <div class="mm-due-meta__item mm-due-meta__item--net">
+                <span>{{ text('الصافي', 'Net') }}</span>
+                <strong>{{ line.netKd | number: '1.2-2' }} KD</strong>
+              </div>
+            </div>
+          </mm-ops-side-card>
+
+          <mm-ops-side-card>
+            <div class="mm-due-side-head">
+              <ng-icon name="lucideHistory" class="size-4" />
+              <strong>{{ text('آخر الأحداث', 'Recent events') }}</strong>
+            </div>
+            <ol class="mm-due-timeline">
+              @for (event of line.timeline; track event.id) {
+                <li [attr.data-tone]="event.tone">
+                  <span class="mm-due-timeline__dot" aria-hidden="true"></span>
+                  <div>
+                    <strong>{{ eventTitle(event) }}</strong>
+                    <small>{{ eventTime(event) }}</small>
+                  </div>
+                </li>
+              }
+            </ol>
+          </mm-ops-side-card>
+
+          <mm-ops-side-card>
+            <div class="mm-due-side-head">
+              <ng-icon name="lucideBadgePercent" class="size-4" />
+              <strong>{{ text('اتفاق العمولة', 'Commission agreement') }}</strong>
+            </div>
+            <p class="mm-due-side-copy">
+              {{
+                text(
+                  `نسبة الاتفاق الحالية ${agreementRate()}%. تُخصم من سعر الصندوق المتفق عليه ولا تُظهر عمولة اشتراك العميل.`,
+                  `Current agreement rate ${agreementRate()}%. Deducted from the agreed box price; customer subscription commission is not shown.`
+                )
+              }}
+            </p>
+            <a class="mm-due-side-link" routerLink="/restaurant/finance/deductions">
+              {{ text('الخصومات والتسويات', 'Deductions & adjustments') }}
+              <ng-icon
+                [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                class="size-3.5"
+              />
+            </a>
+            <a class="mm-due-side-link" routerLink="/restaurant/finance/payouts">
+              {{ text('الدفعات والتحويلات', 'Payouts & transfers') }}
+              <ng-icon
+                [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                class="size-3.5"
+              />
+            </a>
+          </mm-ops-side-card>
+        </mm-ops-side>
+      </mm-ops-split>
+    </div>
+  }
+</div>

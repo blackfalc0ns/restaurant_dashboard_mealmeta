@@ -13029,6 +13029,22 @@
     @apply text-[0.6875rem] font-bold text-mm-ink-muted;
   }
 
+  .mm-due-page .mm-ops-hero {
+    @apply items-start lg:items-end;
+  }
+
+  .mm-due-page .mm-ops-hero__metrics {
+    @apply w-full grid-cols-2 sm:max-w-none lg:w-auto lg:min-w-[28rem] lg:grid-cols-4;
+  }
+
+  .mm-due-page .mm-ops-hero__metrics > :is(div, a, article) {
+    @apply min-w-0 px-3 py-2.5 text-start;
+  }
+
+  .mm-due-page .mm-ops-hero__metrics strong {
+    @apply text-[1.05rem] leading-tight;
+  }
+
   .mm-due-callout {
     @apply mb-4 flex flex-wrap items-start gap-3 rounded-[1.15rem] border border-[#d9ebe1] bg-[#f8fbf9] px-4 py-3.5 text-[0.8125rem] font-medium leading-relaxed text-mm-secondary;
   }
@@ -13054,7 +13070,7 @@
   }
 
   .mm-due-card {
-    @apply grid gap-4 rounded-[1.25rem] border border-[#e4eee8] bg-white p-4 shadow-[0_16px_36px_-32px_rgba(1,83,41,0.45)] md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:p-5;
+    @apply grid gap-4 rounded-[1.25rem] border border-[#e4eee8] bg-white p-4 text-inherit no-underline shadow-[0_16px_36px_-32px_rgba(1,83,41,0.45)] transition hover:-translate-y-0.5 hover:border-mm-primary/25 hover:shadow-[0_20px_40px_-28px_rgba(4,153,78,0.45)] md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:p-5;
   }
 
   .mm-due-card[data-status='pending'] {
@@ -13184,6 +13200,209 @@
 
   .mm-due-skeleton__row {
     @apply h-[5.5rem] w-full rounded-[1.25rem];
+  }
+
+  .mm-due-detail,
+  .mm-due-detail__inner {
+    @apply flex min-h-0 w-full flex-1 flex-col;
+  }
+
+  .mm-due-stat {
+    @apply inline-flex items-center gap-2 rounded-xl border border-[#d9ebe1] bg-white px-3 py-2.5 text-mm-secondary shadow-sm;
+  }
+
+  .mm-due-stat__copy small {
+    @apply block text-[0.625rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-due-stat__copy strong {
+    @apply block max-w-[10rem] truncate text-[0.8125rem] font-extrabold;
+  }
+
+  .mm-due-callout[data-status='held'] {
+    @apply border-[#f5ddb0] bg-[#fffdf8] text-[#9a3412];
+  }
+
+  .mm-due-callout[data-status='held'] > span {
+    @apply text-[#d97706];
+  }
+
+  .mm-due-callout[data-status='pending'] {
+    @apply border-[#cfe9da] bg-[#f3fbf6];
+  }
+
+  .mm-ops-main .mm-due-panel + .mm-due-panel {
+    @apply mt-4;
+  }
+
+  .mm-due-panel {
+    @apply rounded-[1.35rem] border border-[rgba(4,153,78,0.1)] bg-white p-4 md:p-5;
+    box-shadow: 0 18px 40px -32px rgba(1, 83, 41, 0.55);
+  }
+
+  .mm-due-panel__head {
+    @apply mb-4 flex items-center gap-3 border-b border-[#edf3ef] pb-3;
+  }
+
+  .mm-due-panel__icon {
+    @apply grid size-9 shrink-0 place-items-center rounded-xl bg-[#edf8f1] text-mm-primary;
+  }
+
+  .mm-due-panel__head small {
+    @apply block text-[0.625rem] font-extrabold uppercase tracking-wide text-mm-ink-muted;
+  }
+
+  .mm-due-panel__head h2 {
+    @apply m-0 text-[0.9375rem] font-black text-mm-secondary;
+  }
+
+  .mm-due-detail-grid {
+    @apply grid gap-3 sm:grid-cols-2;
+  }
+
+  .mm-due-detail-field {
+    @apply rounded-[1.1rem] border border-[#e4eee8] bg-[#fbfefc] p-3.5;
+  }
+
+  .mm-due-detail-field--warn {
+    @apply border-[#f5ddb0] bg-[#fffdf8];
+  }
+
+  .mm-due-detail-field--ok {
+    @apply border-[#cfe9da] bg-[#edf8f1];
+  }
+
+  .mm-due-detail-field small {
+    @apply block text-[0.625rem] font-extrabold uppercase tracking-wide text-mm-ink-muted;
+  }
+
+  .mm-due-detail-field strong {
+    @apply mt-1 block truncate text-[0.875rem] font-black text-mm-secondary;
+  }
+
+  .mm-due-detail-field--warn strong {
+    @apply text-[#b45309];
+  }
+
+  .mm-due-detail-field--ok strong {
+    @apply text-mm-primary;
+  }
+
+  .mm-due-timeline {
+    @apply m-0 flex list-none flex-col gap-0 p-0;
+  }
+
+  .mm-due-timeline li {
+    @apply relative flex gap-3 pb-4 ps-1;
+  }
+
+  .mm-due-timeline li:last-child {
+    @apply pb-0;
+  }
+
+  .mm-due-timeline li:not(:last-child)::before {
+    content: '';
+    @apply absolute start-[0.55rem] top-3 bottom-0 w-px bg-[#e4eee8];
+  }
+
+  .mm-due-timeline__dot {
+    @apply relative z-[1] mt-1.5 size-2.5 shrink-0 rounded-full bg-mm-primary shadow-[0_0_0_3px_rgba(4,153,78,0.14)];
+  }
+
+  .mm-due-timeline li[data-tone='warn'] .mm-due-timeline__dot {
+    @apply bg-[#d97706] shadow-[0_0_0_3px_rgba(217,119,6,0.16)];
+  }
+
+  .mm-due-timeline li[data-tone='danger'] .mm-due-timeline__dot {
+    @apply bg-[#c43d3d] shadow-[0_0_0_3px_rgba(196,61,61,0.14)];
+  }
+
+  .mm-due-timeline li[data-tone='neutral'] .mm-due-timeline__dot {
+    @apply bg-[#94a3b8] shadow-[0_0_0_3px_rgba(148,163,184,0.18)];
+  }
+
+  .mm-due-timeline strong {
+    @apply block text-[0.8125rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-due-timeline small {
+    @apply mt-0.5 block text-[0.625rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-due-side-head {
+    @apply mb-3 flex items-center gap-2 text-mm-primary;
+  }
+
+  .mm-due-side-head strong {
+    @apply text-[0.8125rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-due-meta {
+    @apply grid gap-2.5;
+  }
+
+  .mm-due-meta__item {
+    @apply flex items-center justify-between gap-3 rounded-xl border border-[#e8f0eb] bg-[#fbfdfc] px-3 py-2.5;
+  }
+
+  .mm-due-meta__item--net {
+    @apply border-[#cfe9da] bg-[#edf8f1];
+  }
+
+  .mm-due-meta__item > span {
+    @apply text-[0.6875rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-due-meta__item > strong {
+    @apply text-[0.8125rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-due-meta__item--net > strong {
+    @apply text-mm-primary;
+  }
+
+  .mm-due-side-copy {
+    @apply m-0 text-[0.75rem] font-medium leading-relaxed text-mm-ink-muted;
+  }
+
+  .mm-due-side-link {
+    @apply mt-3 inline-flex items-center gap-1 text-[0.75rem] font-extrabold text-mm-primary no-underline hover:text-mm-secondary;
+  }
+
+  .mm-due-panel__head .mm-ops-count {
+    @apply ms-auto;
+  }
+
+  .mm-due-days {
+    @apply flex flex-col gap-2.5;
+  }
+
+  .mm-due-day {
+    @apply flex items-center justify-between gap-3 rounded-[1.1rem] border border-[#e8f0eb] bg-[#fbfdfc] px-3.5 py-3;
+  }
+
+  .mm-due-day strong {
+    @apply block text-[0.8125rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-due-day small {
+    @apply mt-0.5 block text-[0.625rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-due-day > b {
+    @apply text-[0.875rem] font-black text-mm-primary;
+  }
+
+  .mm-ops-detail-hero[data-status='scheduled'] {
+    @apply border-[#b7dff5];
+  }
+
+  .mm-ops-detail-hero[data-status='paid'] {
+    @apply border-[#d9ebe1];
+  }
+
+  .mm-ops-detail-hero[data-status='held'] {
+    @apply border-[#f5ddb0];
   }
 
 }

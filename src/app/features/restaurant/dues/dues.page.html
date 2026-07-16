@@ -85,7 +85,11 @@
         } @else {
           <div class="mm-due-list">
             @for (line of facade.pagedLines(); track line.id) {
-              <article class="mm-due-card" [attr.data-status]="line.status">
+              <a
+                class="mm-due-card"
+                [attr.data-status]="line.status"
+                [routerLink]="['/restaurant/finance/dues', line.id]"
+              >
                 <div class="mm-due-card__main">
                   <div class="mm-due-card__topline">
                     <span class="mm-due-code" dir="ltr">{{ line.code }}</span>
@@ -126,11 +130,11 @@
                     <strong>{{ line.netKd | number: '1.2-2' }} KD</strong>
                   </div>
                 </div>
-              </article>
+              </a>
             }
           </div>
 
-          @if (facade.totalPages() > 1) {
+          @if (facade.filteredLines().length > 0) {
             <mm-ops-pager
               [range]="rangeText()"
               [currentPage]="facade.currentPage()"

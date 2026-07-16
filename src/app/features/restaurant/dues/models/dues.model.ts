@@ -14,6 +14,20 @@ export interface DueSummary {
   hint?: LocalizedText;
 }
 
+export interface DueTimelineEvent {
+  id: string;
+  title: LocalizedText;
+  timeLabel: LocalizedText;
+  tone: 'ok' | 'warn' | 'danger' | 'neutral';
+}
+
+export interface DueDeliveryDay {
+  id: string;
+  dateLabel: LocalizedText;
+  boxes: number;
+  amountKd: number;
+}
+
 export interface DueLine {
   id: string;
   code: string;
@@ -31,6 +45,10 @@ export interface DueLine {
   /** Net amount after commission (before complaint deductions on other pages). */
   netKd: number;
   updatedAtLabel: LocalizedText;
+  transferRef?: string;
+  note?: LocalizedText;
+  deliveryDays?: DueDeliveryDay[];
+  timeline: DueTimelineEvent[];
 }
 
 export interface RestaurantDuesData {

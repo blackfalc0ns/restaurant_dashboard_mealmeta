@@ -9,7 +9,7 @@ import {
 } from '../models/dues.model';
 import { DUES_MOCK } from './dues.mock';
 
-export const DUES_PAGE_SIZE = 8;
+export const DUES_PAGE_SIZE = 4;
 
 @Injectable({ providedIn: 'root' })
 export class DuesFacade {
@@ -136,6 +136,18 @@ export class DuesFacade {
 
   goToPage(page: number): void {
     this.setPage(page);
+  }
+
+  lineById(id: string): DueLine | null {
+    return this.data()?.lines.find((line) => line.id === id) ?? null;
+  }
+
+  ensureLoaded(): void {
+    const data = this.data();
+    if (data?.lines.some((line) => !Array.isArray(line.timeline))) {
+      this.data.set(null);
+    }
+    this.load();
   }
 
   retry(): void {
