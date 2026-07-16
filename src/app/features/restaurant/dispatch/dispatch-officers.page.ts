@@ -9,15 +9,17 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
-  lucideClock3,
+  lucideClipboardList,
   lucideInfo,
-  lucideMapPinned,
-  lucidePackage,
+  lucideLoaderCircle,
+  lucideMail,
+  lucidePause,
+  lucidePhone,
+  lucidePlay,
+  lucidePlus,
   lucideRoute,
   lucideSearch,
   lucideSmartphone,
-  lucideUserRound,
-  lucideUsers,
 } from '@ng-icons/lucide';
 
 import { AppLocaleService } from '@/core/i18n/app-locale.service';
@@ -31,52 +33,61 @@ import {
 } from '@/shared/components/restaurant-workspace/restaurant-ops-ui.component';
 
 import { pickLocale } from '../overview/overview-i18n';
-import { TripsFacade } from './data/trips.facade';
-import { DeliveryTrip, TripFilter, TripStatus } from './models/trip.model';
-import { TripsSkeletonComponent } from './trips-skeleton.component';
+import { DispatchOfficersFacade } from './data/dispatch-officers.facade';
+import { DispatchOfficersSkeletonComponent } from './dispatch-officers-skeleton.component';
+import {
+  DispatchOfficer,
+  DispatchOfficerFilter,
+  DispatchOfficerStatus,
+} from './models/dispatch-officer.model';
 
 @Component({
-  selector: 'mm-trips-page',
+  selector: 'mm-dispatch-officers-page',
   standalone: true,
   imports: [
     FormsModule,
     RouterLink,
     NgIcon,
     PageStateComponent,
-    TripsSkeletonComponent,
+    DispatchOfficersSkeletonComponent,
     RestaurantOpsHeroComponent,
     RestaurantOpsBoardComponent,
     RestaurantOpsToolbarComponent,
     RestaurantOpsFiltersComponent,
     RestaurantOpsPagerComponent,
   ],
-  templateUrl: './trips.page.html',
+  templateUrl: './dispatch-officers.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'mm-tp-page flex h-full min-h-0 flex-col' },
+  host: { class: 'mm-dsp-page flex h-full min-h-0 flex-col' },
   viewProviders: [
     provideIcons({
-      lucideClock3,
+      lucideClipboardList,
       lucideInfo,
-      lucideMapPinned,
-      lucidePackage,
+      lucideLoaderCircle,
+      lucideMail,
+      lucidePause,
+      lucidePhone,
+      lucidePlay,
+      lucidePlus,
       lucideRoute,
       lucideSearch,
       lucideSmartphone,
-      lucideUserRound,
-      lucideUsers,
     }),
   ],
 })
-export class TripsPageComponent implements OnInit {
-  readonly facade = inject(TripsFacade);
+export class DispatchOfficersPageComponent implements OnInit {
+  readonly facade = inject(DispatchOfficersFacade);
   readonly locale = inject(AppLocaleService);
 
-  readonly filters: { id: TripFilter; labelAr: string; labelEn: string }[] = [
+  readonly filters: {
+    id: DispatchOfficerFilter;
+    labelAr: string;
+    labelEn: string;
+  }[] = [
     { id: 'all', labelAr: 'الكل', labelEn: 'All' },
-    { id: 'assigned', labelAr: 'مسنَدة', labelEn: 'Assigned' },
-    { id: 'in_progress', labelAr: 'قيد التنفيذ', labelEn: 'In progress' },
-    { id: 'completed', labelAr: 'مكتملة', labelEn: 'Completed' },
-    { id: 'cancelled', labelAr: 'ملغاة', labelEn: 'Cancelled' },
+    { id: 'active', labelAr: 'مفعّل', labelEn: 'Active' },
+    { id: 'invited', labelAr: 'مدعوّ', labelEn: 'Invited' },
+    { id: 'disabled', labelAr: 'معطّل', labelEn: 'Disabled' },
   ];
 
   readonly title = computed(() => {
@@ -101,14 +112,14 @@ export class TripsPageComponent implements OnInit {
 
   readonly searchPlaceholder = computed(() =>
     this.locale.isRtl()
-      ? 'ابحث برقم الرحلة أو السائق أو المنطقة...'
-      : 'Search by trip, driver, or zone...',
+      ? 'ابحث بالاسم أو الهاتف أو البريد...'
+      : 'Search by name, phone, or email...',
   );
 
   readonly emptyLabel = computed(() =>
     this.locale.isRtl()
-      ? 'لا توجد رحلات مطابقة.'
-      : 'No matching trips.',
+      ? 'لا يوجد مسئولو توصيل مطابقون.'
+      : 'No matching dispatch officers.',
   );
 
   readonly rangeText = computed(() => {
@@ -137,7 +148,7 @@ export class TripsPageComponent implements OnInit {
     this.facade.setSearch(value);
   }
 
-  setFilter(filter: TripFilter): void {
+  setFilter(filter: DispatchOfficerFilter): void {
     this.facade.setFilter(filter);
   }
 
@@ -145,7 +156,7 @@ export class TripsPageComponent implements OnInit {
     return this.locale.isRtl() ? option.labelAr : option.labelEn;
   }
 
-  filterCount(id: TripFilter): number {
+  filterCount(id: DispatchOfficerFilter): number {
     return this.facade.filterCounts()[id] ?? 0;
   }
 
@@ -153,60 +164,62 @@ export class TripsPageComponent implements OnInit {
     return pickLocale(card.label, this.locale.locale());
   }
 
-  zone(trip: DeliveryTrip): string {
-    return pickLocale(trip.zoneLabel, this.locale.locale());
+  officerName(officer: DispatchOfficer): string {
+    return pickLocale(officer.name, this.locale.locale());
   }
 
-  shift(trip: DeliveryTrip): string {
-    return pickLocale(trip.shiftLabel, this.locale.locale());
+  updatedAt(officer: DispatchOfficer): string {
+    return pickLocale(officer.updatedAtLabel, this.locale.locale());
   }
 
-  driverName(trip: DeliveryTrip): string {
-    return trip.driverName
-      ? pickLocale(trip.driverName, this.locale.locale())
-      : this.locale.isRtl()
-        ? 'بدون سائق'
-        : 'No driver';
+  officerNote(officer: DispatchOfficer): string {
+    return officer.note ? pickLocale(officer.note, this.locale.locale()) : '';
   }
 
-  driverInitial(trip: DeliveryTrip): string {
-    const name = this.driverName(trip).trim();
-    return name ? name.charAt(0) : '—';
-  }
-
-  deliveredCount(trip: DeliveryTrip): number {
-    return trip.stops.filter((stop) => stop.status === 'delivered').length;
-  }
-
-  createdAt(trip: DeliveryTrip): string {
-    return pickLocale(trip.createdAtLabel, this.locale.locale());
-  }
-
-  statusLabel(status: TripStatus): string {
+  statusLabel(status: DispatchOfficerStatus): string {
     const rtl = this.locale.isRtl();
     switch (status) {
-      case 'draft':
-        return rtl ? 'مسودة' : 'Draft';
-      case 'assigned':
-        return rtl ? 'مسنَدة' : 'Assigned';
-      case 'in_progress':
-        return rtl ? 'قيد التنفيذ' : 'In progress';
-      case 'completed':
-        return rtl ? 'مكتملة' : 'Completed';
-      case 'cancelled':
-        return rtl ? 'ملغاة' : 'Cancelled';
+      case 'active':
+        return rtl ? 'مفعّل' : 'Active';
+      case 'disabled':
+        return rtl ? 'معطّل' : 'Disabled';
+      case 'invited':
+        return rtl ? 'مدعوّ' : 'Invited';
     }
   }
 
-  prevPage(): void {
-    this.facade.prevPage();
+  canToggle(officer: DispatchOfficer): boolean {
+    return officer.status === 'active' || officer.status === 'disabled';
+  }
+
+  isToggling(officer: DispatchOfficer): boolean {
+    return this.facade.togglingId() === officer.id;
+  }
+
+  toggleLabel(officer: DispatchOfficer): string {
+    const rtl = this.locale.isRtl();
+    if (officer.status === 'disabled') {
+      return rtl ? 'تفعيل' : 'Enable';
+    }
+    return rtl ? 'تعطيل' : 'Disable';
+  }
+
+  toggle(event: Event, officer: DispatchOfficer): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.canToggle(officer) || this.isToggling(officer)) return;
+    this.facade.toggleEnabled(officer.id);
+  }
+
+  goToPage(page: number): void {
+    this.facade.goToPage(page);
   }
 
   nextPage(): void {
     this.facade.nextPage();
   }
 
-  goToPage(page: number): void {
-    this.facade.goToPage(page);
+  prevPage(): void {
+    this.facade.prevPage();
   }
 }

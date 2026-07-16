@@ -19,15 +19,6 @@
         [title]="title()"
         [subtitle]="subtitle()"
       >
-        <a
-          opsAside
-          routerLink="/restaurant/delivery/trips/create"
-          class="mm-tp-create"
-        >
-          <ng-icon name="lucidePlus" class="size-4" />
-          {{ locale.isRtl() ? 'إنشاء رحلة' : 'Create trip' }}
-        </a>
-
         <ng-container opsMetrics>
           @for (card of data.summaries; track card.id) {
             <div>
@@ -38,36 +29,19 @@
         </ng-container>
       </mm-ops-hero>
 
-      @if (data.candidates.length > 0) {
-        <a routerLink="/restaurant/delivery/trips/create" class="mm-tp-ready">
-          <span class="mm-tp-ready__icon" aria-hidden="true">
-            <ng-icon name="lucidePackage" class="size-4" />
-          </span>
-          <div class="mm-tp-ready__copy">
-            <strong>
-              {{
-                locale.isRtl()
-                  ? `${readyBoxCount()} بوكس جاهز للتجميع`
-                  : `${readyBoxCount()} boxes ready to group`
-              }}
-            </strong>
-            <p>
-              {{
-                locale.isRtl()
-                  ? `${data.candidates.length} محطات بانتظار رحلة — اختر السائق وأرسل`
-                  : `${data.candidates.length} stops waiting for a trip — pick a driver and send`
-              }}
-            </p>
-          </div>
-          <span class="mm-tp-ready__cta">
-            {{ locale.isRtl() ? 'تجميع الآن' : 'Group now' }}
-            <ng-icon
-              [name]="locale.isRtl() ? 'lucideChevronLeft' : 'lucideChevronRight'"
-              class="size-3.5"
-            />
-          </span>
+      <div class="mm-tp-callout">
+        <span><ng-icon name="lucideSmartphone" class="size-4" /></span>
+        <p>
+          {{
+            locale.isRtl()
+              ? 'إنشاء الرحلات وتعيين السائقين يتم من تطبيق مسئول التوصيل. اللوحة هنا للعرض والمتابعة فقط.'
+              : 'Trips and driver assignment happen in the dispatch mobile app. This dashboard is view-only.'
+          }}
+        </p>
+        <a routerLink="/restaurant/delivery/dispatch" class="mm-tp-callout__link">
+          {{ locale.isRtl() ? 'إدارة مسئولي التوصيل' : 'Manage dispatch officers' }}
         </a>
-      }
+      </div>
 
       <mm-ops-board>
         <div class="mm-ops-board__head">

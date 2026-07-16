@@ -1,0 +1,200 @@
+<div class="mm-dsp-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-dispatch-officers-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <div class="mm-ops-scroll">
+      <mm-ops-hero
+        icon="lucideClipboardList"
+        [eyebrow]="dateLabel()"
+        [title]="title()"
+        [subtitle]="subtitle()"
+      >
+        <a
+          opsAside
+          routerLink="/restaurant/delivery/dispatch/create"
+          class="mm-dsp-create"
+        >
+          <ng-icon name="lucidePlus" class="size-4" />
+          {{ locale.isRtl() ? 'إضافة مسئول توصيل' : 'Add dispatch officer' }}
+        </a>
+
+        <ng-container opsMetrics>
+          @for (card of data.summaries; track card.id) {
+            <div>
+              <small>{{ summaryLabel(card) }}</small>
+              <strong>{{ card.value }}</strong>
+            </div>
+          }
+        </ng-container>
+      </mm-ops-hero>
+
+      <div class="mm-dsp-callout">
+        <span><ng-icon name="lucideSmartphone" class="size-4" /></span>
+        <p>
+          {{
+            locale.isRtl()
+              ? 'إنشاء الرحلات وتعيين السائقين يتم من تطبيق الموبايل الخاص بمسئول التوصيل — اللوحة هنا لإدارة الحسابات فقط.'
+              : 'Trips and driver assignment happen in the dispatch mobile app — this dashboard only manages accounts.'
+          }}
+        </p>
+      </div>
+
+      <mm-ops-board>
+        <div class="mm-ops-board__head">
+          <div>
+            <h2>
+              {{ locale.isRtl() ? 'حسابات مسئولي التوصيل' : 'Dispatch officer accounts' }}
+            </h2>
+            <p>
+              {{
+                locale.isRtl()
+                  ? 'إنشاء الحساب والتفعيل/التعطيل من المطعم'
+                  : 'Account creation and enable/disable by the restaurant'
+              }}
+            </p>
+          </div>
+          <span class="mm-ops-count">{{ facade.filteredOfficers().length }}</span>
+        </div>
+
+        <mm-ops-toolbar>
+          <label class="mm-ops-search">
+            <ng-icon name="lucideSearch" class="size-4" />
+            <input
+              type="search"
+              [placeholder]="searchPlaceholder()"
+              [ngModel]="facade.search()"
+              (ngModelChange)="onSearch($event)"
+            />
+          </label>
+          <mm-ops-filters>
+            @for (option of filters; track option.id) {
+              <button
+                type="button"
+                [class.is-active]="facade.filter() === option.id"
+                (click)="setFilter(option.id)"
+              >
+                {{ filterLabel(option) }}
+                <b>{{ filterCount(option.id) }}</b>
+              </button>
+            }
+          </mm-ops-filters>
+        </mm-ops-toolbar>
+
+        @if (facade.filteredOfficers().length === 0) {
+          <p class="mm-dsp-empty">{{ emptyLabel() }}</p>
+        } @else {
+          <div class="mm-dsp-table" role="table">
+            <div class="mm-dsp-table__head" role="row">
+              <span>{{ locale.isRtl() ? 'المسئول' : 'Officer' }}</span>
+              <span>{{ locale.isRtl() ? 'التواصل' : 'Contact' }}</span>
+              <span>{{ locale.isRtl() ? 'الرحلات (تطبيق)' : 'Trips (app)' }}</span>
+              <span>{{ locale.isRtl() ? 'الحالة' : 'Status' }}</span>
+              <span>{{ locale.isRtl() ? 'إجراء' : 'Action' }}</span>
+            </div>
+
+            @for (officer of facade.pagedOfficers(); track officer.id) {
+              <a
+                class="mm-dsp-row"
+                role="row"
+                [attr.data-status]="officer.status"
+                [routerLink]="['/restaurant/delivery/dispatch', officer.id]"
+              >
+                <div class="mm-dsp-row__officer">
+                  <strong>{{ officerName(officer) }}</strong>
+                  <small>{{ updatedAt(officer) }}</small>
+                </div>
+
+                <div class="mm-dsp-row__contact">
+                  <span dir="ltr">
+                    <ng-icon name="lucidePhone" class="size-3" />
+                    {{ officer.phone }}
+                  </span>
+                  <span dir="ltr">
+                    <ng-icon name="lucideMail" class="size-3" />
+                    {{ officer.email }}
+                  </span>
+                </div>
+
+                <div class="mm-dsp-row__trips">
+                  <strong>
+                    <ng-icon name="lucideRoute" class="size-3.5 shrink-0" />
+                    <span>{{ officer.tripsCreatedToday }}</span>
+                    <small>{{ locale.isRtl() ? 'اليوم' : 'today' }}</small>
+                  </strong>
+                  <span>
+                    {{ officer.tripsCreatedWeek }}
+                    {{ locale.isRtl() ? 'هذا الأسبوع' : 'this week' }}
+                  </span>
+                </div>
+
+                <div class="mm-dsp-row__status">
+                  <span class="mm-dsp-badge" [attr.data-status]="officer.status">
+                    {{ statusLabel(officer.status) }}
+                  </span>
+                  @if (officerNote(officer); as note) {
+                    <small>{{ note }}</small>
+                  }
+                </div>
+
+                <div class="mm-dsp-row__action">
+                  @if (canToggle(officer)) {
+                    <button
+                      type="button"
+                      class="mm-dsp-toggle"
+                      [attr.data-mode]="officer.status === 'disabled' ? 'enable' : 'disable'"
+                      [disabled]="isToggling(officer)"
+                      (click)="toggle($event, officer)"
+                    >
+                      @if (isToggling(officer)) {
+                        <ng-icon name="lucideLoaderCircle" class="size-3.5 animate-spin" />
+                      } @else if (officer.status === 'disabled') {
+                        <ng-icon name="lucidePlay" class="size-3.5" />
+                      } @else {
+                        <ng-icon name="lucidePause" class="size-3.5" />
+                      }
+                      {{ toggleLabel(officer) }}
+                    </button>
+                  } @else {
+                    <small class="mm-dsp-row__hint">
+                      {{ locale.isRtl() ? 'بانتظار دخول التطبيق' : 'Awaiting app login' }}
+                    </small>
+                  }
+                </div>
+              </a>
+            }
+          </div>
+
+          @if (facade.totalPages() > 1) {
+            <mm-ops-pager
+              [range]="rangeText()"
+              [currentPage]="facade.currentPage()"
+              [totalPages]="facade.totalPages()"
+              [pages]="facade.pageNumbers()"
+              [rtl]="locale.isRtl()"
+              [prevLabel]="prevLabel()"
+              [nextLabel]="nextLabel()"
+              (prev)="prevPage()"
+              (next)="nextPage()"
+              (goTo)="goToPage($event)"
+            />
+          }
+        }
+
+        <p class="mm-dsp-note">
+          <ng-icon name="lucideInfo" class="size-3.5" />
+          {{ note() }}
+        </p>
+      </mm-ops-board>
+    </div>
+  }
+</div>

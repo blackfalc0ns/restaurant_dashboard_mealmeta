@@ -1,0 +1,379 @@
+<div class="mm-dsp-detail__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-dispatch-officers-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (notFound()) {
+    <mm-page-state
+      viewState="empty"
+      [emptyMessage]="text('مسئول التوصيل غير موجود.', 'Dispatch officer not found.')"
+    />
+  }
+
+  @if (officer(); as officer) {
+    <div class="mm-ops-scroll">
+      <mm-ops-detail-hero
+        icon="lucideClipboardList"
+        [title]="name(officer)"
+        [subtitle]="text('حساب مسئول توصيل — تطبيق الموبايل', 'Dispatch officer account — mobile app')"
+        [kicker]="text('مسئول توصيل', 'Dispatch officer')"
+        [status]="officer.status"
+      >
+        <a opsBack class="mm-ops-back" routerLink="/restaurant/delivery/dispatch">
+          <ng-icon
+            [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+            class="size-3.5"
+          />
+          {{ text('العودة للحسابات', 'Back to accounts') }}
+        </a>
+
+        <span opsBadge class="mm-dsp-badge" [attr.data-status]="officer.status">
+          {{ statusLabel(officer.status) }}
+        </span>
+
+        @if (canToggle(officer)) {
+          <button
+            opsActions
+            type="button"
+            class="mm-ops-cta"
+            [class.mm-ops-cta--warn]="officer.status !== 'disabled'"
+            [disabled]="isToggling(officer)"
+            (click)="toggle(officer)"
+          >
+            @if (isToggling(officer)) {
+              <ng-icon name="lucideLoaderCircle" class="size-4 animate-spin" />
+            } @else {
+              <ng-icon
+                [name]="officer.status === 'disabled' ? 'lucidePlay' : 'lucidePause'"
+                class="size-4"
+              />
+            }
+            {{ toggleLabel(officer) }}
+          </button>
+        }
+
+        <div opsStats class="contents">
+          <div class="mm-dsp-stat">
+            <ng-icon name="lucidePhone" class="size-4" />
+            <div class="mm-dsp-stat__copy">
+              <small>{{ text('الهاتف', 'Phone') }}</small>
+              <strong><bdi>{{ officer.phone }}</bdi></strong>
+            </div>
+          </div>
+          <div class="mm-dsp-stat">
+            <ng-icon name="lucideRoute" class="size-4" />
+            <div class="mm-dsp-stat__copy">
+              <small>{{ text('رحلات اليوم (تطبيق)', 'Trips today (app)') }}</small>
+              <strong>{{ officer.tripsCreatedToday }}</strong>
+            </div>
+          </div>
+          <div class="mm-dsp-stat">
+            <ng-icon name="lucideHistory" class="size-4" />
+            <div class="mm-dsp-stat__copy">
+              <small>{{ text('هذا الأسبوع', 'This week') }}</small>
+              <strong>{{ officer.tripsCreatedWeek }}</strong>
+            </div>
+          </div>
+          <div class="mm-dsp-stat">
+            <ng-icon name="lucideSmartphone" class="size-4" />
+            <div class="mm-dsp-stat__copy">
+              <small>{{ text('آخر نشاط', 'Last activity') }}</small>
+              <strong>{{ updatedAt(officer) }}</strong>
+            </div>
+          </div>
+        </div>
+      </mm-ops-detail-hero>
+
+      <div class="mm-dsp-callout" [attr.data-status]="officer.status">
+        <span>
+          <ng-icon
+            [name]="officer.status === 'disabled' ? 'lucideTriangleAlert' : 'lucideSmartphone'"
+            class="size-4"
+          />
+        </span>
+        <p>
+          @if (officerNote(officer); as note) {
+            {{ note }}
+          } @else {
+            {{
+              text(
+                'إنشاء الرحلات وتعيين السائقين يتم من تطبيق الموبايل — اللوحة هنا لإدارة الحساب فقط.',
+                'Trips and driver assignment happen in the mobile app — this dashboard only manages the account.'
+              )
+            }}
+          }
+        </p>
+      </div>
+
+      <mm-ops-split>
+        <mm-ops-main>
+          <section class="mm-dsp-panel">
+            <div class="mm-dsp-panel__head">
+              <span class="mm-dsp-panel__icon">
+                <ng-icon name="lucideUserRound" class="size-4" />
+              </span>
+              <div>
+                <small>{{ text('بيانات الحساب', 'Account details') }}</small>
+                <h2>{{ text('ملف مسئول التوصيل', 'Dispatch officer profile') }}</h2>
+              </div>
+            </div>
+
+            <div class="mm-dsp-profile">
+              <div class="mm-dsp-avatar" aria-hidden="true">
+                {{ initials(officer) }}
+              </div>
+              <div class="mm-dsp-profile__copy">
+                <strong>{{ name(officer) }}</strong>
+                <span class="mm-dsp-profile__joined">{{ joinedAt(officer) }}</span>
+                <div class="mm-dsp-chips">
+                  <span>
+                    <ng-icon name="lucidePhone" class="size-3.5" />
+                    <bdi>{{ officer.phone }}</bdi>
+                  </span>
+                  <span>
+                    <ng-icon name="lucideMail" class="size-3.5" />
+                    <bdi>{{ officer.email }}</bdi>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mm-dsp-detail-grid">
+              <div class="mm-dsp-detail-field">
+                <span class="mm-dsp-detail-field__icon">
+                  <ng-icon name="lucideIdCard" class="size-3.5" />
+                </span>
+                <div>
+                  <small>{{ text('معرّف الحساب', 'Account ID') }}</small>
+                  <strong dir="ltr">{{ officer.id }}</strong>
+                </div>
+              </div>
+              <div class="mm-dsp-detail-field">
+                <span class="mm-dsp-detail-field__icon">
+                  <ng-icon name="lucideMail" class="size-3.5" />
+                </span>
+                <div>
+                  <small>{{ text('البريد', 'Email') }}</small>
+                  <strong><bdi>{{ officer.email }}</bdi></strong>
+                </div>
+              </div>
+              <div class="mm-dsp-detail-field">
+                <span class="mm-dsp-detail-field__icon">
+                  <ng-icon name="lucidePhone" class="size-3.5" />
+                </span>
+                <div>
+                  <small>{{ text('الهاتف', 'Phone') }}</small>
+                  <strong><bdi>{{ officer.phone }}</bdi></strong>
+                </div>
+              </div>
+              <div class="mm-dsp-detail-field">
+                <span class="mm-dsp-detail-field__icon">
+                  <ng-icon name="lucideClipboardList" class="size-3.5" />
+                </span>
+                <div>
+                  <small>{{ text('حالة الحساب', 'Account status') }}</small>
+                  <strong>{{ statusLabel(officer.status) }}</strong>
+                </div>
+              </div>
+              <div class="mm-dsp-detail-field">
+                <span class="mm-dsp-detail-field__icon">
+                  <ng-icon name="lucideClock3" class="size-3.5" />
+                </span>
+                <div>
+                  <small>{{ text('تاريخ الإنشاء', 'Created') }}</small>
+                  <strong>{{ joinedAt(officer) }}</strong>
+                </div>
+              </div>
+              <div class="mm-dsp-detail-field">
+                <span class="mm-dsp-detail-field__icon">
+                  <ng-icon name="lucideSmartphone" class="size-3.5" />
+                </span>
+                <div>
+                  <small>{{ text('آخر نشاط بالتطبيق', 'Last app activity') }}</small>
+                  <strong>{{ updatedAt(officer) }}</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="mm-dsp-panel">
+            <div class="mm-dsp-panel__head">
+              <span class="mm-dsp-panel__icon">
+                <ng-icon name="lucideRoute" class="size-4" />
+              </span>
+              <div>
+                <small>{{ text('الرحلات', 'Trips') }}</small>
+                <h2>{{ text('رحلات أنشأها من التطبيق', 'Trips created in the app') }}</h2>
+              </div>
+              <span class="mm-ops-count">{{ officerTrips().length }}</span>
+            </div>
+
+            @if (officerTrips().length === 0) {
+              <p class="mm-dsp-trips-empty">
+                {{
+                  text(
+                    'لا توجد رحلات مرتبطة بهذا الحساب بعد.',
+                    'No trips linked to this account yet.'
+                  )
+                }}
+              </p>
+            } @else {
+              <ul class="mm-dsp-trips">
+                @for (trip of officerTrips(); track trip.id) {
+                  <li>
+                    <a
+                      class="mm-dsp-trip"
+                      [attr.data-status]="trip.status"
+                      [routerLink]="['/restaurant/delivery/trips', trip.id]"
+                    >
+                      <div class="mm-dsp-trip__main">
+                        <div class="mm-dsp-trip__topline">
+                          <strong dir="ltr">{{ trip.code }}</strong>
+                          <span
+                            class="mm-tp-badge"
+                            [attr.data-status]="trip.status"
+                          >
+                            {{ tripStatusLabel(trip.status) }}
+                          </span>
+                        </div>
+                        <p>
+                          <ng-icon name="lucideMapPinned" class="size-3.5" />
+                          {{ tripZone(trip) }}
+                        </p>
+                        <div class="mm-dsp-trip__meta">
+                          <span>
+                            <ng-icon name="lucideUsers" class="size-3" />
+                            {{ trip.customerCount }}
+                            {{ text('عملاء', 'customers') }}
+                          </span>
+                          <span>
+                            <ng-icon name="lucidePackage" class="size-3" />
+                            {{ trip.boxCount }}
+                            {{ text('بوكس', 'boxes') }}
+                          </span>
+                          <span>
+                            <ng-icon name="lucideClock3" class="size-3" />
+                            {{ tripCreatedAt(trip) }}
+                          </span>
+                          <span>{{ tripDriver(trip) }}</span>
+                        </div>
+                      </div>
+                    </a>
+                  </li>
+                }
+              </ul>
+            }
+          </section>
+        </mm-ops-main>
+
+        <mm-ops-side>
+          <mm-ops-side-card>
+            <div class="mm-dsp-side-head">
+              <ng-icon name="lucideInfo" class="size-4" />
+              <strong>{{ text('ملخص الحساب', 'Account summary') }}</strong>
+            </div>
+            <div class="mm-dsp-meta">
+              <div class="mm-dsp-meta__item">
+                <span>{{ text('الحالة', 'Status') }}</span>
+                <strong>{{ statusLabel(officer.status) }}</strong>
+              </div>
+              <div class="mm-dsp-meta__item">
+                <span>{{ text('رحلات اليوم', 'Trips today') }}</span>
+                <strong>{{ officer.tripsCreatedToday }}</strong>
+              </div>
+              <div class="mm-dsp-meta__item">
+                <span>{{ text('هذا الأسبوع', 'This week') }}</span>
+                <strong>{{ officer.tripsCreatedWeek }}</strong>
+              </div>
+              <div class="mm-dsp-meta__item">
+                <span>{{ text('رحلات معروضة', 'Linked trips') }}</span>
+                <strong>{{ officerTrips().length }}</strong>
+              </div>
+            </div>
+          </mm-ops-side-card>
+
+          <mm-ops-side-card>
+            <div class="mm-dsp-side-head">
+              <ng-icon name="lucideHistory" class="size-4" />
+              <strong>{{ text('آخر الأحداث', 'Recent events') }}</strong>
+            </div>
+            <ol class="mm-dsp-timeline">
+              @for (event of officer.timeline; track event.id) {
+                <li [attr.data-tone]="event.tone">
+                  <span class="mm-dsp-timeline__dot" aria-hidden="true"></span>
+                  <div>
+                    <strong>{{ eventTitle(event) }}</strong>
+                    <small>{{ eventTime(event) }}</small>
+                  </div>
+                </li>
+              }
+            </ol>
+          </mm-ops-side-card>
+
+          <mm-ops-side-card>
+            <div class="mm-dsp-side-head">
+              <ng-icon name="lucideInfo" class="size-4" />
+              <strong>{{ text('صلاحيات المطعم', 'Restaurant controls') }}</strong>
+            </div>
+            <ul class="mm-dsp-side-list">
+              <li>
+                {{
+                  text(
+                    'إنشاء الحساب وإرسال الدعوة',
+                    'Create the account and send the invite'
+                  )
+                }}
+              </li>
+              <li>
+                {{
+                  text(
+                    'تفعيل أو تعطيل الدخول للتطبيق',
+                    'Enable or disable app access'
+                  )
+                }}
+              </li>
+              <li>
+                {{
+                  text(
+                    'متابعة الرحلات التي أنشأها من التطبيق',
+                    'Monitor trips created from the app'
+                  )
+                }}
+              </li>
+            </ul>
+          </mm-ops-side-card>
+
+          <mm-ops-side-card>
+            <div class="mm-dsp-side-head">
+              <ng-icon name="lucideSmartphone" class="size-4" />
+              <strong>{{ text('تطبيق الموبايل', 'Mobile app') }}</strong>
+            </div>
+            <p class="mm-dsp-side-copy">
+              {{
+                text(
+                  'مسئول التوصيل يجمّع البوكسات وينشئ الرحلات ويعيّن السائقين من التطبيق — وليس من لوحة المطعم.',
+                  'The officer groups boxes, creates trips, and assigns drivers in the app — not in the restaurant dashboard.'
+                )
+              }}
+            </p>
+            <a class="mm-dsp-side-link" routerLink="/restaurant/delivery/trips">
+              {{ text('عرض كل الرحلات', 'View all trips') }}
+              <ng-icon
+                [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                class="size-3.5"
+              />
+            </a>
+          </mm-ops-side-card>
+        </mm-ops-side>
+      </mm-ops-split>
+    </div>
+  }
+</div>

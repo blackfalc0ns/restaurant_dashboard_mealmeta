@@ -155,6 +155,13 @@ export const RESTAURANT_NAV_SECTIONS: RestaurantNavSection[] = [
     icon: 'lucideTruck',
     items: [
       {
+        id: 'dispatch',
+        labelAr: 'مسئولو التوصيل',
+        labelEn: 'Dispatch officers',
+        route: '/restaurant/delivery/dispatch',
+        icon: 'lucideClipboardList',
+      },
+      {
         id: 'trips',
         labelAr: 'الرحلات',
         labelEn: 'Trips',

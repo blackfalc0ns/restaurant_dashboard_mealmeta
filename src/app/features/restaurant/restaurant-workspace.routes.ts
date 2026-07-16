@@ -122,11 +122,23 @@ const loadRatingsPage = () =>
 const loadTripsPage = () =>
   import('./trips/trips.page').then((m) => m.TripsPageComponent);
 
-const loadTripCreatePage = () =>
-  import('./trips/trip-create.page').then((m) => m.TripCreatePageComponent);
-
 const loadTripDetailPage = () =>
   import('./trips/trip-detail.page').then((m) => m.TripDetailPageComponent);
+
+const loadDispatchOfficersPage = () =>
+  import('./dispatch/dispatch-officers.page').then(
+    (m) => m.DispatchOfficersPageComponent,
+  );
+
+const loadDispatchOfficerCreatePage = () =>
+  import('./dispatch/dispatch-officer-create.page').then(
+    (m) => m.DispatchOfficerCreatePageComponent,
+  );
+
+const loadDispatchOfficerDetailPage = () =>
+  import('./dispatch/dispatch-officer-detail.page').then(
+    (m) => m.DispatchOfficerDetailPageComponent,
+  );
 
 const SIDEBAR_LINK_PATHS = [
   'finance/dues',
@@ -246,8 +258,21 @@ export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
     loadComponent: loadDriversPage,
   },
   {
+    path: 'delivery/dispatch/create',
+    loadComponent: loadDispatchOfficerCreatePage,
+  },
+  {
+    path: 'delivery/dispatch/:officerId',
+    loadComponent: loadDispatchOfficerDetailPage,
+  },
+  {
+    path: 'delivery/dispatch',
+    loadComponent: loadDispatchOfficersPage,
+  },
+  {
     path: 'delivery/trips/create',
-    loadComponent: loadTripCreatePage,
+    redirectTo: 'delivery/trips',
+    pathMatch: 'full',
   },
   {
     path: 'delivery/trips/:tripId',

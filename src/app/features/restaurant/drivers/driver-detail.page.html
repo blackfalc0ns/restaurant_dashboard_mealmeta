@@ -259,16 +259,16 @@
               <p class="mm-dr-trips-empty">
                 {{
                   text(
-                    'لا توجد رحلات مرتبطة بهذا المندوب بعد.',
-                    'No trips linked to this driver yet.'
+                    'لا توجد رحلات مرتبطة بهذا المندوب بعد. يتم إنشاء الرحلات من تطبيق مسئول التوصيل.',
+                    'No trips linked to this driver yet. Trips are created in the dispatch mobile app.'
                   )
                 }}
               </p>
               <a
                 class="mm-dr-trips-cta"
-                routerLink="/restaurant/delivery/trips/create"
+                routerLink="/restaurant/delivery/trips"
               >
-                {{ text('إنشاء رحلة وتعيينه', 'Create a trip & assign') }}
+                {{ text('عرض الرحلات', 'View trips') }}
               </a>
             } @else {
               <ul class="mm-dr-trips">

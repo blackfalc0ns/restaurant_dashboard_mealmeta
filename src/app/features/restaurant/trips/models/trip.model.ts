@@ -64,6 +64,7 @@ export interface DeliveryTrip {
   driverId: string | null;
   driverName: LocalizedText | null;
   driverCode: string | null;
+  dispatcherId: string;
   dispatcherName: LocalizedText;
   stops: TripStop[];
   boxCount: number;

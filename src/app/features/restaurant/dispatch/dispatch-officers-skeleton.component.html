@@ -1,0 +1,29 @@
+<div class="mm-dsp-skeleton__inner" aria-hidden="true">
+  <div class="mm-dsp-skeleton__hero">
+    <div class="mm-dsp-skeleton__hero-main">
+      <span class="mm-ov-bone mm-ov-bone--pill"></span>
+      <span class="mm-ov-bone mm-ov-bone--title"></span>
+      <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--mid"></span>
+    </div>
+    <div class="mm-dsp-skeleton__metrics">
+      @for (_ of [1, 2, 3]; track $index) {
+        <div class="mm-dsp-skeleton__metric">
+          <span class="mm-ov-bone mm-ov-bone--line mm-ov-bone--short"></span>
+          <span class="mm-ov-bone mm-ov-bone--value"></span>
+        </div>
+      }
+    </div>
+  </div>
+  <div class="mm-dsp-skeleton__board">
+    <div class="mm-dsp-skeleton__toolbar">
+      <span class="mm-ov-bone mm-ov-bone--line" style="flex: 1"></span>
+      <span class="mm-ov-bone mm-ov-bone--chip"></span>
+      <span class="mm-ov-bone mm-ov-bone--chip"></span>
+    </div>
+    <div class="mm-dsp-skeleton__rows">
+      @for (row of rows; track row) {
+        <span class="mm-ov-bone mm-dsp-skeleton__row"></span>
+      }
+    </div>
+  </div>
+</div>

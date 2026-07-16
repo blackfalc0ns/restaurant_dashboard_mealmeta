@@ -645,7 +645,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Restaurant shell Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Restaurant shell â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-restaurant-shell-canvas {
     @apply flex h-dvh min-h-0 gap-3 bg-[#eef5f0] p-3 md:gap-4 md:p-4;
@@ -812,7 +812,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Dark Thor-style sidebar (MealMate brand) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Dark Thor-style sidebar (MealMate brand) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-thor {
     display: flex;
@@ -1136,7 +1136,7 @@
     pointer-events: none;
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Restaurant overview Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Restaurant overview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-ov-page {
     @apply h-full;
@@ -1550,7 +1550,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Overview skeleton Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Overview skeleton â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-ov-skeleton__inner {
     @apply flex flex-col gap-4 md:gap-5;
@@ -1669,7 +1669,7 @@
     animation-direction: reverse;
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Restaurant analytics Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Restaurant analytics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-an-page {
     @apply h-full;
@@ -1941,7 +1941,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Restaurant daily operations Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Restaurant daily operations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-op-page {
     @apply h-full;
@@ -2284,7 +2284,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Restaurant finance overview Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Restaurant finance overview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-fn-page {
     @apply h-full;
@@ -2538,7 +2538,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Restaurant quality overview Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Restaurant quality overview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-ql-page {
     @apply h-full;
@@ -2844,7 +2844,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Restaurant activity center Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Restaurant activity center â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-ac-page {
     @apply h-full;
@@ -3671,7 +3671,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Pending confirmation (F06 Ã¢Ë†â€™72h / 24h window) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Pending confirmation (F06 âˆ’72h / 24h window) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-pc-page {
     @apply w-full;
@@ -3992,7 +3992,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Upcoming 24h prep (F06 Ã¢Ë†â€™24h window) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Upcoming 24h prep (F06 âˆ’24h window) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-u24-page {
     @apply w-full;
@@ -4328,7 +4328,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Labels & barcodes Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Labels & barcodes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-lb-page {
     @apply w-full;
@@ -4852,7 +4852,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Order handover (driver pickup & delivery) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Order handover (driver pickup & delivery) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-ho-page {
     @apply w-full;
@@ -5552,7 +5552,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Orders archive Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Orders archive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-oa-page {
     @apply w-full;
@@ -5860,7 +5860,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Menus & meals Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Menus & meals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-mn-page {
     @apply w-full;
@@ -6227,7 +6227,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Restaurant ingredients catalog Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Restaurant ingredients catalog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-ig-page {
     @apply w-full;
@@ -6547,7 +6547,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Ingredient create Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Ingredient create â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-igc-page {
     @apply flex h-full min-h-0 flex-col;
@@ -6787,7 +6787,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Restaurant pricing Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Restaurant pricing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-pr-page {
     @apply flex h-full min-h-0 flex-col;
@@ -7375,9 +7375,9 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Restaurant pricing redesign Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Restaurant pricing redesign â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Shared restaurant workspace primitives Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Shared restaurant workspace primitives â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-ws-hero {
     @apply relative flex flex-wrap items-end justify-between gap-5 overflow-hidden rounded-[1.55rem] p-5 text-white md:p-6;
@@ -8337,7 +8337,7 @@
     }
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Menu meal detail Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Menu meal detail â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-mnd-page {
     @apply w-full;
@@ -8559,7 +8559,7 @@
     @apply flex flex-col gap-2 rounded-[1.15rem] border border-[rgba(4,153,78,0.1)] bg-white p-4;
   }
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Menu meal create Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€â”€ Menu meal create â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   .mm-mnc-page {
     @apply flex h-full min-h-0 flex-col;
@@ -9719,7 +9719,7 @@
   }
 
 
-  /* â”€â”€â”€ Shared ops UI (from service-regions) + SR aliases â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ─── Shared ops UI (from service-regions) + SR aliases ───────────────── */
 
   .mm-ops-page,
   .mm-ops-detail-page,
@@ -10725,7 +10725,7 @@
     }
   }
 
-  /* â”€â”€â”€ Daily capacity (F08) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ─── Daily capacity (F08) ─────────────────────────────────────────────── */
 
   .mm-cp-page {
     @apply w-full;
@@ -11177,7 +11177,7 @@
     }
   }
 
-  /* ─── Drivers (F23) ──────────────────────────────────────────────────── */
+  /* --- Drivers (F23) ---------------------------------------------------- */
 
   .mm-dr-page {
     @apply w-full;
@@ -11757,7 +11757,7 @@
     @apply text-[#b45309];
   }
 
-  /* ─── Ratings (F15) ──────────────────────────────────────────────────── */
+  /* --- Ratings (F15) ---------------------------------------------------- */
 
   .mm-rt-page {
     @apply w-full;
@@ -11939,7 +11939,7 @@
     @apply h-[5.25rem] w-full rounded-xl;
   }
 
-  /* ─── Trips / dispatch (multi-stop) ──────────────────────────────────── */
+  /* --- Trips / dispatch (multi-stop) ------------------------------------ */
 
   .mm-tp-page,
   .mm-tp-create-page,
@@ -12125,6 +12125,38 @@
     @apply mt-4 inline-flex items-start gap-2 text-[0.75rem] font-medium text-mm-ink-muted;
   }
 
+  .mm-tp-callout {
+    @apply mb-4 flex flex-wrap items-start gap-3 rounded-[1.15rem] border border-[#d9ebe1] bg-[#f8fbf9] px-4 py-3.5 text-[0.8125rem] font-medium leading-relaxed text-mm-secondary;
+  }
+
+  .mm-tp-callout > span {
+    @apply grid size-8 shrink-0 place-items-center rounded-full bg-white text-mm-primary shadow-sm;
+  }
+
+  .mm-tp-callout p {
+    @apply m-0 min-w-[12rem] flex-1;
+  }
+
+  .mm-tp-callout__link {
+    @apply inline-flex items-center self-center rounded-xl border border-mm-primary/20 bg-white px-3 py-2 text-[0.6875rem] font-extrabold text-mm-primary no-underline transition hover:bg-[#edf8f1];
+  }
+
+  .mm-tp-callout[data-status='in_progress'] {
+    @apply border-[#b7dff5] bg-[#f3faff] text-[#0c4a6e];
+  }
+
+  .mm-tp-callout[data-status='in_progress'] > span {
+    @apply text-[#0284c7];
+  }
+
+  .mm-tp-callout[data-status='cancelled'] {
+    @apply border-[#f5c9c9] bg-[#fff8f8] text-[#9f1239];
+  }
+
+  .mm-tp-callout[data-status='cancelled'] > span {
+    @apply text-[#c43d3d];
+  }
+
   .mm-tp-stat {
     @apply inline-flex items-center gap-2 rounded-xl border border-[#d9ebe1] bg-white px-3 py-2.5 text-mm-secondary shadow-sm;
   }
@@ -12203,34 +12235,6 @@
 
   .mm-tp-side-note {
     @apply m-0 mt-3 inline-flex items-start gap-2 text-[0.75rem] font-medium leading-relaxed text-mm-ink-muted;
-  }
-
-  .mm-tp-callout {
-    @apply mb-4 flex items-start gap-3 rounded-[1.15rem] border border-[#d9ebe1] bg-[#f8fbf9] px-4 py-3.5 text-[0.8125rem] font-medium leading-relaxed text-mm-secondary;
-  }
-
-  .mm-tp-callout > span {
-    @apply grid size-8 shrink-0 place-items-center rounded-full bg-white text-mm-primary shadow-sm;
-  }
-
-  .mm-tp-callout p {
-    @apply m-0;
-  }
-
-  .mm-tp-callout[data-status='in_progress'] {
-    @apply border-[#b7dff5] bg-[#f3faff] text-[#0c4a6e];
-  }
-
-  .mm-tp-callout[data-status='in_progress'] > span {
-    @apply text-[#0284c7];
-  }
-
-  .mm-tp-callout[data-status='cancelled'] {
-    @apply border-[#f5c9c9] bg-[#fff8f8] text-[#9f1239];
-  }
-
-  .mm-tp-callout[data-status='cancelled'] > span {
-    @apply text-[#c43d3d];
   }
 
   .mm-tp-progress {
@@ -12530,6 +12534,436 @@
 
   .mm-tp-skeleton__row {
     @apply h-[5.5rem] w-full rounded-[1.25rem];
+  }
+
+  /* --- Dispatch officer accounts ---------------------------------------- */
+
+  .mm-dsp-page,
+  .mm-dsp-create-page,
+  .mm-dsp-detail {
+    @apply w-full;
+  }
+
+  .mm-dsp-page__inner,
+  .mm-dsp-create-page__inner,
+  .mm-dsp-detail__inner {
+    @apply flex min-h-0 flex-1 flex-col;
+  }
+
+  .mm-dsp-create {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-mm-primary bg-mm-primary px-4 py-2.5 text-[0.75rem] font-extrabold text-white shadow-[0_8px_18px_-12px_rgba(4,153,78,0.8)] transition hover:border-mm-secondary hover:bg-mm-secondary;
+  }
+
+  .mm-dsp-callout {
+    @apply mb-4 flex items-start gap-3 rounded-[1.15rem] border border-[#d9ebe1] bg-[#f8fbf9] px-4 py-3.5 text-[0.8125rem] font-medium leading-relaxed text-mm-secondary;
+  }
+
+  .mm-dsp-callout > span {
+    @apply grid size-8 shrink-0 place-items-center rounded-full bg-white text-mm-primary shadow-sm;
+  }
+
+  .mm-dsp-callout[data-status='disabled'] {
+    @apply border-[#f5c9c9] bg-[#fff8f8] text-[#9f1239];
+  }
+
+  .mm-dsp-callout[data-status='disabled'] > span {
+    @apply text-[#c43d3d];
+  }
+
+  .mm-dsp-callout[data-status='invited'] {
+    @apply border-[#f5ddb0] bg-[#fffdf8] text-[#9a3412];
+  }
+
+  .mm-dsp-callout[data-status='invited'] > span {
+    @apply text-[#d97706];
+  }
+
+  .mm-dsp-callout p {
+    @apply m-0;
+  }
+
+  .mm-dsp-empty {
+    @apply rounded-xl border border-dashed border-[#d9ebe1] bg-[#f8fbf9] px-4 py-8 text-center text-[0.8125rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-dsp-table {
+    --mm-dsp-cols: minmax(0, 1.15fr) minmax(0, 1.25fr) minmax(7.5rem, 0.95fr) minmax(0, 0.9fr) minmax(0, 0.75fr);
+    @apply flex flex-col gap-2.5;
+  }
+
+  .mm-dsp-table__head {
+    @apply hidden items-center gap-3 border border-transparent px-3.5 text-[0.625rem] font-extrabold uppercase tracking-wide text-mm-ink-muted xl:grid;
+  }
+
+  .mm-dsp-row {
+    @apply grid gap-3 rounded-xl border border-[#e8f0eb] bg-[#fbfdfc] p-3.5 text-inherit no-underline transition hover:border-mm-primary/25 hover:bg-white xl:items-center;
+  }
+
+  @media (min-width: 1280px) {
+    .mm-dsp-table__head,
+    .mm-dsp-row {
+      grid-template-columns: var(--mm-dsp-cols);
+    }
+  }
+
+  .mm-dsp-row > * {
+    @apply min-w-0;
+  }
+
+  .mm-dsp-row[data-status='active'] {
+    @apply border-[#cfe9da] bg-[#f3fbf6];
+  }
+
+  .mm-dsp-row[data-status='invited'] {
+    @apply border-[#f3d39a] bg-[#fffaf0];
+  }
+
+  .mm-dsp-row[data-status='disabled'] {
+    @apply border-[#e4eee8] bg-[#f8faf9];
+  }
+
+  .mm-dsp-row__officer strong {
+    @apply block truncate text-[0.8125rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-dsp-row__officer small,
+  .mm-dsp-row__status small {
+    @apply mt-0.5 block truncate text-[0.625rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-dsp-row__contact {
+    @apply flex min-w-0 flex-col items-start gap-1 text-[0.6875rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-dsp-row__contact span {
+    @apply inline-flex max-w-full items-center gap-1.5;
+  }
+
+  .mm-dsp-row__trips {
+    @apply min-w-0;
+  }
+
+  .mm-dsp-row__trips strong {
+    @apply inline-flex flex-wrap items-center gap-1.5 text-[0.8125rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-dsp-row__trips strong small {
+    @apply shrink-0 text-[0.625rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-dsp-row__trips span {
+    @apply mt-0.5 block whitespace-nowrap text-[0.625rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-dsp-row__status {
+    @apply flex min-w-0 flex-col items-start gap-1;
+  }
+
+  .mm-dsp-badge {
+    @apply inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[0.625rem] font-extrabold;
+  }
+
+  .mm-dsp-badge[data-status='active'] {
+    @apply bg-[#edf8f1] text-mm-primary;
+  }
+
+  .mm-dsp-badge[data-status='invited'] {
+    @apply bg-[#fff7e8] text-[#d97706];
+  }
+
+  .mm-dsp-badge[data-status='disabled'] {
+    @apply bg-[#eef2f0] text-mm-ink-muted;
+  }
+
+  .mm-dsp-row__action {
+    @apply flex items-center justify-start;
+  }
+
+  .mm-dsp-toggle {
+    @apply inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-[0.6875rem] font-extrabold transition disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .mm-dsp-toggle[data-mode='disable'] {
+    @apply border-[#d9ebe1] bg-white text-mm-secondary hover:border-mm-primary/25 hover:bg-[#edf8f1];
+  }
+
+  .mm-dsp-toggle[data-mode='enable'] {
+    @apply border-mm-primary/20 bg-[#edf8f1] text-mm-primary hover:bg-[#e2f5ea];
+  }
+
+  .mm-dsp-row__hint {
+    @apply text-[0.625rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-dsp-note {
+    @apply mt-4 inline-flex items-start gap-2 text-[0.75rem] font-medium text-mm-ink-muted;
+  }
+
+  .mm-dsp-alert {
+    @apply mb-4 inline-flex items-center gap-2 rounded-xl border border-[#f5c9c9] bg-[#fff8f8] px-3 py-2.5 text-[0.75rem] font-bold text-[#c43d3d];
+  }
+
+  .mm-dsp-form {
+    @apply grid gap-4 md:grid-cols-2;
+  }
+
+  .mm-dsp-form label {
+    @apply flex flex-col gap-1.5;
+  }
+
+  .mm-dsp-form label span {
+    @apply text-[0.6875rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-dsp-form input {
+    @apply rounded-xl border border-[#d9ebe1] bg-[#fbfdfc] px-3.5 py-2.5 text-[0.8125rem] font-semibold text-mm-secondary outline-none transition placeholder:text-mm-ink-muted/70 focus:border-mm-primary/40 focus:bg-white;
+  }
+
+  .mm-dsp-stat {
+    @apply inline-flex items-center gap-2 rounded-xl border border-[#d9ebe1] bg-white px-3 py-2.5 text-mm-secondary shadow-sm;
+  }
+
+  .mm-dsp-stat__copy small {
+    @apply block text-[0.625rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-dsp-stat__copy strong {
+    @apply block max-w-[10rem] truncate text-[0.8125rem] font-extrabold;
+  }
+
+  .mm-ops-main .mm-dsp-panel + .mm-dsp-panel {
+    @apply mt-4;
+  }
+
+  .mm-dsp-panel {
+    @apply rounded-[1.35rem] border border-[rgba(4,153,78,0.1)] bg-white p-4 md:p-5;
+    box-shadow: 0 18px 40px -32px rgba(1, 83, 41, 0.55);
+  }
+
+  .mm-dsp-panel__head {
+    @apply mb-4 flex items-center gap-3 border-b border-[#edf3ef] pb-3;
+  }
+
+  .mm-dsp-panel__icon {
+    @apply grid size-9 shrink-0 place-items-center rounded-xl bg-[#edf8f1] text-mm-primary;
+  }
+
+  .mm-dsp-panel__head small {
+    @apply block text-[0.625rem] font-extrabold uppercase tracking-wide text-mm-ink-muted;
+  }
+
+  .mm-dsp-panel__head h2 {
+    @apply m-0 text-[0.9375rem] font-black text-mm-secondary;
+  }
+
+  .mm-dsp-profile {
+    @apply flex flex-wrap items-center gap-4;
+  }
+
+  .mm-dsp-avatar {
+    @apply grid size-16 shrink-0 place-items-center rounded-[1.25rem] bg-[linear-gradient(145deg,#edf8f1_0%,#d9f0e4_100%)] text-[1.125rem] font-black text-mm-primary shadow-[inset_0_0_0_1px_rgba(4,153,78,0.12)];
+  }
+
+  .mm-dsp-profile__copy {
+    @apply min-w-[12rem] flex-1;
+  }
+
+  .mm-dsp-profile__copy strong {
+    @apply block text-[1.0625rem] font-black text-mm-secondary;
+  }
+
+  .mm-dsp-profile__joined {
+    @apply mt-1.5 block text-[0.75rem] font-medium text-mm-ink-muted;
+  }
+
+  .mm-dsp-chips {
+    @apply mt-3 flex flex-wrap gap-2;
+  }
+
+  .mm-dsp-chips > span {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-[#d9ebe1] bg-[#f8fcfa] px-3 py-1.5 text-[0.6875rem] font-bold text-mm-secondary;
+  }
+
+  .mm-dsp-detail-grid {
+    @apply mt-5 grid gap-3 sm:grid-cols-2;
+  }
+
+  .mm-dsp-detail-field {
+    @apply flex items-start gap-3 rounded-[1.1rem] border border-[#e4eee8] bg-[#fbfefc] p-3.5;
+  }
+
+  .mm-dsp-detail-field__icon {
+    @apply grid size-8 shrink-0 place-items-center rounded-full bg-white text-mm-primary shadow-sm;
+  }
+
+  .mm-dsp-detail-field small {
+    @apply block text-[0.625rem] font-extrabold uppercase tracking-wide text-mm-ink-muted;
+  }
+
+  .mm-dsp-detail-field strong {
+    @apply mt-1 block truncate text-[0.875rem] font-black text-mm-secondary;
+  }
+
+  .mm-dsp-panel__head .mm-ops-count {
+    @apply ms-auto;
+  }
+
+  .mm-dsp-trips-empty {
+    @apply m-0 rounded-xl border border-dashed border-[#d9ebe1] bg-[#f8fbf9] px-4 py-6 text-center text-[0.8125rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-dsp-trips {
+    @apply m-0 flex list-none flex-col gap-2.5 p-0;
+  }
+
+  .mm-dsp-trip {
+    @apply flex items-center gap-3 rounded-[1.1rem] border border-[#e8f0eb] bg-[#fbfdfc] p-3.5 text-inherit no-underline transition hover:border-mm-primary/25 hover:bg-white;
+  }
+
+  .mm-dsp-trip[data-status='assigned'] {
+    @apply border-[#cfe9da] bg-[#f3fbf6];
+  }
+
+  .mm-dsp-trip[data-status='in_progress'] {
+    @apply border-[#b7dff5] bg-[#f3faff];
+  }
+
+  .mm-dsp-trip__main {
+    @apply min-w-0 flex-1;
+  }
+
+  .mm-dsp-trip__topline {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .mm-dsp-trip__topline strong {
+    @apply font-mono text-[0.8125rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-dsp-trip__main p {
+    @apply m-0 mt-1 inline-flex items-center gap-1.5 text-[0.75rem] font-medium text-mm-ink-muted;
+  }
+
+  .mm-dsp-trip__meta {
+    @apply mt-2 flex flex-wrap gap-2 text-[0.625rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-dsp-trip__meta span {
+    @apply inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 shadow-sm;
+  }
+
+  .mm-dsp-meta {
+    @apply grid gap-2.5;
+  }
+
+  .mm-dsp-meta__item {
+    @apply flex items-center justify-between gap-3 rounded-xl border border-[#e8f0eb] bg-[#fbfdfc] px-3 py-2.5;
+  }
+
+  .mm-dsp-meta__item > span {
+    @apply text-[0.6875rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-dsp-meta__item > strong {
+    @apply text-[0.8125rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-dsp-timeline {
+    @apply m-0 flex list-none flex-col gap-0 p-0;
+  }
+
+  .mm-dsp-timeline li {
+    @apply relative flex gap-3 pb-4 ps-1;
+  }
+
+  .mm-dsp-timeline li:last-child {
+    @apply pb-0;
+  }
+
+  .mm-dsp-timeline li:not(:last-child)::before {
+    content: '';
+    @apply absolute start-[0.55rem] top-3 bottom-0 w-px bg-[#e4eee8];
+  }
+
+  .mm-dsp-timeline__dot {
+    @apply relative z-[1] mt-1.5 size-2.5 shrink-0 rounded-full bg-mm-primary shadow-[0_0_0_3px_rgba(4,153,78,0.14)];
+  }
+
+  .mm-dsp-timeline li[data-tone='warn'] .mm-dsp-timeline__dot {
+    @apply bg-[#d97706] shadow-[0_0_0_3px_rgba(217,119,6,0.16)];
+  }
+
+  .mm-dsp-timeline li[data-tone='danger'] .mm-dsp-timeline__dot {
+    @apply bg-[#c43d3d] shadow-[0_0_0_3px_rgba(196,61,61,0.14)];
+  }
+
+  .mm-dsp-timeline li[data-tone='neutral'] .mm-dsp-timeline__dot {
+    @apply bg-[#94a3b8] shadow-[0_0_0_3px_rgba(148,163,184,0.18)];
+  }
+
+  .mm-dsp-timeline strong {
+    @apply block text-[0.8125rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-dsp-timeline small {
+    @apply mt-0.5 block text-[0.625rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-dsp-side-head {
+    @apply mb-3 flex items-center gap-2 text-mm-primary;
+  }
+
+  .mm-dsp-side-head strong {
+    @apply text-[0.8125rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-dsp-side-list {
+    @apply m-0 flex list-disc flex-col gap-2 ps-4 text-[0.75rem] font-medium leading-relaxed text-mm-ink-muted;
+  }
+
+  .mm-dsp-side-copy {
+    @apply m-0 text-[0.75rem] font-medium leading-relaxed text-mm-ink-muted;
+  }
+
+  .mm-dsp-side-link {
+    @apply mt-3 inline-flex items-center gap-1 text-[0.75rem] font-extrabold text-mm-primary no-underline hover:text-mm-secondary;
+  }
+
+  .mm-dsp-skeleton__inner {
+    @apply flex w-full flex-col gap-4 pb-4;
+  }
+
+  .mm-dsp-skeleton__hero {
+    @apply flex flex-wrap items-end justify-between gap-4 rounded-[1.4rem] border border-[rgba(4,153,78,0.12)] bg-white p-5 md:p-6;
+    background-image: linear-gradient(145deg, #ffffff 0%, #f3fbf6 58%, #edf8f1 100%);
+  }
+
+  .mm-dsp-skeleton__hero-main {
+    @apply min-w-[14rem] flex-1;
+  }
+
+  .mm-dsp-skeleton__metrics {
+    @apply flex flex-wrap gap-3;
+  }
+
+  .mm-dsp-skeleton__metric {
+    @apply min-w-[5.5rem] rounded-xl border border-[#e4eee8] bg-[#f8fbf9] p-3;
+  }
+
+  .mm-dsp-skeleton__board {
+    @apply rounded-[1.35rem] border border-[rgba(4,153,78,0.1)] bg-white p-4 md:p-5;
+  }
+
+  .mm-dsp-skeleton__toolbar {
+    @apply mb-4 flex flex-wrap gap-2;
+  }
+
+  .mm-dsp-skeleton__rows {
+    @apply flex flex-col gap-2.5;
+  }
+
+  .mm-dsp-skeleton__row {
+    @apply h-[4.5rem] w-full rounded-xl;
   }
 
 }

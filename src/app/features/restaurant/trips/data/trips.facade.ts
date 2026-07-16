@@ -332,6 +332,7 @@ export class TripsFacade {
         driverId: driver.id,
         driverName: driver.name,
         driverCode: driverCodeOf(driver),
+        dispatcherId: 'dsp-01',
         dispatcherName: {
           ar: 'أنت — مسئول التوصيل',
           en: 'You — dispatch',
@@ -391,9 +392,9 @@ export class TripsFacade {
         value: data.trips.filter((t) => t.status === 'assigned').length,
       },
       {
-        id: 'ready',
-        label: { ar: 'بوكسات جاهزة', en: 'Ready boxes' },
-        value: data.candidates.reduce((sum, c) => sum + c.boxCount, 0),
+        id: 'completed',
+        label: { ar: 'مكتملة', en: 'Completed' },
+        value: data.trips.filter((t) => t.status === 'completed').length,
       },
     ];
   }
