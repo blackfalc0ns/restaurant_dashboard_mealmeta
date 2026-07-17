@@ -1,6 +1,6 @@
 <div class="mm-due-detail__inner">
   @if (facade.page().viewState === 'loading') {
-    <mm-dues-skeleton />
+    <mm-deductions-skeleton />
   }
 
   @if (facade.page().viewState === 'error') {
@@ -14,25 +14,29 @@
   @if (notFound()) {
     <mm-page-state
       viewState="empty"
-      [emptyMessage]="text('البند غير موجود.', 'Due line not found.')"
+      [emptyMessage]="text('البند غير موجود.', 'Deduction line not found.')"
     />
   }
 
   @if (line(); as line) {
     <div class="mm-ops-scroll">
       <mm-ops-detail-hero
-        icon="lucideHandCoins"
+        icon="lucideReceipt"
         [title]="title(line)"
         [subtitle]="detail(line)"
         [kicker]="kindLabel(line.kind) + ' · ' + line.code"
         [status]="line.status"
       >
-        <a opsBack class="mm-ops-back" routerLink="/restaurant/finance/dues">
+        <a
+          opsBack
+          class="mm-ops-back"
+          routerLink="/restaurant/finance/deductions"
+        >
           <ng-icon
             [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
             class="size-3.5"
           />
-          {{ text('العودة للمستحقات', 'Back to dues') }}
+          {{ text('العودة للخصومات', 'Back to deductions') }}
         </a>
 
         <span opsBadge class="mm-due-badge" [attr.data-status]="line.status">
@@ -44,28 +48,21 @@
             <ng-icon name="lucidePackage" class="size-4" />
             <div class="mm-due-stat__copy">
               <small>{{ text('البوكسات', 'Boxes') }}</small>
-              <strong>{{ line.boxesDelivered }}</strong>
+              <strong>{{ line.boxesAffected }}</strong>
             </div>
           </div>
           <div class="mm-due-stat">
             <ng-icon name="lucideReceipt" class="size-4" />
             <div class="mm-due-stat__copy">
-              <small>{{ text('الإجمالي', 'Gross') }}</small>
+              <small>{{ text('المتعلق', 'Related') }}</small>
               <strong>{{ line.grossKd | number: '1.2-2' }} KD</strong>
             </div>
           </div>
           <div class="mm-due-stat">
-            <ng-icon name="lucideBadgePercent" class="size-4" />
+            <ng-icon name="lucideScale" class="size-4" />
             <div class="mm-due-stat__copy">
-              <small>{{ text('العمولة', 'Commission') }}</small>
-              <strong>−{{ line.commissionKd | number: '1.2-2' }} KD</strong>
-            </div>
-          </div>
-          <div class="mm-due-stat">
-            <ng-icon name="lucideHandCoins" class="size-4" />
-            <div class="mm-due-stat__copy">
-              <small>{{ text('الصافي', 'Net') }}</small>
-              <strong>{{ line.netKd | number: '1.2-2' }} KD</strong>
+              <small>{{ text('الخصم', 'Deduction') }}</small>
+              <strong>−{{ line.amountKd | number: '1.2-2' }} KD</strong>
             </div>
           </div>
         </div>
@@ -146,6 +143,10 @@
                       <strong>{{ kindLabel(line.kind) }}</strong>
                     </div>
                     <div class="mm-due-detail-field">
+                      <small>{{ text('الحالة', 'Status') }}</small>
+                      <strong>{{ statusLabel(line.status) }}</strong>
+                    </div>
+                    <div class="mm-due-detail-field">
                       <small>{{ text('الفترة', 'Period') }}</small>
                       <strong>{{ period(line) }}</strong>
                     </div>
@@ -154,31 +155,23 @@
                       <strong>{{ updatedAt(line) }}</strong>
                     </div>
                     <div class="mm-due-detail-field">
-                      <small>{{ text('بوكسات مسلّمة', 'Boxes delivered') }}</small>
-                      <strong>{{ line.boxesDelivered }}</strong>
+                      <small>{{ text('بوكسات متأثرة', 'Boxes affected') }}</small>
+                      <strong>{{ line.boxesAffected }}</strong>
                     </div>
-                    <div class="mm-due-detail-field">
-                      <small>{{ text('متوسط سعر البوكس', 'Avg box price') }}</small>
-                      <strong>{{ avgBoxPrice(line) | number: '1.2-2' }} KD</strong>
-                    </div>
-                    <div class="mm-due-detail-field">
-                      <small>{{ text('نسبة العمولة', 'Commission rate') }}</small>
-                      <strong>{{ line.commissionRatePct }}%</strong>
-                    </div>
-                    <div class="mm-due-detail-field mm-due-detail-field--warn">
-                      <small>{{ text('عمولة المطعم', 'Restaurant commission') }}</small>
-                      <strong>−{{ line.commissionKd | number: '1.2-2' }} KD</strong>
-                    </div>
-                    <div class="mm-due-detail-field mm-due-detail-field--ok">
-                      <small>{{ text('صافي بعد العمولة', 'Net after commission') }}</small>
-                      <strong>{{ line.netKd | number: '1.2-2' }} KD</strong>
-                    </div>
-                    @if (line.transferRef) {
+                    @if (line.complaintCode) {
                       <div class="mm-due-detail-field">
-                        <small>{{ text('مرجع التحويل', 'Transfer ref') }}</small>
-                        <strong dir="ltr">{{ line.transferRef }}</strong>
+                        <small>{{ text('رقم الشكوى', 'Complaint code') }}</small>
+                        <strong dir="ltr">{{ line.complaintCode }}</strong>
                       </div>
                     }
+                    <div class="mm-due-detail-field">
+                      <small>{{ text('المبلغ المتعلق', 'Related amount') }}</small>
+                      <strong>{{ line.grossKd | number: '1.2-2' }} KD</strong>
+                    </div>
+                    <div class="mm-due-detail-field mm-due-detail-field--warn">
+                      <small>{{ text('مبلغ الخصم', 'Deduction amount') }}</small>
+                      <strong>−{{ line.amountKd | number: '1.2-2' }} KD</strong>
+                    </div>
                   </div>
                 }
 
@@ -222,12 +215,8 @@
                               <strong>{{ box.unitPriceKd | number: '1.2-2' }} KD</strong>
                             </div>
                             <div class="mm-due-box__commission">
-                              <small>{{ text('عمولة', 'Commission') }}</small>
-                              <strong>−{{ box.commissionKd | number: '1.2-2' }} KD</strong>
-                            </div>
-                            <div class="mm-due-box__net">
-                              <small>{{ text('صافي', 'Net') }}</small>
-                              <strong>{{ box.netKd | number: '1.2-2' }} KD</strong>
+                              <small>{{ text('الخصم', 'Deduction') }}</small>
+                              <strong>−{{ box.deductedKd | number: '1.2-2' }} KD</strong>
                             </div>
                           </div>
                         </article>
@@ -249,30 +238,13 @@
                   }
                 }
 
-                @case ('days') {
-                  <div class="mm-due-days">
-                    @for (day of line.deliveryDays; track day.id) {
-                      <article class="mm-due-day">
-                        <div>
-                          <strong>{{ dayLabel(day) }}</strong>
-                          <small>
-                            {{ day.boxes }}
-                            {{ text('بوكس', 'boxes') }}
-                          </small>
-                        </div>
-                        <b>{{ day.amountKd | number: '1.2-2' }} KD</b>
-                      </article>
-                    }
-                  </div>
-                }
-
                 @case ('summary') {
                   <div class="mm-due-window__layout">
                     <div class="mm-due-window__main">
                       <section class="mm-due-panel">
                         <div class="mm-due-side-head">
                           <ng-icon name="lucideHandCoins" class="size-4" />
-                          <strong>{{ text('ملخص المبالغ', 'Amount summary') }}</strong>
+                          <strong>{{ text('ملخص الخصم', 'Deduction summary') }}</strong>
                         </div>
                         <div class="mm-due-meta">
                           <div class="mm-due-meta__item">
@@ -280,16 +252,12 @@
                             <strong>{{ statusLabel(line.status) }}</strong>
                           </div>
                           <div class="mm-due-meta__item">
-                            <span>{{ text('الإجمالي', 'Gross') }}</span>
+                            <span>{{ text('المتعلق', 'Related') }}</span>
                             <strong>{{ line.grossKd | number: '1.2-2' }} KD</strong>
                           </div>
-                          <div class="mm-due-meta__item">
-                            <span>{{ text('العمولة', 'Commission') }}</span>
-                            <strong>−{{ line.commissionKd | number: '1.2-2' }} KD</strong>
-                          </div>
-                          <div class="mm-due-meta__item mm-due-meta__item--net">
-                            <span>{{ text('الصافي', 'Net') }}</span>
-                            <strong>{{ line.netKd | number: '1.2-2' }} KD</strong>
+                          <div class="mm-due-meta__item mm-due-meta__item--deduct">
+                            <span>{{ text('الخصم', 'Deduction') }}</span>
+                            <strong>−{{ line.amountKd | number: '1.2-2' }} KD</strong>
                           </div>
                         </div>
                       </section>
@@ -316,19 +284,12 @@
                     <aside class="mm-due-window__side">
                       <section class="mm-due-panel">
                         <div class="mm-due-side-head">
-                          <ng-icon name="lucideBadgePercent" class="size-4" />
-                          <strong>{{ text('اتفاق العمولة', 'Commission agreement') }}</strong>
+                          <ng-icon name="lucideScale" class="size-4" />
+                          <strong>{{ text('سياسة الخصم', 'Deduction policy') }}</strong>
                         </div>
-                        <p class="mm-due-side-copy">
-                          {{
-                            text(
-                              `نسبة الاتفاق الحالية ${agreementRate()}%. تُخصم من سعر البوكس المتفق عليه ولا تُظهر عمولة اشتراك العميل.`,
-                              `Current agreement rate ${agreementRate()}%. Deducted from the agreed box price; customer subscription commission is not shown.`
-                            )
-                          }}
-                        </p>
-                        <a class="mm-due-side-link" routerLink="/restaurant/finance/deductions">
-                          {{ text('الخصومات والتسويات', 'Deductions & adjustments') }}
+                        <p class="mm-due-side-copy">{{ policyNote() }}</p>
+                        <a class="mm-due-side-link" routerLink="/restaurant/finance/dues">
+                          {{ text('المستحقات والعمولات', 'Dues & commissions') }}
                           <ng-icon
                             [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
                             class="size-3.5"

@@ -1,9 +1,10 @@
 import { LocalizedText } from '../../overview/models/restaurant-overview.model';
 
-/** Restaurant-facing dues (box payables) and MealMate restaurant commission. */
+/** Restaurant-facing dues (box payables) and MealMate restaurant commission.
+ * Settlement is calculated per delivered box, not per meal. */
 export type DueStatus = 'pending' | 'scheduled' | 'paid' | 'held';
 
-export type DueKind = 'meal_payable' | 'commission' | 'net_settlement';
+export type DueKind = 'box_payable' | 'commission' | 'net_settlement';
 
 export type DueFilter = 'all' | DueStatus;
 
@@ -28,6 +29,23 @@ export interface DueDeliveryDay {
   amountKd: number;
 }
 
+/** One delivered restaurant box contributing to a due line. No customer PII.
+ * Pricing/commission are per box. */
+export interface DueBox {
+  id: string;
+  boxCode: string;
+  orderCode: string;
+  customerMaskedId: string;
+  /** Contents label for the box (informational only — settlement is per box). */
+  contentsLabel: LocalizedText;
+  zoneLabel: LocalizedText;
+  deliveredAtLabel: LocalizedText;
+  /** Agreed restaurant box price before commission. */
+  unitPriceKd: number;
+  commissionKd: number;
+  netKd: number;
+}
+
 export interface DueLine {
   id: string;
   code: string;
@@ -48,6 +66,7 @@ export interface DueLine {
   transferRef?: string;
   note?: LocalizedText;
   deliveryDays?: DueDeliveryDay[];
+  boxes?: DueBox[];
   timeline: DueTimelineEvent[];
 }
 

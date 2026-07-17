@@ -141,8 +141,15 @@ const loadDuesPage = () =>
 const loadDueDetailPage = () =>
   import('./dues/due-detail.page').then((m) => m.DueDetailPageComponent);
 
+const loadDeductionsPage = () =>
+  import('./deductions/deductions.page').then((m) => m.DeductionsPageComponent);
+
+const loadDeductionDetailPage = () =>
+  import('./deductions/deduction-detail.page').then(
+    (m) => m.DeductionDetailPageComponent,
+  );
+
 const SIDEBAR_LINK_PATHS = [
-  'finance/deductions',
   'finance/invoices',
   'finance/payouts',
   'finance/statements',
@@ -294,6 +301,14 @@ export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   {
     path: 'finance/dues',
     loadComponent: loadDuesPage,
+  },
+  {
+    path: 'finance/deductions/:deductionId',
+    loadComponent: loadDeductionDetailPage,
+  },
+  {
+    path: 'finance/deductions',
+    loadComponent: loadDeductionsPage,
   },
   ...SIDEBAR_LINK_PATHS.map((path) => ({
     path,

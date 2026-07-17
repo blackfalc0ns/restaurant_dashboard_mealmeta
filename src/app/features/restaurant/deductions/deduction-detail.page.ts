@@ -15,14 +15,13 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideArrowLeft,
   lucideArrowRight,
-  lucideBadgePercent,
-  lucideCalendarDays,
   lucideHandCoins,
   lucideHistory,
   lucideInfo,
   lucideMapPinned,
   lucidePackage,
   lucideReceipt,
+  lucideScale,
   lucideSearch,
   lucideX,
 } from '@ng-icons/lucide';
@@ -38,23 +37,22 @@ import {
 } from '@/shared/components/restaurant-workspace/restaurant-ops-ui.component';
 
 import { pickLocale } from '../overview/overview-i18n';
-import { DuesFacade } from './data/dues.facade';
-import { DuesSkeletonComponent } from './dues-skeleton.component';
+import { DeductionsFacade } from './data/deductions.facade';
+import { DeductionsSkeletonComponent } from './deductions-skeleton.component';
 import {
-  DueBox,
-  DueDeliveryDay,
-  DueKind,
-  DueLine,
-  DueStatus,
-  DueTimelineEvent,
-} from './models/dues.model';
+  DeductionBox,
+  DeductionKind,
+  DeductionLine,
+  DeductionStatus,
+  DeductionTimelineEvent,
+} from './models/deductions.model';
 
 const BOXES_PAGE_SIZE = 6;
 
-export type DueDetailWindow = 'details' | 'boxes' | 'days' | 'summary';
+export type DeductionDetailWindow = 'details' | 'boxes' | 'summary';
 
-interface DueDetailWindowCard {
-  id: DueDetailWindow;
+interface DeductionDetailWindowCard {
+  id: DeductionDetailWindow;
   icon: string;
   titleAr: string;
   titleEn: string;
@@ -63,7 +61,7 @@ interface DueDetailWindowCard {
 }
 
 @Component({
-  selector: 'mm-due-detail-page',
+  selector: 'mm-deduction-detail-page',
   standalone: true,
   imports: [
     DecimalPipe,
@@ -71,56 +69,52 @@ interface DueDetailWindowCard {
     RouterLink,
     NgIcon,
     PageStateComponent,
-    DuesSkeletonComponent,
+    DeductionsSkeletonComponent,
     RestaurantOpsDetailHeroComponent,
     RestaurantOpsToolbarComponent,
     RestaurantOpsFiltersComponent,
     RestaurantOpsPagerComponent,
   ],
-  templateUrl: './due-detail.page.html',
+  templateUrl: './deduction-detail.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'mm-due-detail flex h-full min-h-0 flex-col' },
   viewProviders: [
     provideIcons({
       lucideArrowLeft,
       lucideArrowRight,
-      lucideBadgePercent,
-      lucideCalendarDays,
       lucideHandCoins,
       lucideHistory,
       lucideInfo,
       lucideMapPinned,
       lucidePackage,
       lucideReceipt,
+      lucideScale,
       lucideSearch,
       lucideX,
     }),
   ],
 })
-export class DueDetailPageComponent implements OnInit {
-  readonly facade = inject(DuesFacade);
+export class DeductionDetailPageComponent implements OnInit {
+  readonly facade = inject(DeductionsFacade);
   readonly locale = inject(AppLocaleService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
   readonly boxesPage = signal(1);
   readonly boxesPageSize = BOXES_PAGE_SIZE;
-  readonly activeWindow = signal<DueDetailWindow | null>(null);
+  readonly activeWindow = signal<DeductionDetailWindow | null>(null);
   readonly boxSearch = signal('');
 
-  private readonly dueId = toSignal(
-    this.route.paramMap.pipe(map((params) => params.get('dueId') ?? '')),
-    { initialValue: this.route.snapshot.paramMap.get('dueId') ?? '' },
+  private readonly deductionId = toSignal(
+    this.route.paramMap.pipe(map((params) => params.get('deductionId') ?? '')),
+    { initialValue: this.route.snapshot.paramMap.get('deductionId') ?? '' },
   );
 
   private readonly routeWindow = toSignal(
     this.route.queryParamMap.pipe(
       map((params) => {
         const value = params.get('window');
-        return value === 'details' ||
-          value === 'boxes' ||
-          value === 'days' ||
-          value === 'summary'
+        return value === 'details' || value === 'boxes' || value === 'summary'
           ? value
           : null;
       }),
@@ -128,10 +122,7 @@ export class DueDetailPageComponent implements OnInit {
     {
       initialValue: (() => {
         const value = this.route.snapshot.queryParamMap.get('window');
-        return value === 'details' ||
-          value === 'boxes' ||
-          value === 'days' ||
-          value === 'summary'
+        return value === 'details' || value === 'boxes' || value === 'summary'
           ? value
           : null;
       })(),
@@ -139,7 +130,7 @@ export class DueDetailPageComponent implements OnInit {
   );
 
   readonly line = computed(() => {
-    const id = this.dueId();
+    const id = this.deductionId();
     if (!id || this.facade.page().viewState !== 'success') return null;
     return this.facade.lineById(id);
   });
@@ -147,12 +138,8 @@ export class DueDetailPageComponent implements OnInit {
   readonly notFound = computed(
     () =>
       this.facade.page().viewState === 'success' &&
-      !!this.dueId() &&
+      !!this.deductionId() &&
       !this.line(),
-  );
-
-  readonly agreementRate = computed(
-    () => this.facade.data()?.agreementRatePct ?? 15,
   );
 
   readonly boxes = computed(() => this.line()?.boxes ?? []);
@@ -212,14 +199,14 @@ export class DueDetailPageComponent implements OnInit {
     this.locale.isRtl() ? 'التالي' : 'Next',
   );
 
-  readonly windows = computed<DueDetailWindowCard[]>(() => {
+  readonly windows = computed<DeductionDetailWindowCard[]>(() => {
     const line = this.line();
-    const items: DueDetailWindowCard[] = [
+    const items: DeductionDetailWindowCard[] = [
       {
         id: 'details',
         icon: 'lucideReceipt',
-        titleAr: 'بيانات البند',
-        titleEn: 'Line details',
+        titleAr: 'بيانات الخصم',
+        titleEn: 'Deduction details',
         detailAr: 'التفصيل المالي للبند',
         detailEn: 'Financial breakdown for this line',
       },
@@ -229,21 +216,10 @@ export class DueDetailPageComponent implements OnInit {
       items.push({
         id: 'boxes',
         icon: 'lucidePackage',
-        titleAr: 'البوكسات',
-        titleEn: 'Boxes',
-        detailAr: 'تفاصيل البوكسات المسلّمة',
-        detailEn: 'Delivered box details',
-      });
-    }
-
-    if ((line?.deliveryDays?.length ?? 0) > 0) {
-      items.push({
-        id: 'days',
-        icon: 'lucideCalendarDays',
-        titleAr: 'التسليم اليومي',
-        titleEn: 'Daily deliveries',
-        detailAr: 'ملخص الفترة بالأيام',
-        detailEn: 'Period summary by day',
+        titleAr: 'البوكسات المتأثرة',
+        titleEn: 'Affected boxes',
+        detailAr: 'البوكسات التي دخلت في الخصم',
+        detailEn: 'Boxes included in this deduction',
       });
     }
 
@@ -252,8 +228,8 @@ export class DueDetailPageComponent implements OnInit {
       icon: 'lucideHandCoins',
       titleAr: 'الملخص والأحداث',
       titleEn: 'Summary & events',
-      detailAr: 'المبالغ والتايملاين واتفاق العمولة',
-      detailEn: 'Amounts, timeline, and commission agreement',
+      detailAr: 'المبالغ والتايملاين والسياسة',
+      detailEn: 'Amounts, timeline, and policy',
     });
 
     return items;
@@ -269,6 +245,11 @@ export class DueDetailPageComponent implements OnInit {
     const id = this.activeWindow();
     const card = this.windows().find((item) => item.id === id);
     return card ? this.windowCardDetail(card) : '';
+  });
+
+  readonly policyNote = computed(() => {
+    const data = this.facade.data();
+    return data ? pickLocale(data.policyNote, this.locale.locale()) : '';
   });
 
   readonly boxSearchPlaceholder = computed(() =>
@@ -314,15 +295,15 @@ export class DueDetailPageComponent implements OnInit {
     return this.locale.isRtl() ? ar : en;
   }
 
-  windowCardTitle(card: DueDetailWindowCard): string {
+  windowCardTitle(card: DeductionDetailWindowCard): string {
     return this.locale.isRtl() ? card.titleAr : card.titleEn;
   }
 
-  windowCardDetail(card: DueDetailWindowCard): string {
+  windowCardDetail(card: DeductionDetailWindowCard): string {
     return this.locale.isRtl() ? card.detailAr : card.detailEn;
   }
 
-  windowCount(id: DueDetailWindow): number {
+  windowCount(id: DeductionDetailWindow): number {
     const line = this.line();
     if (!line) return 0;
     switch (id) {
@@ -330,14 +311,12 @@ export class DueDetailPageComponent implements OnInit {
         return 1;
       case 'boxes':
         return line.boxes?.length ?? 0;
-      case 'days':
-        return line.deliveryDays?.length ?? 0;
       case 'summary':
         return line.timeline.length;
     }
   }
 
-  openWindow(id: DueDetailWindow): void {
+  openWindow(id: DeductionDetailWindow): void {
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { window: id },
@@ -357,79 +336,72 @@ export class DueDetailPageComponent implements OnInit {
     this.boxSearch.set(value);
   }
 
-  title(line: DueLine): string {
+  title(line: DeductionLine): string {
     return pickLocale(line.title, this.locale.locale());
   }
 
-  detail(line: DueLine): string {
+  detail(line: DeductionLine): string {
     return pickLocale(line.detail, this.locale.locale());
   }
 
-  period(line: DueLine): string {
+  period(line: DeductionLine): string {
     return pickLocale(line.periodLabel, this.locale.locale());
   }
 
-  updatedAt(line: DueLine): string {
+  updatedAt(line: DeductionLine): string {
     return pickLocale(line.updatedAtLabel, this.locale.locale());
   }
 
-  lineNote(line: DueLine): string {
+  lineNote(line: DeductionLine): string {
     return line.note ? pickLocale(line.note, this.locale.locale()) : '';
   }
 
-  eventTitle(event: DueTimelineEvent): string {
+  eventTitle(event: DeductionTimelineEvent): string {
     return pickLocale(event.title, this.locale.locale());
   }
 
-  eventTime(event: DueTimelineEvent): string {
+  eventTime(event: DeductionTimelineEvent): string {
     return pickLocale(event.timeLabel, this.locale.locale());
   }
 
-  contents(box: DueBox): string {
+  contents(box: DeductionBox): string {
     return pickLocale(box.contentsLabel, this.locale.locale());
   }
 
-  zone(box: DueBox): string {
+  zone(box: DeductionBox): string {
     return pickLocale(box.zoneLabel, this.locale.locale());
   }
 
-  deliveredAt(box: DueBox): string {
+  deliveredAt(box: DeductionBox): string {
     return pickLocale(box.deliveredAtLabel, this.locale.locale());
   }
 
-  statusLabel(status: DueStatus): string {
+  statusLabel(status: DeductionStatus): string {
     const rtl = this.locale.isRtl();
     switch (status) {
       case 'pending':
         return rtl ? 'معلّق' : 'Pending';
-      case 'scheduled':
-        return rtl ? 'مجدول' : 'Scheduled';
-      case 'paid':
-        return rtl ? 'مدفوع' : 'Paid';
-      case 'held':
-        return rtl ? 'موقوف' : 'Held';
+      case 'applied':
+        return rtl ? 'مطبّق' : 'Applied';
+      case 'disputed':
+        return rtl ? 'اعتراض' : 'Disputed';
+      case 'reversed':
+        return rtl ? 'مُعاد' : 'Reversed';
     }
   }
 
-  kindLabel(kind: DueKind): string {
+  kindLabel(kind: DeductionKind): string {
     const rtl = this.locale.isRtl();
     switch (kind) {
-      case 'box_payable':
-        return rtl ? 'مستحق بوكسات' : 'Box payable';
-      case 'commission':
-        return rtl ? 'عمولة' : 'Commission';
-      case 'net_settlement':
-        return rtl ? 'صافي تسوية' : 'Net settlement';
+      case 'complaint':
+        return rtl ? 'شكوى' : 'Complaint';
+      case 'quality':
+        return rtl ? 'جودة' : 'Quality';
+      case 'remake':
+        return rtl ? 'إعادة' : 'Remake';
+      case 'adjustment':
+        return rtl ? 'تسوية' : 'Adjustment';
     }
-  }
-
-  avgBoxPrice(line: DueLine): number {
-    if (!line.boxesDelivered) return 0;
-    return line.grossKd / line.boxesDelivered;
-  }
-
-  dayLabel(day: DueDeliveryDay): string {
-    return pickLocale(day.dateLabel, this.locale.locale());
   }
 
   goToBoxesPage(page: number): void {

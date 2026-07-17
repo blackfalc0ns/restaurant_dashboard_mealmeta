@@ -13,13 +13,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
-  lucideBadgePercent,
   lucideClipboardList,
-  lucideHandCoins,
   lucideInfo,
   lucidePackage,
+  lucideReceipt,
+  lucideScale,
   lucideSearch,
-  lucideWallet,
+  lucideShieldAlert,
   lucideX,
 } from '@ng-icons/lucide';
 import { map } from 'rxjs';
@@ -34,19 +34,19 @@ import {
 } from '@/shared/components/restaurant-workspace/restaurant-ops-ui.component';
 
 import { pickLocale } from '../overview/overview-i18n';
-import { DuesFacade } from './data/dues.facade';
-import { DuesSkeletonComponent } from './dues-skeleton.component';
+import { DeductionsFacade } from './data/deductions.facade';
+import { DeductionsSkeletonComponent } from './deductions-skeleton.component';
 import {
-  DueFilter,
-  DueKind,
-  DueLine,
-  DueStatus,
-} from './models/dues.model';
+  DeductionFilter,
+  DeductionKind,
+  DeductionLine,
+  DeductionStatus,
+} from './models/deductions.model';
 
-export type DueSection = 'ledger' | 'pending' | 'commission';
+export type DeductionSection = 'ledger' | 'open' | 'applied';
 
-interface DueSectionCard {
-  id: DueSection;
+interface DeductionSectionCard {
+  id: DeductionSection;
   icon: string;
   titleAr: string;
   titleEn: string;
@@ -55,7 +55,7 @@ interface DueSectionCard {
 }
 
 @Component({
-  selector: 'mm-dues-page',
+  selector: 'mm-deductions-page',
   standalone: true,
   imports: [
     DecimalPipe,
@@ -63,43 +63,41 @@ interface DueSectionCard {
     RouterLink,
     NgIcon,
     PageStateComponent,
-    DuesSkeletonComponent,
+    DeductionsSkeletonComponent,
     RestaurantOpsHeroComponent,
     RestaurantOpsToolbarComponent,
     RestaurantOpsFiltersComponent,
     RestaurantOpsPagerComponent,
   ],
-  templateUrl: './dues.page.html',
+  templateUrl: './deductions.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'mm-due-page flex h-full min-h-0 flex-col' },
   viewProviders: [
     provideIcons({
-      lucideBadgePercent,
       lucideClipboardList,
-      lucideHandCoins,
       lucideInfo,
       lucidePackage,
+      lucideReceipt,
+      lucideScale,
       lucideSearch,
-      lucideWallet,
+      lucideShieldAlert,
       lucideX,
     }),
   ],
 })
-export class DuesPageComponent implements OnInit {
-  readonly facade = inject(DuesFacade);
+export class DeductionsPageComponent implements OnInit {
+  readonly facade = inject(DeductionsFacade);
   readonly locale = inject(AppLocaleService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  readonly activeSection = signal<DueSection | null>(null);
+  readonly activeSection = signal<DeductionSection | null>(null);
 
   private readonly routeSection = toSignal(
     this.route.queryParamMap.pipe(
       map((params) => {
         const value = params.get('section');
-        return value === 'ledger' ||
-          value === 'pending' ||
-          value === 'commission'
+        return value === 'ledger' || value === 'open' || value === 'applied'
           ? value
           : null;
       }),
@@ -107,49 +105,48 @@ export class DuesPageComponent implements OnInit {
     {
       initialValue: (() => {
         const value = this.route.snapshot.queryParamMap.get('section');
-        return value === 'ledger' ||
-          value === 'pending' ||
-          value === 'commission'
+        return value === 'ledger' || value === 'open' || value === 'applied'
           ? value
           : null;
       })(),
     },
   );
 
-  readonly sections: DueSectionCard[] = [
+  readonly sections: DeductionSectionCard[] = [
     {
       id: 'ledger',
       icon: 'lucideClipboardList',
-      titleAr: 'سجل المستحقات',
-      titleEn: 'Dues ledger',
-      detailAr: 'كل بنود التسوية حسب الفترة والحالة',
-      detailEn: 'All settlement lines by period and status',
+      titleAr: 'سجل الخصومات',
+      titleEn: 'Deductions ledger',
+      detailAr: 'كل خصومات الشكاوى والتسويات',
+      detailEn: 'All complaint deductions and adjustments',
     },
     {
-      id: 'pending',
-      icon: 'lucideWallet',
-      titleAr: 'المستحق المعلّق',
-      titleEn: 'Pending payout',
-      detailAr: 'بنود جاهزة أو مجدولة للتحويل',
-      detailEn: 'Lines ready or scheduled for transfer',
+      id: 'open',
+      icon: 'lucideShieldAlert',
+      titleAr: 'مفتوح / اعتراض',
+      titleEn: 'Open / disputed',
+      detailAr: 'بنود بانتظار الاعتماد أو قيد الاعتراض',
+      detailEn: 'Lines awaiting approval or in dispute',
     },
     {
-      id: 'commission',
-      icon: 'lucideBadgePercent',
-      titleAr: 'عمولة المطعم',
-      titleEn: 'Restaurant commission',
-      detailAr: 'نسبة الاتفاق وملخص العمولة المستقطعة',
-      detailEn: 'Agreement rate and withheld commission summary',
+      id: 'applied',
+      icon: 'lucideScale',
+      titleAr: 'مطبّق / مُعاد',
+      titleEn: 'Applied / reversed',
+      detailAr: 'خصومات أُغلقت على المستحقات',
+      detailEn: 'Deductions closed against payables',
     },
   ];
 
-  readonly filters: { id: DueFilter; labelAr: string; labelEn: string }[] = [
-    { id: 'all', labelAr: 'الكل', labelEn: 'All' },
-    { id: 'pending', labelAr: 'معلّق', labelEn: 'Pending' },
-    { id: 'scheduled', labelAr: 'مجدول', labelEn: 'Scheduled' },
-    { id: 'paid', labelAr: 'مدفوع', labelEn: 'Paid' },
-    { id: 'held', labelAr: 'موقوف', labelEn: 'Held' },
-  ];
+  readonly filters: { id: DeductionFilter; labelAr: string; labelEn: string }[] =
+    [
+      { id: 'all', labelAr: 'الكل', labelEn: 'All' },
+      { id: 'pending', labelAr: 'معلّق', labelEn: 'Pending' },
+      { id: 'applied', labelAr: 'مطبّق', labelEn: 'Applied' },
+      { id: 'disputed', labelAr: 'اعتراض', labelEn: 'Disputed' },
+      { id: 'reversed', labelAr: 'مُعاد', labelEn: 'Reversed' },
+    ];
 
   readonly title = computed(() => {
     const data = this.facade.data();
@@ -171,23 +168,19 @@ export class DuesPageComponent implements OnInit {
     return data ? pickLocale(data.note, this.locale.locale()) : '';
   });
 
-  readonly commissionNote = computed(() => {
+  readonly policyNote = computed(() => {
     const data = this.facade.data();
-    return data ? pickLocale(data.commissionNote, this.locale.locale()) : '';
+    return data ? pickLocale(data.policyNote, this.locale.locale()) : '';
   });
-
-  readonly agreementRate = computed(
-    () => this.facade.data()?.agreementRatePct ?? 15,
-  );
 
   readonly searchPlaceholder = computed(() =>
     this.locale.isRtl()
-      ? 'ابحث برقم المستحق أو الفترة...'
-      : 'Search by due code or period...',
+      ? 'ابحث برقم الخصم أو الشكوى...'
+      : 'Search by deduction or complaint code...',
   );
 
   readonly emptyLabel = computed(() =>
-    this.locale.isRtl() ? 'لا توجد مستحقات مطابقة.' : 'No matching dues.',
+    this.locale.isRtl() ? 'لا توجد خصومات مطابقة.' : 'No matching deductions.',
   );
 
   readonly rangeText = computed(() => {
@@ -222,36 +215,16 @@ export class DuesPageComponent implements OnInit {
     return card ? this.sectionCardDetail(card) : '';
   });
 
-  readonly commissionLines = computed(() =>
-    (this.facade.data()?.lines ?? []).filter(
-      (line) => line.kind === 'commission',
-    ),
-  );
-
-  readonly filteredCommissionLines = computed(() => {
-    const query = this.facade.search().trim().toLowerCase();
-    const lines = this.commissionLines();
-    if (!query) return lines;
-    return lines.filter((line) => {
-      const haystack = [
-        line.code,
-        line.title.ar,
-        line.title.en,
-        line.detail.ar,
-        line.detail.en,
-        line.periodLabel.ar,
-        line.periodLabel.en,
-      ]
-        .join(' ')
-        .toLowerCase();
-      return haystack.includes(query);
-    });
-  });
-
-  readonly pendingCount = computed(
+  readonly openCount = computed(
     () =>
       (this.facade.filterCounts().pending ?? 0) +
-      (this.facade.filterCounts().scheduled ?? 0),
+      (this.facade.filterCounts().disputed ?? 0),
+  );
+
+  readonly appliedCount = computed(
+    () =>
+      (this.facade.filterCounts().applied ?? 0) +
+      (this.facade.filterCounts().reversed ?? 0),
   );
 
   constructor() {
@@ -260,8 +233,10 @@ export class DuesPageComponent implements OnInit {
       this.activeSection.set(section);
       if (section === 'ledger') {
         this.facade.setFilter('all');
-      } else if (section === 'pending') {
+      } else if (section === 'open') {
         this.facade.setFilter('pending');
+      } else if (section === 'applied') {
+        this.facade.setFilter('applied');
       }
     });
   }
@@ -274,26 +249,26 @@ export class DuesPageComponent implements OnInit {
     return this.locale.isRtl() ? ar : en;
   }
 
-  sectionCardTitle(card: DueSectionCard): string {
+  sectionCardTitle(card: DeductionSectionCard): string {
     return this.locale.isRtl() ? card.titleAr : card.titleEn;
   }
 
-  sectionCardDetail(card: DueSectionCard): string {
+  sectionCardDetail(card: DeductionSectionCard): string {
     return this.locale.isRtl() ? card.detailAr : card.detailEn;
   }
 
-  sectionCount(section: DueSection): number {
+  sectionCount(section: DeductionSection): number {
     switch (section) {
       case 'ledger':
         return this.facade.filterCounts().all ?? 0;
-      case 'pending':
-        return this.pendingCount();
-      case 'commission':
-        return this.commissionLines().length;
+      case 'open':
+        return this.openCount();
+      case 'applied':
+        return this.appliedCount();
     }
   }
 
-  openSection(section: DueSection): void {
+  openSection(section: DeductionSection): void {
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { section },
@@ -309,15 +284,15 @@ export class DuesPageComponent implements OnInit {
     });
   }
 
-  openDue(line: DueLine): void {
-    void this.router.navigate(['/restaurant/finance/dues', line.id]);
+  openLine(line: DeductionLine): void {
+    void this.router.navigate(['/restaurant/finance/deductions', line.id]);
   }
 
   onSearch(value: string): void {
     this.facade.setSearch(value);
   }
 
-  setFilter(filter: DueFilter): void {
+  setFilter(filter: DeductionFilter): void {
     this.facade.setFilter(filter);
   }
 
@@ -325,7 +300,7 @@ export class DuesPageComponent implements OnInit {
     return this.locale.isRtl() ? option.labelAr : option.labelEn;
   }
 
-  filterCount(id: DueFilter): number {
+  filterCount(id: DeductionFilter): number {
     return this.facade.filterCounts()[id] ?? 0;
   }
 
@@ -337,45 +312,47 @@ export class DuesPageComponent implements OnInit {
     return card.hint ? pickLocale(card.hint, this.locale.locale()) : '';
   }
 
-  lineTitle(line: DueLine): string {
+  lineTitle(line: DeductionLine): string {
     return pickLocale(line.title, this.locale.locale());
   }
 
-  lineDetail(line: DueLine): string {
+  lineDetail(line: DeductionLine): string {
     return pickLocale(line.detail, this.locale.locale());
   }
 
-  period(line: DueLine): string {
+  period(line: DeductionLine): string {
     return pickLocale(line.periodLabel, this.locale.locale());
   }
 
-  updatedAt(line: DueLine): string {
+  updatedAt(line: DeductionLine): string {
     return pickLocale(line.updatedAtLabel, this.locale.locale());
   }
 
-  statusLabel(status: DueStatus): string {
+  statusLabel(status: DeductionStatus): string {
     const rtl = this.locale.isRtl();
     switch (status) {
       case 'pending':
         return rtl ? 'معلّق' : 'Pending';
-      case 'scheduled':
-        return rtl ? 'مجدول' : 'Scheduled';
-      case 'paid':
-        return rtl ? 'مدفوع' : 'Paid';
-      case 'held':
-        return rtl ? 'موقوف' : 'Held';
+      case 'applied':
+        return rtl ? 'مطبّق' : 'Applied';
+      case 'disputed':
+        return rtl ? 'اعتراض' : 'Disputed';
+      case 'reversed':
+        return rtl ? 'مُعاد' : 'Reversed';
     }
   }
 
-  kindLabel(kind: DueKind): string {
+  kindLabel(kind: DeductionKind): string {
     const rtl = this.locale.isRtl();
     switch (kind) {
-      case 'box_payable':
-        return rtl ? 'مستحق بوكسات' : 'Box payable';
-      case 'commission':
-        return rtl ? 'عمولة' : 'Commission';
-      case 'net_settlement':
-        return rtl ? 'صافي تسوية' : 'Net settlement';
+      case 'complaint':
+        return rtl ? 'شكوى' : 'Complaint';
+      case 'quality':
+        return rtl ? 'جودة' : 'Quality';
+      case 'remake':
+        return rtl ? 'إعادة' : 'Remake';
+      case 'adjustment':
+        return rtl ? 'تسوية' : 'Adjustment';
     }
   }
 

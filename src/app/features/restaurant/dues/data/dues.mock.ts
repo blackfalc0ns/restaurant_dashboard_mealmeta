@@ -1,4 +1,5 @@
 import {
+  DueBox,
   DueLine,
   DueTimelineEvent,
   RestaurantDuesData,
@@ -16,16 +17,155 @@ function line(partial: DueLine): DueLine {
   return partial;
 }
 
+function box(
+  partial: Omit<DueBox, 'commissionKd' | 'netKd'> & {
+    commissionKd?: number;
+    netKd?: number;
+  },
+  ratePct = 15,
+): DueBox {
+  const commissionKd =
+    partial.commissionKd ??
+    Math.round(partial.unitPriceKd * (ratePct / 100) * 100) / 100;
+  const netKd =
+    partial.netKd ??
+    Math.round((partial.unitPriceKd - commissionKd) * 100) / 100;
+  return { ...partial, commissionKd, netKd };
+}
+
+const DUE_01_BOXES: DueBox[] = [
+  box({
+    id: 'bx-01',
+    boxCode: 'BOX-2401-A',
+    orderCode: 'ORD-2401',
+    customerMaskedId: 'CUS-•••401',
+    contentsLabel: { ar: 'غداء · بروتين', en: 'Lunch · protein' },
+    zoneLabel: { ar: 'السالمية', en: 'Salmiya' },
+    deliveredAtLabel: { ar: '13 يوليو · 12:40', en: '13 Jul · 12:40' },
+    unitPriceKd: 3.8,
+  }),
+  box({
+    id: 'bx-02',
+    boxCode: 'BOX-2401-B',
+    orderCode: 'ORD-2401',
+    customerMaskedId: 'CUS-•••401',
+    contentsLabel: { ar: 'غداء · سلطة', en: 'Lunch · salad' },
+    zoneLabel: { ar: 'السالمية', en: 'Salmiya' },
+    deliveredAtLabel: { ar: '13 يوليو · 12:40', en: '13 Jul · 12:40' },
+    unitPriceKd: 3.75,
+  }),
+  box({
+    id: 'bx-03',
+    boxCode: 'BOX-2405-A',
+    orderCode: 'ORD-2405',
+    customerMaskedId: 'CUS-•••405',
+    contentsLabel: { ar: 'غداء · كيتو', en: 'Lunch · keto' },
+    zoneLabel: { ar: 'حولي', en: 'Hawally' },
+    deliveredAtLabel: { ar: '13 يوليو · 13:10', en: '13 Jul · 13:10' },
+    unitPriceKd: 3.9,
+  }),
+  box({
+    id: 'bx-04',
+    boxCode: 'BOX-2408-A',
+    orderCode: 'ORD-2408',
+    customerMaskedId: 'CUS-•••408',
+    contentsLabel: { ar: 'غداء · رئيسية', en: 'Lunch · main' },
+    zoneLabel: { ar: 'السالمية', en: 'Salmiya' },
+    deliveredAtLabel: { ar: '13 يوليو · 13:35', en: '13 Jul · 13:35' },
+    unitPriceKd: 3.85,
+  }),
+  box({
+    id: 'bx-05',
+    boxCode: 'BOX-2410-A',
+    orderCode: 'ORD-2410',
+    customerMaskedId: 'CUS-•••410',
+    contentsLabel: { ar: 'غداء · بروتين', en: 'Lunch · protein' },
+    zoneLabel: { ar: 'الجابرية', en: 'Jabriya' },
+    deliveredAtLabel: { ar: '14 يوليو · 12:20', en: '14 Jul · 12:20' },
+    unitPriceKd: 3.8,
+  }),
+  box({
+    id: 'bx-06',
+    boxCode: 'BOX-2412-A',
+    orderCode: 'ORD-2412',
+    customerMaskedId: 'CUS-•••412',
+    contentsLabel: { ar: 'غداء · منخفضة كربوهيدرات', en: 'Lunch · low-carb' },
+    zoneLabel: { ar: 'بيان', en: 'Bayan' },
+    deliveredAtLabel: { ar: '14 يوليو · 12:55', en: '14 Jul · 12:55' },
+    unitPriceKd: 3.7,
+  }),
+  box({
+    id: 'bx-07',
+    boxCode: 'BOX-2415-A',
+    orderCode: 'ORD-2415',
+    customerMaskedId: 'CUS-•••415',
+    contentsLabel: { ar: 'غداء · سلطة', en: 'Lunch · salad' },
+    zoneLabel: { ar: 'حولي', en: 'Hawally' },
+    deliveredAtLabel: { ar: '14 يوليو · 13:20', en: '14 Jul · 13:20' },
+    unitPriceKd: 3.75,
+  }),
+  box({
+    id: 'bx-08',
+    boxCode: 'BOX-2418-A',
+    orderCode: 'ORD-2418',
+    customerMaskedId: 'CUS-•••418',
+    contentsLabel: { ar: 'غداء · بروتين', en: 'Lunch · protein' },
+    zoneLabel: { ar: 'الشعب', en: 'Shaab' },
+    deliveredAtLabel: { ar: '14 يوليو · 13:50', en: '14 Jul · 13:50' },
+    unitPriceKd: 3.85,
+  }),
+  box({
+    id: 'bx-09',
+    boxCode: 'BOX-2420-A',
+    orderCode: 'ORD-2420',
+    customerMaskedId: 'CUS-•••420',
+    contentsLabel: { ar: 'غداء · كيتو', en: 'Lunch · keto' },
+    zoneLabel: { ar: 'السالمية', en: 'Salmiya' },
+    deliveredAtLabel: { ar: '15 يوليو · 12:15', en: '15 Jul · 12:15' },
+    unitPriceKd: 3.9,
+  }),
+  box({
+    id: 'bx-10',
+    boxCode: 'BOX-2422-A',
+    orderCode: 'ORD-2422',
+    customerMaskedId: 'CUS-•••422',
+    contentsLabel: { ar: 'غداء · رئيسية', en: 'Lunch · main' },
+    zoneLabel: { ar: 'الجابرية', en: 'Jabriya' },
+    deliveredAtLabel: { ar: '15 يوليو · 12:45', en: '15 Jul · 12:45' },
+    unitPriceKd: 3.8,
+  }),
+  box({
+    id: 'bx-11',
+    boxCode: 'BOX-2425-A',
+    orderCode: 'ORD-2425',
+    customerMaskedId: 'CUS-•••425',
+    contentsLabel: { ar: 'غداء · بروتين', en: 'Lunch · protein' },
+    zoneLabel: { ar: 'بيان', en: 'Bayan' },
+    deliveredAtLabel: { ar: '15 يوليو · 13:10', en: '15 Jul · 13:10' },
+    unitPriceKd: 3.75,
+  }),
+  box({
+    id: 'bx-12',
+    boxCode: 'BOX-2428-A',
+    orderCode: 'ORD-2428',
+    customerMaskedId: 'CUS-•••428',
+    contentsLabel: { ar: 'غداء · سلطة', en: 'Lunch · salad' },
+    zoneLabel: { ar: 'حولي', en: 'Hawally' },
+    deliveredAtLabel: { ar: '15 يوليو · 13:40', en: '15 Jul · 13:40' },
+    unitPriceKd: 3.7,
+  }),
+];
+
 export const DUES_MOCK: RestaurantDuesData = {
   title: { ar: 'المستحقات والعمولات', en: 'Dues & commissions' },
   subtitle: {
-    ar: 'مستحق الوجبات المسلّمة وعمولة المطعم المتفق عليها مع MealMate.',
-    en: 'Payables for delivered boxes and the agreed restaurant commission with MealMate.',
+    ar: 'مستحق البوكسات المسلّمة وعمولة المطعم المتفق عليها مع MealMate — الحساب على البوكس.',
+    en: 'Payables for delivered boxes and the agreed restaurant commission with MealMate — calculated per box.',
   },
   dateLabel: { ar: 'يوليو 2026', en: 'July 2026' },
   note: {
-    ar: 'المبالغ للمطعم فقط. عمولة اشتراك العميل لا تظهر هنا. عمولة المطعم تُخصم من سعر الصندوق المتفق عليه.',
-    en: 'Restaurant-facing amounts only. Customer subscription commission is not shown. Restaurant commission is deducted from the agreed box price.',
+    ar: 'المبالغ للمطعم فقط. عمولة اشتراك العميل لا تظهر هنا. التسوية تُحسب لكل بوكس مسلّم. عمولة المطعم تُخصم من سعر البوكس المتفق عليه.',
+    en: 'Restaurant-facing amounts only. Customer subscription commission is not shown. Settlement is per delivered box. Restaurant commission is deducted from the agreed box price.',
   },
   commissionNote: {
     ar: 'نسبة عمولة المطعم حسب الاتفاق الحالي: 15%.',
@@ -41,7 +181,7 @@ export const DUES_MOCK: RestaurantDuesData = {
     },
     {
       id: 'gross',
-      label: { ar: 'مستحق الوجبات', en: 'Meal payables' },
+      label: { ar: 'مستحق البوكسات', en: 'Box payables' },
       valueKd: 1260.75,
       hint: { ar: 'هذا الشهر', en: 'This month' },
     },
@@ -62,11 +202,11 @@ export const DUES_MOCK: RestaurantDuesData = {
     line({
       id: 'due-01',
       code: 'DUE-0726-W3',
-      kind: 'meal_payable',
+      kind: 'box_payable',
       status: 'pending',
       title: { ar: 'مستحق أسبوع 13–15 يوليو', en: 'Payable week 13–15 Jul' },
       detail: {
-        ar: '84 صندوق مسلّم · عمولة 15%',
+        ar: '84 بوكس مسلّم · عمولة 15%',
         en: '84 boxes delivered · 15% commission',
       },
       periodLabel: { ar: '13–15 يوليو', en: '13–15 Jul' },
@@ -100,6 +240,7 @@ export const DUES_MOCK: RestaurantDuesData = {
           amountKd: 98.5,
         },
       ],
+      boxes: DUE_01_BOXES,
       timeline: timeline([
         {
           id: 't1',
@@ -113,8 +254,8 @@ export const DUES_MOCK: RestaurantDuesData = {
         {
           id: 't2',
           title: {
-            ar: 'احتساب عمولة المطعم 15%',
-            en: 'Restaurant commission 15% calculated',
+            ar: 'احتساب عمولة المطعم 15% لكل بوكس',
+            en: 'Restaurant commission 15% calculated per box',
           },
           timeLabel: { ar: 'اليوم 09:41', en: 'Today 09:41' },
           tone: 'neutral',
@@ -133,11 +274,11 @@ export const DUES_MOCK: RestaurantDuesData = {
     line({
       id: 'due-02',
       code: 'DUE-0726-W2',
-      kind: 'meal_payable',
+      kind: 'box_payable',
       status: 'scheduled',
       title: { ar: 'مستحق أسبوع 6–12 يوليو', en: 'Payable week 6–12 Jul' },
       detail: {
-        ar: '112 صندوق مسلّم · مجدول للتحويل غدًا',
+        ar: '112 بوكس مسلّم · مجدول للتحويل غدًا',
         en: '112 boxes delivered · scheduled for transfer tomorrow',
       },
       periodLabel: { ar: '6–12 يوليو', en: '6–12 Jul' },
@@ -173,11 +314,11 @@ export const DUES_MOCK: RestaurantDuesData = {
     line({
       id: 'due-03',
       code: 'DUE-0726-W1',
-      kind: 'meal_payable',
+      kind: 'box_payable',
       status: 'paid',
       title: { ar: 'مستحق أسبوع 1–5 يوليو', en: 'Payable week 1–5 Jul' },
       detail: {
-        ar: '96 صندوق · تم التحويل TR-4412',
+        ar: '96 بوكس · تم التحويل TR-4412',
         en: '96 boxes · transferred TR-4412',
       },
       periodLabel: { ar: '1–5 يوليو', en: '1–5 Jul' },
@@ -269,7 +410,7 @@ export const DUES_MOCK: RestaurantDuesData = {
     line({
       id: 'due-06',
       code: 'DUE-0626-W4',
-      kind: 'meal_payable',
+      kind: 'box_payable',
       status: 'held',
       title: {
         ar: 'مستحق معلّق لمراجعة شكوى',
@@ -305,11 +446,11 @@ export const DUES_MOCK: RestaurantDuesData = {
     line({
       id: 'due-07',
       code: 'DUE-0626-W3',
-      kind: 'meal_payable',
+      kind: 'box_payable',
       status: 'paid',
       title: { ar: 'مستحق أسبوع 17–23 يونيو', en: 'Payable week 17–23 Jun' },
       detail: {
-        ar: '78 صندوق · تحويل مكتمل',
+        ar: '78 بوكس · تحويل مكتمل',
         en: '78 boxes · transfer completed',
       },
       periodLabel: { ar: '17–23 يونيو', en: '17–23 Jun' },
@@ -332,11 +473,11 @@ export const DUES_MOCK: RestaurantDuesData = {
     line({
       id: 'due-08',
       code: 'DUE-0626-W2',
-      kind: 'meal_payable',
+      kind: 'box_payable',
       status: 'paid',
       title: { ar: 'مستحق أسبوع 10–16 يونيو', en: 'Payable week 10–16 Jun' },
       detail: {
-        ar: '90 صندوق · تحويل مكتمل',
+        ar: '90 بوكس · تحويل مكتمل',
         en: '90 boxes · transfer completed',
       },
       periodLabel: { ar: '10–16 يونيو', en: '10–16 Jun' },

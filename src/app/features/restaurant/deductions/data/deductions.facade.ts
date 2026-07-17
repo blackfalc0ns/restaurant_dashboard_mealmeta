@@ -3,26 +3,26 @@ import { Injectable, computed, signal } from '@angular/core';
 import { PageStateModel } from '@/shared/models/page-view-state.model';
 
 import {
-  DueFilter,
-  DueLine,
-  RestaurantDuesData,
-} from '../models/dues.model';
-import { DUES_MOCK } from './dues.mock';
+  DeductionFilter,
+  DeductionLine,
+  RestaurantDeductionsData,
+} from '../models/deductions.model';
+import { DEDUCTIONS_MOCK } from './deductions.mock';
 
-export const DUES_PAGE_SIZE = 4;
+export const DEDUCTIONS_PAGE_SIZE = 4;
 
 @Injectable({ providedIn: 'root' })
-export class DuesFacade {
+export class DeductionsFacade {
   readonly page = signal<PageStateModel>({ viewState: 'idle' });
-  readonly data = signal<RestaurantDuesData | null>(null);
-  readonly filter = signal<DueFilter>('all');
+  readonly data = signal<RestaurantDeductionsData | null>(null);
+  readonly filter = signal<DeductionFilter>('all');
   readonly search = signal('');
   readonly currentPage = signal(1);
-  readonly pageSize = DUES_PAGE_SIZE;
+  readonly pageSize = DEDUCTIONS_PAGE_SIZE;
 
   private loadTimer: ReturnType<typeof setTimeout> | null = null;
 
-  readonly filteredLines = computed<DueLine[]>(() => {
+  readonly filteredLines = computed<DeductionLine[]>(() => {
     const data = this.data();
     if (!data) return [];
 
@@ -35,6 +35,7 @@ export class DuesFacade {
 
       const haystack = [
         line.code,
+        line.complaintCode ?? '',
         line.title.ar,
         line.title.en,
         line.detail.ar,
@@ -49,23 +50,23 @@ export class DuesFacade {
     });
   });
 
-  readonly filterCounts = computed<Record<DueFilter, number>>(() => {
+  readonly filterCounts = computed<Record<DeductionFilter, number>>(() => {
     const data = this.data();
     const empty = {
       all: 0,
       pending: 0,
-      scheduled: 0,
-      paid: 0,
-      held: 0,
+      applied: 0,
+      disputed: 0,
+      reversed: 0,
     };
     if (!data) return empty;
 
     return {
       all: data.lines.length,
       pending: data.lines.filter((l) => l.status === 'pending').length,
-      scheduled: data.lines.filter((l) => l.status === 'scheduled').length,
-      paid: data.lines.filter((l) => l.status === 'paid').length,
-      held: data.lines.filter((l) => l.status === 'held').length,
+      applied: data.lines.filter((l) => l.status === 'applied').length,
+      disputed: data.lines.filter((l) => l.status === 'disputed').length,
+      reversed: data.lines.filter((l) => l.status === 'reversed').length,
     };
   });
 
@@ -106,13 +107,13 @@ export class DuesFacade {
     this.currentPage.set(1);
 
     this.loadTimer = setTimeout(() => {
-      this.data.set(structuredClone(DUES_MOCK));
+      this.data.set(structuredClone(DEDUCTIONS_MOCK));
       this.page.set({ viewState: 'success' });
       this.loadTimer = null;
     }, 650);
   }
 
-  setFilter(filter: DueFilter): void {
+  setFilter(filter: DeductionFilter): void {
     this.filter.set(filter);
     this.currentPage.set(1);
   }
@@ -138,34 +139,17 @@ export class DuesFacade {
     this.setPage(page);
   }
 
-  lineById(id: string): DueLine | null {
+  lineById(id: string): DeductionLine | null {
     return this.data()?.lines.find((line) => line.id === id) ?? null;
   }
 
   ensureLoaded(): void {
-    const data = this.data();
-    if (
-      data?.lines.some(
-        (line) => !Array.isArray(line.timeline) || (line.id === 'due-01' && !line.boxes),
-      )
-    ) {
-      this.data.set(null);
-    }
     this.load();
   }
 
   retry(): void {
     this.data.set(null);
     this.load();
-  }
-
-  reset(): void {
-    this.clearLoadTimer();
-    this.page.set({ viewState: 'idle' });
-    this.data.set(null);
-    this.filter.set('all');
-    this.search.set('');
-    this.currentPage.set(1);
   }
 
   private clearLoadTimer(): void {
