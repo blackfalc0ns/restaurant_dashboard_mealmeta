@@ -1,0 +1,821 @@
+<div class="mm-due-detail__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-reports-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (notFound()) {
+    <mm-page-state
+      viewState="empty"
+      [emptyMessage]="text('التقرير غير موجود.', 'Report not found.')"
+    />
+  }
+
+  @if (line(); as line) {
+    <div class="mm-ops-scroll">
+      <mm-ops-detail-hero
+        icon="lucideChartColumn"
+        [title]="title(line)"
+        [subtitle]="detail(line)"
+        [kicker]="line.code"
+        [status]="line.status"
+      >
+        <a
+          opsBack
+          class="mm-ops-back"
+          routerLink="/restaurant/finance/reports"
+        >
+          <ng-icon
+            [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+            class="size-3.5"
+          />
+          {{ text('العودة للتقارير', 'Back to reports') }}
+        </a>
+
+        <span opsBadge class="mm-due-badge" [attr.data-status]="line.status">
+          {{ statusLabel(line.status) }}
+        </span>
+
+        <div opsStats class="contents">
+          <div class="mm-due-stat">
+            <ng-icon name="lucidePackage" class="size-4" />
+            <div class="mm-due-stat__copy">
+              <small>{{ text('البوكسات', 'Boxes') }}</small>
+              <strong>{{ line.boxesDelivered }}</strong>
+            </div>
+          </div>
+          <div class="mm-due-stat">
+            <ng-icon name="lucideFileText" class="size-4" />
+            <div class="mm-due-stat__copy">
+              <small>{{ text('إجمالي', 'Gross') }}</small>
+              <strong>{{ line.grossKd | number: '1.2-2' }} KD</strong>
+            </div>
+          </div>
+          <div class="mm-due-stat">
+            <ng-icon name="lucideHandCoins" class="size-4" />
+            <div class="mm-due-stat__copy">
+              <small>{{ text('صافي', 'Net') }}</small>
+              <strong>{{ line.netKd | number: '1.2-2' }} KD</strong>
+            </div>
+          </div>
+        </div>
+      </mm-ops-detail-hero>
+
+      @if (lineNote(line); as note) {
+        <div class="mm-due-callout" [attr.data-status]="line.status">
+          <span><ng-icon name="lucideInfo" class="size-4" /></span>
+          <p>{{ note }}</p>
+        </div>
+      }
+
+      <section class="mm-due-sections">
+        <div class="mm-due-sections__head">
+          <div>
+            <h2>{{ text('نوافذ التقرير', 'Report windows') }}</h2>
+            <p>
+              {{
+                text(
+                  'افتح كل قسم في نافذة داخل صفحة التفاصيل.',
+                  'Open each section in a window inside the detail page.'
+                )
+              }}
+            </p>
+          </div>
+        </div>
+
+        <mm-ops-toolbar>
+          <mm-ops-filters>
+            @for (item of windows(); track item.id) {
+              <button
+                type="button"
+                [class.is-active]="activeWindow() === item.id"
+                (click)="openWindow(item.id)"
+              >
+                <ng-icon [name]="item.icon" class="size-3.5" />
+                {{ windowCardTitle(item) }}
+                <b>{{ windowCount(item.id) }}</b>
+              </button>
+            }
+          </mm-ops-filters>
+        </mm-ops-toolbar>
+      </section>
+
+      <div class="mm-due-workspace">
+        @if (activeWindow(); as windowId) {
+          <section class="mm-due-window" [attr.data-window]="windowId">
+            <header class="mm-due-window__bar">
+              <div class="mm-due-window__title">
+                <span class="mm-due-window__dots" aria-hidden="true">
+                  <i></i><i></i><i></i>
+                </span>
+                <div>
+                  <h2>{{ windowTitle() }}</h2>
+                  <p>{{ windowSubtitle() }}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="mm-due-window__close"
+                [attr.aria-label]="text('إغلاق النافذة', 'Close window')"
+                (click)="closeWindow()"
+              >
+                <ng-icon name="lucideX" class="size-4" />
+              </button>
+            </header>
+
+            <div class="mm-due-window__body">
+              @switch (windowId) {
+                @case ('details') {
+                  <div class="mm-rpt-details">
+                    <div class="mm-inv-lines__formula" aria-label="Settlement formula">
+                      <div class="mm-inv-lines__formula-item is-gross">
+                        <small>{{ text('إجمالي', 'Gross') }}</small>
+                        <strong>{{ line.grossKd | number: '1.2-2' }}</strong>
+                      </div>
+                      <div class="mm-inv-lines__formula-item is-out">
+                        <small>{{ text('عمولة', 'Commission') }}</small>
+                        <strong>−{{ line.commissionKd | number: '1.2-2' }}</strong>
+                      </div>
+                      <div class="mm-inv-lines__formula-item is-out">
+                        <small>{{ text('خصم', 'Deduct') }}</small>
+                        <strong>−{{ line.deductionsKd | number: '1.2-2' }}</strong>
+                      </div>
+                      <div class="mm-inv-lines__formula-item is-out">
+                        <small>{{ text('رسوم', 'Fees') }}</small>
+                        <strong>−{{ feesKd() | number: '1.2-2' }}</strong>
+                      </div>
+                      <div class="mm-inv-lines__formula-item is-net">
+                        <small>{{ text('صافي', 'Net') }}</small>
+                        <strong>{{ line.netKd | number: '1.2-2' }}</strong>
+                      </div>
+                    </div>
+
+                    <div class="mm-rpt-details__grid">
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideFileText" class="size-3.5" />
+                          <strong>{{ text('هوية التقرير', 'Report identity') }}</strong>
+                        </header>
+                        <div class="mm-pay-summary__amount">
+                          <small>{{ text('صافي التقرير', 'Report net') }}</small>
+                          <strong dir="ltr">
+                            {{ line.netKd | number: '1.2-2' }}
+                            <em>KD</em>
+                          </strong>
+                        </div>
+                        <div class="mm-ded-summary__grid">
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('رقم التقرير', 'Report code') }}</span>
+                            <strong dir="ltr">{{ line.code }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('النوع', 'Kind') }}</span>
+                            <strong>{{ kindLabel(line.kind) }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('الحالة', 'Status') }}</span>
+                            <strong>{{ statusLabel(line.status) }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('الفترة', 'Period') }}</span>
+                            <strong>{{ period(line) }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('أيام نشطة', 'Active days') }}</span>
+                            <strong>{{ line.activeDays ?? 26 }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('تاريخ التوليد', 'Generated') }}</span>
+                            <strong>{{ generatedAt(line) }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('آخر تحديث', 'Updated') }}</span>
+                            <strong>{{ updatedAt(line) }}</strong>
+                          </div>
+                        </div>
+                      </section>
+
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideHandCoins" class="size-3.5" />
+                          <strong>{{ text('أرقام التسوية', 'Settlement figures') }}</strong>
+                        </header>
+                        <div class="mm-ded-summary__grid">
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('البوكسات', 'Boxes') }}</span>
+                            <strong>{{ line.boxesDelivered }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('متوسط البوكس', 'Avg box') }}</span>
+                            <strong>{{ avgBoxKd() | number: '1.2-2' }} KD</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('إجمالي', 'Gross') }}</span>
+                            <strong>{{ line.grossKd | number: '1.2-2' }} KD</strong>
+                          </div>
+                          <div class="mm-ded-summary__row is-deduct">
+                            <span>{{ text('عمولة', 'Commission') }}</span>
+                            <strong>
+                              −{{ line.commissionKd | number: '1.2-2' }} KD
+                              <small dir="ltr">({{ commissionRatePct() | number: '1.0-0' }}%)</small>
+                            </strong>
+                          </div>
+                          <div class="mm-ded-summary__row is-deduct">
+                            <span>{{ text('خصومات', 'Deductions') }}</span>
+                            <strong>−{{ line.deductionsKd | number: '1.2-2' }} KD</strong>
+                          </div>
+                          <div class="mm-ded-summary__row is-deduct">
+                            <span>{{ text('رسوم', 'Fees') }}</span>
+                            <strong>−{{ feesKd() | number: '1.2-2' }} KD</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('محوّل', 'Paid out') }}</span>
+                            <strong>{{ line.payoutsKd | number: '1.2-2' }} KD</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('متبقي للتحويل', 'Pending payout') }}</span>
+                            <strong>{{ pendingPayoutKd() | number: '1.2-2' }} KD</strong>
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+
+                    <div class="mm-rpt-details__charts">
+                      @if (hasComposition()) {
+                        <section class="mm-rpt-chart-panel">
+                          <header class="mm-rpt-chart-panel__head">
+                            <div>
+                              <strong>{{ text('تكوين الصافي', 'Net composition') }}</strong>
+                              <p>
+                                {{
+                                  text(
+                                    'توزيع الإجمالي بين الصافي والعمولة والخصم والرسوم.',
+                                    'How gross splits into net, commission, deductions, and fees.'
+                                  )
+                                }}
+                              </p>
+                            </div>
+                          </header>
+                          <mm-apex-chart
+                            [series]="compositionSeries()"
+                            [chart]="compositionChart"
+                            [labels]="compositionLabels()"
+                            [colors]="compositionColors"
+                            [fill]="compositionFill"
+                            [legend]="chartLegend"
+                            [tooltip]="chartTooltip"
+                            [plotOptions]="compositionPlotOptions()"
+                            [dataLabels]="{ enabled: false }"
+                          />
+                        </section>
+                      }
+
+                      @if (hasTrend()) {
+                        <section class="mm-rpt-chart-panel">
+                          <header class="mm-rpt-chart-panel__head">
+                            <div>
+                              <strong>{{ text('اتجاه الفترة', 'Period trend') }}</strong>
+                              <p>
+                                {{
+                                  text(
+                                    'إجمالي مقابل صافي عبر أسابيع الفترة.',
+                                    'Gross vs net across period weeks.'
+                                  )
+                                }}
+                              </p>
+                            </div>
+                          </header>
+                          <mm-apex-chart
+                            [series]="trendSeries()"
+                            [chart]="trendChart"
+                            [colors]="trendColors"
+                            [xaxis]="trendXaxis()"
+                            [yaxis]="chartYaxis"
+                            [grid]="chartGrid"
+                            [stroke]="chartStroke"
+                            [fill]="trendFill"
+                            [tooltip]="chartTooltip"
+                            [legend]="chartLegend"
+                            [dataLabels]="{ enabled: false }"
+                          />
+                        </section>
+                      }
+                    </div>
+
+                    <section class="mm-ded-summary__sheet">
+                      <header class="mm-ded-summary__head">
+                        <ng-icon name="lucideInfo" class="size-3.5" />
+                        <strong>{{ text('روابط مرتبطة', 'Linked records') }}</strong>
+                      </header>
+                      <div class="mm-ded-summary__links">
+                        @if (invoiceRoute(line); as route) {
+                          <a class="mm-ded-summary__link" [routerLink]="route">
+                            {{ line.linkedInvoiceCode ?? text('الفاتورة', 'Invoice') }}
+                            <ng-icon
+                              [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                              class="size-3"
+                            />
+                          </a>
+                        }
+                        @if (statementRoute(line); as route) {
+                          <a class="mm-ded-summary__link" [routerLink]="route">
+                            {{ line.linkedStatementCode ?? text('كشف الحساب', 'Statement') }}
+                            <ng-icon
+                              [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                              class="size-3"
+                            />
+                          </a>
+                        }
+                        @if (payoutRoute(line); as route) {
+                          <a class="mm-ded-summary__link" [routerLink]="route">
+                            {{ line.linkedPayoutCode ?? text('الدفعة', 'Payout') }}
+                            <ng-icon
+                              [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                              class="size-3"
+                            />
+                          </a>
+                        }
+                        <a class="mm-ded-summary__link" routerLink="/restaurant/finance/dues">
+                          {{ text('المستحقات', 'Dues') }}
+                          <ng-icon
+                            [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                            class="size-3"
+                          />
+                        </a>
+                      </div>
+                    </section>
+                  </div>
+                }
+
+                @case ('metrics') {
+                  <div class="mm-rpt-metrics-window">
+                    <div class="mm-rpt-metrics">
+                      @for (metric of line.metrics; track metric.id) {
+                        <article
+                          class="mm-rpt-metrics__card"
+                          [attr.data-tone]="metric.tone ?? 'neutral'"
+                        >
+                          <small>{{ metricLabel(metric) }}</small>
+                          @if (metric.isCount) {
+                            <strong>{{ metric.valueKd | number: '1.0-0' }}</strong>
+                          } @else {
+                            <strong dir="ltr">
+                              {{ metric.valueKd | number: '1.2-2' }}
+                              <em>KD</em>
+                            </strong>
+                          }
+                          @if (metricHint(metric); as hint) {
+                            <span>{{ hint }}</span>
+                          }
+                        </article>
+                      }
+                    </div>
+
+                    <div class="mm-rpt-details__charts">
+                      @if (hasBoxesTrend()) {
+                        <section class="mm-rpt-chart-panel">
+                          <header class="mm-rpt-chart-panel__head">
+                            <div>
+                              <strong>{{ text('حجم البوكسات', 'Box volume') }}</strong>
+                              <p>
+                                {{
+                                  text(
+                                    'عدد البوكسات لكل أسبوع في الفترة.',
+                                    'Boxes delivered per week in the period.'
+                                  )
+                                }}
+                              </p>
+                            </div>
+                          </header>
+                          <mm-apex-chart
+                            [series]="boxesBarSeries()"
+                            [chart]="metricsBarChart"
+                            [colors]="barColors"
+                            [xaxis]="trendXaxis()"
+                            [yaxis]="chartYaxis"
+                            [grid]="chartGrid"
+                            [tooltip]="chartTooltip"
+                            [legend]="chartLegend"
+                            [dataLabels]="{ enabled: false }"
+                            [plotOptions]="{ bar: { borderRadius: 4, columnWidth: '48%' } }"
+                          />
+                        </section>
+                      }
+
+                      @if (hasMoneyMetricsChart()) {
+                        <section class="mm-rpt-chart-panel">
+                          <header class="mm-rpt-chart-panel__head">
+                            <div>
+                              <strong>{{ text('مؤشرات المبالغ', 'Money metrics') }}</strong>
+                              <p>
+                                {{
+                                  text(
+                                    'مقارنة مؤشرات KD داخل التقرير.',
+                                    'Compare KD metrics inside this report.'
+                                  )
+                                }}
+                              </p>
+                            </div>
+                          </header>
+                          <mm-apex-chart
+                            [series]="moneyMetricsBarSeries()"
+                            [chart]="metricsBarChart"
+                            [colors]="barColors"
+                            [xaxis]="moneyMetricsXaxis()"
+                            [yaxis]="chartYaxis"
+                            [grid]="chartGrid"
+                            [tooltip]="chartTooltip"
+                            [legend]="{ show: false }"
+                            [dataLabels]="{ enabled: false }"
+                            [plotOptions]="{ bar: { borderRadius: 4, columnWidth: '42%' } }"
+                          />
+                        </section>
+                      }
+
+                      @if (hasTrend()) {
+                        <section class="mm-rpt-chart-panel mm-rpt-chart-panel--wide">
+                          <header class="mm-rpt-chart-panel__head">
+                            <div>
+                              <strong>{{ text('إجمالي مقابل صافي', 'Gross vs net') }}</strong>
+                              <p>
+                                {{
+                                  text(
+                                    'اتجاه المبالغ عبر أسابيع الفترة.',
+                                    'Amount trend across period weeks.'
+                                  )
+                                }}
+                              </p>
+                            </div>
+                          </header>
+                          <mm-apex-chart
+                            [series]="trendSeries()"
+                            [chart]="trendChart"
+                            [colors]="trendColors"
+                            [xaxis]="trendXaxis()"
+                            [yaxis]="chartYaxis"
+                            [grid]="chartGrid"
+                            [stroke]="chartStroke"
+                            [fill]="trendFill"
+                            [tooltip]="chartTooltip"
+                            [legend]="chartLegend"
+                            [dataLabels]="{ enabled: false }"
+                          />
+                        </section>
+                      }
+                    </div>
+                  </div>
+                }
+
+                @case ('breakdown') {
+                  <div class="mm-inv-lines">
+                    <mm-ops-toolbar>
+                      <label class="mm-ops-search">
+                        <ng-icon name="lucideSearch" class="size-4" />
+                        <input
+                          type="search"
+                          [placeholder]="breakdownSearchPlaceholder()"
+                          [ngModel]="breakdownSearch()"
+                          (ngModelChange)="onBreakdownSearch($event)"
+                        />
+                      </label>
+                    </mm-ops-toolbar>
+
+                    @if (filteredBreakdown().length === 0) {
+                      <p class="mm-due-empty">{{ emptyBreakdownLabel() }}</p>
+                    } @else {
+                      <div class="mm-inv-lines__sheet">
+                        <div class="mm-inv-lines__list">
+                          @for (item of pagedBreakdown(); track item.id) {
+                            <article
+                              class="mm-inv-lines__row"
+                              [attr.data-tone]="item.tone"
+                            >
+                              <div class="mm-inv-lines__badge">
+                                {{ item.code }}
+                              </div>
+                              <div class="mm-inv-lines__body">
+                                <div class="mm-inv-lines__title">
+                                  <h3>{{ itemLabel(item) }}</h3>
+                                  @if (item.sharePct != null) {
+                                    <code dir="ltr">{{ item.sharePct }}%</code>
+                                  }
+                                </div>
+                                <p>{{ itemDetail(item) }}</p>
+                                <div class="mm-inv-lines__meta">
+                                  <div>
+                                    <small>{{ text('البوكسات', 'Boxes') }}</small>
+                                    <b>{{ item.boxes && item.boxes > 0 ? item.boxes : '—' }}</b>
+                                  </div>
+                                  <div
+                                    class="mm-inv-lines__value"
+                                    [class.is-gross]="item.tone === 'gross' || item.amountKd > 0"
+                                    [class.is-neg]="item.amountKd < 0"
+                                    [class.is-net]="item.tone === 'net'"
+                                  >
+                                    <small>{{ text('المبلغ', 'Amount') }}</small>
+                                    <b dir="ltr">
+                                      <i>{{ amountSign(item.amountKd) }}</i>
+                                      {{ amountAbs(item.amountKd) | number: '1.2-2' }}
+                                      <em>KD</em>
+                                    </b>
+                                  </div>
+                                </div>
+                                @if (item.linkedRoute) {
+                                  <a
+                                    class="mm-ded-summary__link"
+                                    style="margin-top: 0.4rem"
+                                    [routerLink]="item.linkedRoute"
+                                  >
+                                    {{ text('فتح المرتبط', 'Open linked') }}
+                                    <ng-icon
+                                      [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                                      class="size-3"
+                                    />
+                                  </a>
+                                }
+                              </div>
+                            </article>
+                          }
+                        </div>
+                        <footer class="mm-inv-lines__foot">
+                          <div>
+                            <small>{{ text('صافي التقرير', 'Report net') }}</small>
+                            <span>
+                              {{ line.breakdown.length }}
+                              {{ text('بند', 'items') }}
+                            </span>
+                          </div>
+                          <strong dir="ltr">
+                            {{ line.netKd | number: '1.2-2' }}
+                            <em>KD</em>
+                          </strong>
+                        </footer>
+                      </div>
+
+                      <mm-ops-pager
+                        [range]="breakdownRangeText()"
+                        [currentPage]="breakdownPage()"
+                        [totalPages]="breakdownTotalPages()"
+                        [pages]="breakdownPageNumbers()"
+                        [rtl]="locale.isRtl()"
+                        [prevLabel]="prevLabel()"
+                        [nextLabel]="nextLabel()"
+                        (prev)="prevBreakdownPage()"
+                        (next)="nextBreakdownPage()"
+                        (goTo)="goToBreakdownPage($event)"
+                      />
+                    }
+                  </div>
+                }
+
+                @case ('export') {
+                  @if (line.exportFile; as file) {
+                    <div class="mm-pay-proof" [attr.data-status]="file.status">
+                      <header class="mm-pay-proof__head">
+                        <div class="mm-pay-proof__icon">
+                          <ng-icon name="lucideDownload" class="size-4" />
+                        </div>
+                        <div>
+                          <strong>{{ text('ملف التصدير', 'Export file') }}</strong>
+                          <p>
+                            {{
+                              text(
+                                'نسخة PDF للأرشفة والمراجعة الداخلية.',
+                                'PDF copy for archive and internal review.'
+                              )
+                            }}
+                          </p>
+                        </div>
+                        <span class="mm-pay-proof__badge" [attr.data-status]="file.status">
+                          {{ exportStatusLabel(file.status) }}
+                        </span>
+                      </header>
+
+                      <div class="mm-ded-summary__sheet">
+                        <div class="mm-ded-summary__grid">
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('الصيغة', 'Format') }}</span>
+                            <strong>{{ exportFormat(file) }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('التوليد', 'Generated') }}</span>
+                            <strong>{{ exportGeneratedAt(file) }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('الصافي', 'Net') }}</span>
+                            <strong>{{ line.netKd | number: '1.2-2' }} KD</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('البوكسات', 'Boxes') }}</span>
+                            <strong>{{ line.boxesDelivered }}</strong>
+                          </div>
+                        </div>
+                      </div>
+
+                      <article class="mm-pay-proof__file" [attr.data-status]="file.status">
+                        <div class="mm-pay-proof__file-icon">
+                          <ng-icon name="lucideFileText" class="size-4" />
+                        </div>
+                        <div class="mm-pay-proof__file-copy">
+                          <strong dir="ltr">{{ file.fileName }}</strong>
+                          <small>
+                            {{ exportFileType(file) }}
+                            ·
+                            {{ exportFileSize(file) }}
+                          </small>
+                        </div>
+                        @if (file.status === 'ready') {
+                          <button
+                            type="button"
+                            class="mm-pay-proof__download"
+                            (click)="downloadExport(line)"
+                          >
+                            <ng-icon name="lucideDownload" class="size-3.5" />
+                            {{
+                              exportDownloaded()
+                                ? text('تم التحميل', 'Downloaded')
+                                : text('تحميل PDF', 'Download PDF')
+                            }}
+                          </button>
+                        } @else {
+                          <span class="mm-pay-proof__wait">
+                            {{
+                              file.status === 'pending'
+                                ? text('قيد التوليد…', 'Generating…')
+                                : text('غير متاح', 'Unavailable')
+                            }}
+                          </span>
+                        }
+                      </article>
+
+                      @if (exportNote(file); as note) {
+                        <p class="mm-pay-proof__note">{{ note }}</p>
+                      }
+                    </div>
+                  } @else {
+                    <p class="mm-due-empty">
+                      {{ text('لا يوجد ملف تصدير.', 'No export file.') }}
+                    </p>
+                  }
+                }
+
+                @case ('summary') {
+                  <div class="mm-ded-summary mm-pay-summary">
+                    <div class="mm-ded-summary__main">
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideHandCoins" class="size-3.5" />
+                          <strong>{{ text('ملخص الأرقام', 'Figures summary') }}</strong>
+                        </header>
+                        <div class="mm-pay-summary__amount">
+                          <small>{{ text('الصافي', 'Net') }}</small>
+                          <strong dir="ltr">
+                            {{ line.netKd | number: '1.2-2' }}
+                            <em>KD</em>
+                          </strong>
+                        </div>
+                        <div class="mm-ded-summary__grid">
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('الحالة', 'Status') }}</span>
+                            <strong>{{ statusLabel(line.status) }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('النوع', 'Kind') }}</span>
+                            <strong>{{ kindLabel(line.kind) }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('البوكسات', 'Boxes') }}</span>
+                            <strong>{{ line.boxesDelivered }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('إجمالي', 'Gross') }}</span>
+                            <strong>{{ line.grossKd | number: '1.2-2' }} KD</strong>
+                          </div>
+                          <div class="mm-ded-summary__row is-deduct">
+                            <span>{{ text('عمولة', 'Commission') }}</span>
+                            <strong>−{{ line.commissionKd | number: '1.2-2' }} KD</strong>
+                          </div>
+                          <div class="mm-ded-summary__row is-deduct">
+                            <span>{{ text('خصومات', 'Deductions') }}</span>
+                            <strong>−{{ line.deductionsKd | number: '1.2-2' }} KD</strong>
+                          </div>
+                        </div>
+                      </section>
+
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideHistory" class="size-3.5" />
+                          <strong>{{ text('التايملاين', 'Timeline') }}</strong>
+                        </header>
+                        <ol class="mm-ded-summary__timeline">
+                          @for (event of line.timeline; track event.id) {
+                            <li [attr.data-tone]="event.tone">
+                              <span class="mm-ded-summary__dot" aria-hidden="true"></span>
+                              <div>
+                                <div class="mm-ded-summary__event-top">
+                                  <strong>{{ eventTitle(event) }}</strong>
+                                  <small>{{ eventTime(event) }}</small>
+                                </div>
+                                @if (eventDetail(event); as detailText) {
+                                  <p>{{ detailText }}</p>
+                                }
+                              </div>
+                            </li>
+                          }
+                        </ol>
+                      </section>
+                    </div>
+
+                    <aside class="mm-ded-summary__side">
+                      @if (impactNote(line); as impact) {
+                        <section class="mm-ded-summary__sheet">
+                          <header class="mm-ded-summary__head">
+                            <ng-icon name="lucideChartColumn" class="size-3.5" />
+                            <strong>{{ text('أثر التقرير', 'Report impact') }}</strong>
+                          </header>
+                          <p class="mm-ded-summary__copy">{{ impact }}</p>
+                        </section>
+                      }
+
+                      @if (nextAction(line); as action) {
+                        <section class="mm-ded-summary__sheet">
+                          <header class="mm-ded-summary__head">
+                            <ng-icon name="lucideInfo" class="size-3.5" />
+                            <strong>{{ text('الخطوة التالية', 'Next step') }}</strong>
+                          </header>
+                          <p class="mm-ded-summary__copy">{{ action }}</p>
+                        </section>
+                      }
+
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideFileText" class="size-3.5" />
+                          <strong>{{ text('روابط', 'Links') }}</strong>
+                        </header>
+                        <p class="mm-ded-summary__copy">{{ policyNote() }}</p>
+                        <div class="mm-ded-summary__links">
+                          <a class="mm-ded-summary__link" routerLink="/restaurant/finance/invoices">
+                            {{ text('الفواتير', 'Invoices') }}
+                            <ng-icon
+                              [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                              class="size-3"
+                            />
+                          </a>
+                          <a class="mm-ded-summary__link" routerLink="/restaurant/finance/statements">
+                            {{ text('كشف الحساب', 'Statements') }}
+                            <ng-icon
+                              [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                              class="size-3"
+                            />
+                          </a>
+                        </div>
+                      </section>
+                    </aside>
+                  </div>
+                }
+              }
+            </div>
+          </section>
+        } @else {
+          <div class="mm-due-window mm-due-window--empty">
+            <header class="mm-due-window__bar">
+              <div class="mm-due-window__title">
+                <span class="mm-due-window__dots" aria-hidden="true">
+                  <i></i><i></i><i></i>
+                </span>
+                <div>
+                  <h2>{{ text('نافذة التقرير', 'Report window') }}</h2>
+                  <p>
+                    {{
+                      text(
+                        'لم يتم اختيار نافذة بعد.',
+                        'No window selected yet.'
+                      )
+                    }}
+                  </p>
+                </div>
+              </div>
+            </header>
+            <div class="mm-due-window__body">
+              <p class="mm-due-empty">
+                {{
+                  text(
+                    'اضغط على أحد الأقسام أعلاه لفتح نافذته هنا داخل الصفحة.',
+                    'Click one of the sections above to open its window here inside the page.'
+                  )
+                }}
+              </p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

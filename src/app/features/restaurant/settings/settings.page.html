@@ -1,0 +1,396 @@
+<div class="mm-set2-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-settings-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    @if (facade.draft(); as draft) {
+      <div class="mm-ops-scroll">
+        <mm-ops-hero
+          icon="lucideSettings"
+          [eyebrow]="dateLabel()"
+          [title]="title()"
+          [subtitle]="subtitle()"
+        >
+          <ng-container opsMetrics>
+            @for (card of data.summaries; track card.id) {
+              <div>
+                <small>{{ summaryLabel(card) }}</small>
+                <strong>{{ summaryValue(card) }}</strong>
+                @if (summaryHint(card); as hint) {
+                  <em>{{ hint }}</em>
+                }
+              </div>
+            }
+          </ng-container>
+        </mm-ops-hero>
+
+        <div class="mm-set2-wrap">
+          <nav class="mm-set2-tabs">
+            @for (section of sections; track section.id) {
+              <button
+                type="button"
+                class="mm-set2-tab"
+                [class.is-active]="activeSection() === section.id"
+                (click)="openSection(section.id)"
+              >
+                <ng-icon [name]="section.icon" class="size-3.5" />
+                <span>{{ sectionCardTitle(section) }}</span>
+                <b>{{ sectionCount(section.id) }}</b>
+              </button>
+            }
+          </nav>
+
+          <div class="mm-set2-window">
+            <header class="mm-set2-head">
+              <div>
+                <h2>{{ sectionTitle() }}</h2>
+                <p>{{ sectionSubtitle() }}</p>
+              </div>
+              @if (facade.dirty() || facade.savedFlash()) {
+                <div class="mm-set2-actions">
+                  @if (facade.savedFlash()) {
+                    <span class="mm-set2-saved">
+                      <ng-icon name="lucideCheck" class="size-3" />
+                      {{ text('تم الحفظ', 'Saved') }}
+                    </span>
+                  } @else {
+                    <button type="button" class="mm-set2-btn is-ghost" (click)="discard()">
+                      {{ text('تجاهل', 'Discard') }}
+                    </button>
+                    <button type="button" class="mm-set2-btn" (click)="save()">
+                      {{ text('حفظ', 'Save') }}
+                    </button>
+                  }
+                </div>
+              }
+            </header>
+
+            @switch (activeSection()) {
+              @case ('account-security') {
+                <div class="mm-set2-body">
+                  <div class="mm-set2-group">
+                    <h3>{{ text('بيانات الدخول', 'Login details') }}</h3>
+                    <div class="mm-set2-form mm-set2-form--pairs">
+                      <label class="mm-set2-field">
+                        <span>{{ text('البريد', 'Email') }}</span>
+                        <input type="email" dir="ltr" [ngModel]="draft.account.email" (ngModelChange)="facade.patchAccount({ email: $event })" />
+                        <small>{{ text('تسجيل الدخول والتنبيهات', 'Login and alerts') }}</small>
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('الجوال', 'Phone') }}</span>
+                        <input type="tel" dir="ltr" [ngModel]="draft.account.phone" (ngModelChange)="facade.patchAccount({ phone: $event })" />
+                        <small>{{ text('تواصل وتحقق', 'Contact and verification') }}</small>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="mm-set2-group">
+                    <h3>{{ text('الحماية', 'Protection') }}</h3>
+                    <div class="mm-set2-form mm-set2-form--pairs">
+                      <label class="mm-set2-field">
+                        <span>{{ text('الدور', 'Role') }}</span>
+                        <input type="text" [value]="locale.isRtl() ? draft.security.roleLabel.ar : draft.security.roleLabel.en" disabled />
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('كلمة المرور', 'Password') }}</span>
+                        <input type="password" value="••••••••" disabled />
+                        <small class="is-warn">{{ text('اطلب إعادة تعيين', 'Request reset') }}</small>
+                      </label>
+                    </div>
+
+                    <label class="mm-set2-toggle">
+                      <div>
+                        <strong>{{ text('التحقق بخطوتين', '2FA') }}</strong>
+                        <p>{{ text('موصى به لحساب المالك', 'Recommended for owner') }}</p>
+                      </div>
+                      <input type="checkbox" [checked]="draft.security.twoFactorEnabled" (change)="onTwoFactor($event)" />
+                      <span class="mm-set2-toggle__switch" aria-hidden="true"></span>
+                    </label>
+                  </div>
+
+                  <div class="mm-set2-group">
+                    <h3>{{ text('الجلسات', 'Sessions') }}</h3>
+                    <div class="mm-set2-list">
+                      @for (session of draft.security.sessions; track session.id) {
+                        <div class="mm-set2-row">
+                          <div class="mm-set2-row__main">
+                            <div>
+                              <strong>
+                                {{ locale.isRtl() ? session.device.ar : session.device.en }}
+                                @if (session.current) {
+                                  <span class="mm-set2-tag">{{ text('الحالي', 'Current') }}</span>
+                                }
+                              </strong>
+                              <p>{{ locale.isRtl() ? session.detail.ar : session.detail.en }}</p>
+                            </div>
+                          </div>
+                          <div class="mm-set2-row__side">
+                            @if (!session.current) {
+                              <button type="button" class="mm-set2-row__action is-ghost" (click)="facade.revokeSession(session.id)">
+                                {{ text('إنهاء', 'Revoke') }}
+                              </button>
+                            }
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                  <p class="mm-set2-hint">
+                    {{ localizedNote(data.securityPolicyNote) }}
+                  </p>
+                </div>
+              }
+
+              @case ('business-location') {
+                <div class="mm-set2-body">
+                  <div class="mm-set2-group">
+                    <h3>{{ text('الشركة', 'Business') }}</h3>
+                    <div class="mm-set2-form mm-set2-form--pairs">
+                      <label class="mm-set2-field">
+                        <span>{{ text('الاسم التجاري', 'Trade name') }}</span>
+                        <input type="text" [ngModel]="draft.business.restaurantName" (ngModelChange)="facade.patchBusiness({ restaurantName: $event })" />
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('الاسم القانوني', 'Legal name') }}</span>
+                        <input type="text" [ngModel]="draft.business.legalCompanyName" (ngModelChange)="facade.patchBusiness({ legalCompanyName: $event })" />
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('السجل التجاري', 'CR') }}</span>
+                        <input type="text" dir="ltr" [ngModel]="draft.business.commercialRegistrationNumber" (ngModelChange)="facade.patchBusiness({ commercialRegistrationNumber: $event })" />
+                        <small class="is-warn">{{ text('يتطلب مراجعة', 'Needs review') }}</small>
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('التصنيف', 'Cuisine') }}</span>
+                        <input type="text" [ngModel]="draft.business.cuisine" (ngModelChange)="facade.patchBusiness({ cuisine: $event })" />
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('المالك', 'Owner') }}</span>
+                        <input type="text" [ngModel]="draft.business.ownerName" (ngModelChange)="facade.patchBusiness({ ownerName: $event })" />
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('المدني', 'National ID') }} <i>{{ text('اختياري', 'optional') }}</i></span>
+                        <input type="text" dir="ltr" [ngModel]="draft.business.ownerNationalId" (ngModelChange)="facade.patchBusiness({ ownerNationalId: $event })" />
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('هاتف الدعم', 'Support phone') }}</span>
+                        <input type="tel" dir="ltr" [ngModel]="draft.business.supportPhone" (ngModelChange)="facade.patchBusiness({ supportPhone: $event })" />
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="mm-set2-group">
+                    <h3>{{ text('الموقع والتواصل', 'Location & contact') }}</h3>
+                    <div class="mm-set2-form mm-set2-form--pairs">
+                      <label class="mm-set2-field">
+                        <span>{{ text('الدولة', 'Country') }}</span>
+                        <select [ngModel]="draft.location.countryId" (ngModelChange)="facade.patchLocation({ countryId: $event })">
+                          @for (option of data.countries; track option.id) {
+                            <option [value]="option.id">{{ optionLabel(option) }}</option>
+                          }
+                        </select>
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('المحافظة', 'Governorate') }}</span>
+                        <select [ngModel]="draft.location.regionId" (ngModelChange)="facade.patchLocation({ regionId: $event })">
+                          @for (option of data.regions; track option.id) {
+                            <option [value]="option.id">{{ optionLabel(option) }}</option>
+                          }
+                        </select>
+                      </label>
+                      <label class="mm-set2-field mm-set2-field--full">
+                        <span>{{ text('العنوان', 'Address') }}</span>
+                        <textarea rows="2" [ngModel]="draft.location.address" (ngModelChange)="facade.patchLocation({ address: $event })"></textarea>
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('مسؤول التواصل', 'Contact person') }}</span>
+                        <input type="text" [ngModel]="draft.location.contactPersonName" (ngModelChange)="facade.patchLocation({ contactPersonName: $event })" />
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('هاتف التواصل', 'Contact phone') }}</span>
+                        <input type="tel" dir="ltr" [ngModel]="draft.location.contactPhone" (ngModelChange)="facade.patchLocation({ contactPhone: $event })" />
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('بريد التواصل', 'Contact email') }}</span>
+                        <input type="email" dir="ltr" [ngModel]="draft.location.contactEmail" (ngModelChange)="facade.patchLocation({ contactEmail: $event })" />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              }
+
+              @case ('documents-settlement') {
+                <div class="mm-set2-body">
+                  <div class="mm-set2-group">
+                    <h3>{{ text('المستندات', 'Documents') }}</h3>
+                    <div class="mm-set2-list">
+                      @for (doc of draft.documents; track doc.id) {
+                        <div class="mm-set2-row" [attr.data-status]="doc.status">
+                          <div class="mm-set2-row__main">
+                            <span class="mm-set2-row__code">{{ doc.type }}</span>
+                            <div>
+                              <strong>{{ docLabel(doc) }}</strong>
+                              <p>
+                                {{ docDetail(doc) }}
+                                @if (docExpires(doc); as expires) {
+                                  <span> · {{ expires }}</span>
+                                }
+                              </p>
+                            </div>
+                          </div>
+                          <div class="mm-set2-row__side">
+                            <span class="mm-set2-row__status" [attr.data-status]="doc.status">{{ docStatusLabel(doc.status) }}</span>
+                            <button type="button" class="mm-set2-row__action" (click)="onDocUpload(doc)">
+                              <ng-icon name="lucideUpload" class="size-3" />
+                              {{ doc.uploaded ? text('استبدال', 'Replace') : text('رفع', 'Upload') }}
+                            </button>
+                            @if (doc.uploaded) {
+                              <button type="button" class="mm-set2-row__action is-ghost" (click)="onDocRemove(doc)">
+                                {{ text('إزالة', 'Remove') }}
+                              </button>
+                            }
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="mm-set2-group">
+                    <h3>{{ text('مناطق الخدمة', 'Service areas') }}</h3>
+                    <div class="mm-set2-chips">
+                      @for (option of data.serviceAreaOptions; track option.id) {
+                        <button
+                          type="button"
+                          class="mm-set2-chip"
+                          [class.is-on]="isRegionSelected(option.id)"
+                          (click)="facade.toggleServiceRegion(option.id)"
+                        >
+                          {{ optionLabel(option) }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="mm-set2-group">
+                    <h3>{{ text('التسوية', 'Settlement') }}</h3>
+                    <div class="mm-set2-form mm-set2-form--pairs">
+                      <label class="mm-set2-field">
+                        <span>{{ text('البنك', 'Bank') }}</span>
+                        <input type="text" [ngModel]="draft.regions.bankName" (ngModelChange)="facade.patchRegions({ bankName: $event })" />
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('صاحب الحساب', 'Holder') }}</span>
+                        <input type="text" [ngModel]="draft.regions.accountHolder" (ngModelChange)="facade.patchRegions({ accountHolder: $event })" />
+                      </label>
+                      <label class="mm-set2-field mm-set2-field--full">
+                        <span>{{ text('الآيبان', 'IBAN') }}</span>
+                        <input type="text" dir="ltr" [ngModel]="draft.regions.iban" (ngModelChange)="facade.patchRegions({ iban: $event })" />
+                        <small class="is-warn">{{ text('يتطلب مراجعة', 'Needs review') }}</small>
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('يوم التحويل', 'Payout day') }}</span>
+                        <select [ngModel]="draft.regions.payoutDay" (ngModelChange)="facade.patchRegions({ payoutDay: $event })">
+                          @for (option of data.payoutDayOptions; track option.id) {
+                            <option [value]="option.id">{{ optionLabel(option) }}</option>
+                          }
+                        </select>
+                      </label>
+                      <label class="mm-set2-field">
+                        <span>{{ text('عمولة البوكس %', 'Box commission %') }}</span>
+                        <input type="number" min="0" max="100" step="0.1" dir="ltr" [ngModel]="draft.regions.commissionRatePct" (ngModelChange)="facade.patchRegions({ commissionRatePct: +$event })" />
+                        <small>{{ text('ليست عمولة اشتراك العميل', 'Not customer subscription commission') }}</small>
+                      </label>
+                    </div>
+                  </div>
+
+                  <p class="mm-set2-hint">
+                    {{ localizedNote(data.documentsPolicyNote) }}
+                  </p>
+
+                  <div class="mm-set2-links">
+                    <a routerLink="/restaurant/operations/service-regions">{{ text('خريطة المناطق', 'Regions map') }}</a>
+                    <a routerLink="/restaurant/finance/payouts">{{ text('الدفعات', 'Payouts') }}</a>
+                  </div>
+                </div>
+              }
+
+              @case ('operations-notifications') {
+                <div class="mm-set2-body">
+                  <div class="mm-set2-group">
+                    <h3>{{ text('قواعد ثابتة', 'Fixed rules') }}</h3>
+                    <div class="mm-set2-kv">
+                      <div><span>{{ text('قفل العميل', 'Customer lock') }}</span><strong>−72h</strong></div>
+                      <div><span>{{ text('تأكيد المطعم', 'Confirm window') }}</span><strong>24h</strong></div>
+                      <div><span>{{ text('تحضير نهائي', 'Final prep') }}</span><strong>−24h</strong></div>
+                    </div>
+                  </div>
+
+                  <div class="mm-set2-group">
+                    <h3>{{ text('تفضيلات التشغيل', 'Operations preferences') }}</h3>
+                    <div class="mm-set2-toggles">
+                      @for (toggle of draft.operationsToggles; track toggle.id) {
+                        <label class="mm-set2-toggle">
+                          <div>
+                            <strong>{{ toggleLabel(toggle) }}</strong>
+                            <p>{{ toggleDetail(toggle) }}</p>
+                          </div>
+                          <input type="checkbox" [checked]="toggle.enabled" (change)="onToggle('operations', toggle, $event)" />
+                          <span class="mm-set2-toggle__switch" aria-hidden="true"></span>
+                        </label>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="mm-set2-group">
+                    <h3>{{ text('قنوات التنبيه', 'Alert channels') }}</h3>
+                    <div class="mm-set2-toggles">
+                      @for (toggle of draft.notificationToggles; track toggle.id) {
+                        <label class="mm-set2-toggle">
+                          <div>
+                            <strong>{{ toggleLabel(toggle) }}</strong>
+                            <p>{{ toggleDetail(toggle) }}</p>
+                          </div>
+                          <input type="checkbox" [checked]="toggle.enabled" (change)="onToggle('notifications', toggle, $event)" />
+                          <span class="mm-set2-toggle__switch" aria-hidden="true"></span>
+                        </label>
+                      }
+                    </div>
+                  </div>
+
+                  <p class="mm-set2-hint">
+                    {{ localizedNote(data.operationsPolicyNote) }}
+                  </p>
+
+                  <div class="mm-set2-links">
+                    <a routerLink="/restaurant/operations/capacity">{{ text('السعة', 'Capacity') }}</a>
+                    <a routerLink="/restaurant/orders/labels">{{ text('الملصقات', 'Labels') }}</a>
+                  </div>
+                </div>
+              }
+
+              @default {
+                <div class="mm-set2-empty">
+                  <p>{{ text('اختر قسماً من الأعلى', 'Choose a section above') }}</p>
+                </div>
+              }
+            }
+          </div>
+        </div>
+
+        <p class="mm-due-note">
+          <ng-icon name="lucideInfo" class="size-3.5" />
+          {{ note() }}
+        </p>
+      </div>
+    }
+  }
+</div>

@@ -171,10 +171,18 @@ const loadStatementDetailPage = () =>
     (m) => m.StatementDetailPageComponent,
   );
 
-const SIDEBAR_LINK_PATHS = [
-  'finance/reports',
-  'settings',
-];
+const loadReportsPage = () =>
+  import('./reports/reports.page').then((m) => m.ReportsPageComponent);
+
+const loadReportDetailPage = () =>
+  import('./reports/report-detail.page').then(
+    (m) => m.ReportDetailPageComponent,
+  );
+
+const loadSettingsPage = () =>
+  import('./settings/settings.page').then((m) => m.SettingsPageComponent);
+
+const SIDEBAR_LINK_PATHS: string[] = [];
 
 export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   { path: '', redirectTo: 'overview', pathMatch: 'full' },
@@ -352,6 +360,18 @@ export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   {
     path: 'finance/statements',
     loadComponent: loadStatementsPage,
+  },
+  {
+    path: 'finance/reports/:reportId',
+    loadComponent: loadReportDetailPage,
+  },
+  {
+    path: 'finance/reports',
+    loadComponent: loadReportsPage,
+  },
+  {
+    path: 'settings',
+    loadComponent: loadSettingsPage,
   },
   ...SIDEBAR_LINK_PATHS.map((path) => ({
     path,
