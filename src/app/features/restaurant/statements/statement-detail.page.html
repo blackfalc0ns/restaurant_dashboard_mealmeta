@@ -1,0 +1,443 @@
+<div class="mm-due-detail__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-statements-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (notFound()) {
+    <mm-page-state
+      viewState="empty"
+      [emptyMessage]="text('الكشف غير موجود.', 'Statement not found.')"
+    />
+  }
+
+  @if (line(); as line) {
+    <div class="mm-ops-scroll">
+      <mm-ops-detail-hero
+        icon="lucideScrollText"
+        [title]="title(line)"
+        [subtitle]="detail(line)"
+        [kicker]="line.code"
+        [status]="line.status"
+      >
+        <a
+          opsBack
+          class="mm-ops-back"
+          routerLink="/restaurant/finance/statements"
+        >
+          <ng-icon
+            [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+            class="size-3.5"
+          />
+          {{ text('العودة للكشوف', 'Back to statements') }}
+        </a>
+
+        <span opsBadge class="mm-due-badge" [attr.data-status]="line.status">
+          {{ statusLabel(line.status) }}
+        </span>
+
+        <div opsStats class="contents">
+          <div class="mm-due-stat">
+            <ng-icon name="lucidePackage" class="size-4" />
+            <div class="mm-due-stat__copy">
+              <small>{{ text('البوكسات', 'Boxes') }}</small>
+              <strong>{{ line.boxesDelivered }}</strong>
+            </div>
+          </div>
+          <div class="mm-due-stat">
+            <ng-icon name="lucideReceipt" class="size-4" />
+            <div class="mm-due-stat__copy">
+              <small>{{ text('دائن', 'Credits') }}</small>
+              <strong>{{ line.creditsKd | number: '1.2-2' }} KD</strong>
+            </div>
+          </div>
+          <div class="mm-due-stat">
+            <ng-icon name="lucideHandCoins" class="size-4" />
+            <div class="mm-due-stat__copy">
+              <small>{{ text('الختامي', 'Closing') }}</small>
+              <strong>{{ line.closingBalanceKd | number: '1.2-2' }} KD</strong>
+            </div>
+          </div>
+        </div>
+      </mm-ops-detail-hero>
+
+      @if (lineNote(line); as note) {
+        <div class="mm-due-callout" [attr.data-status]="line.status">
+          <span><ng-icon name="lucideInfo" class="size-4" /></span>
+          <p>{{ note }}</p>
+        </div>
+      }
+
+      <section class="mm-due-sections">
+        <div class="mm-due-sections__head">
+          <div>
+            <h2>{{ text('نوافذ الكشف', 'Statement windows') }}</h2>
+            <p>
+              {{
+                text(
+                  'افتح كل قسم في نافذة داخل صفحة التفاصيل.',
+                  'Open each section in a window inside the detail page.'
+                )
+              }}
+            </p>
+          </div>
+        </div>
+
+        <mm-ops-toolbar>
+          <mm-ops-filters>
+            @for (item of windows(); track item.id) {
+              <button
+                type="button"
+                [class.is-active]="activeWindow() === item.id"
+                (click)="openWindow(item.id)"
+              >
+                <ng-icon [name]="item.icon" class="size-3.5" />
+                {{ windowCardTitle(item) }}
+                <b>{{ windowCount(item.id) }}</b>
+              </button>
+            }
+          </mm-ops-filters>
+        </mm-ops-toolbar>
+      </section>
+
+      <div class="mm-due-workspace">
+        @if (activeWindow(); as windowId) {
+          <section class="mm-due-window" [attr.data-window]="windowId">
+            <header class="mm-due-window__bar">
+              <div class="mm-due-window__title">
+                <span class="mm-due-window__dots" aria-hidden="true">
+                  <i></i><i></i><i></i>
+                </span>
+                <div>
+                  <h2>{{ windowTitle() }}</h2>
+                  <p>{{ windowSubtitle() }}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="mm-due-window__close"
+                [attr.aria-label]="text('إغلاق النافذة', 'Close window')"
+                (click)="closeWindow()"
+              >
+                <ng-icon name="lucideX" class="size-4" />
+              </button>
+            </header>
+
+            <div class="mm-due-window__body">
+              @switch (windowId) {
+                @case ('details') {
+                  <div class="mm-ded-summary__sheet">
+                    <div class="mm-pay-summary__amount">
+                      <small>{{ text('الرصيد الختامي', 'Closing balance') }}</small>
+                      <strong dir="ltr">
+                        {{ line.closingBalanceKd | number: '1.2-2' }}
+                        <em>KD</em>
+                      </strong>
+                    </div>
+                    <div class="mm-ded-summary__grid">
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('رقم الكشف', 'Statement code') }}</span>
+                        <strong dir="ltr">{{ line.code }}</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('الحالة', 'Status') }}</span>
+                        <strong>{{ statusLabel(line.status) }}</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('الفترة', 'Period') }}</span>
+                        <strong>{{ period(line) }}</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('تاريخ الإصدار', 'Issued') }}</span>
+                        <strong>{{ issuedAt(line) }}</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('افتتاحي', 'Opening') }}</span>
+                        <strong>{{ line.openingBalanceKd | number: '1.2-2' }} KD</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('البوكسات', 'Boxes') }}</span>
+                        <strong>{{ line.boxesDelivered }}</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('دائن', 'Credits') }}</span>
+                        <strong>{{ line.creditsKd | number: '1.2-2' }} KD</strong>
+                      </div>
+                      <div class="mm-ded-summary__row is-deduct">
+                        <span>{{ text('مدين', 'Debits') }}</span>
+                        <strong>−{{ line.debitsKd | number: '1.2-2' }} KD</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('تحويلات', 'Payouts') }}</span>
+                        <strong>{{ line.payoutsKd | number: '1.2-2' }} KD</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('آخر تحديث', 'Updated') }}</span>
+                        <strong>{{ updatedAt(line) }}</strong>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                @case ('entries') {
+                  <div class="mm-inv-lines">
+                    <mm-ops-toolbar>
+                      <label class="mm-ops-search">
+                        <ng-icon name="lucideSearch" class="size-4" />
+                        <input
+                          type="search"
+                          [placeholder]="entrySearchPlaceholder()"
+                          [ngModel]="entrySearch()"
+                          (ngModelChange)="onEntrySearch($event)"
+                        />
+                      </label>
+                    </mm-ops-toolbar>
+
+                    @if (filteredEntries().length === 0) {
+                      <p class="mm-due-empty">{{ emptyEntriesLabel() }}</p>
+                    } @else {
+                      <div class="mm-inv-lines__sheet">
+                        <div class="mm-inv-lines__list">
+                          @for (item of pagedEntries(); track item.id) {
+                            <article
+                              class="mm-inv-lines__row"
+                              [attr.data-tone]="entryTone(item.kind)"
+                            >
+                              <div class="mm-inv-lines__badge">
+                                {{ kindLabel(item.kind) }}
+                              </div>
+                              <div class="mm-inv-lines__body">
+                                <div class="mm-inv-lines__title">
+                                  <h3>{{ entryLabel(item) }}</h3>
+                                  <code dir="ltr">{{ item.code }}</code>
+                                </div>
+                                <p>
+                                  {{ entryDetail(item) }}
+                                  ·
+                                  {{ entryDate(item) }}
+                                </p>
+                                <div class="mm-inv-lines__meta">
+                                  <div>
+                                    <small>{{ text('البوكسات', 'Boxes') }}</small>
+                                    <b>{{ item.boxes && item.boxes > 0 ? item.boxes : '—' }}</b>
+                                  </div>
+                                  <div
+                                    class="mm-inv-lines__value"
+                                    [class.is-gross]="item.amountKd > 0"
+                                    [class.is-neg]="item.amountKd < 0"
+                                    [class.is-net]="item.kind === 'closing' || item.kind === 'opening'"
+                                  >
+                                    <small>{{ text('الحركة', 'Movement') }}</small>
+                                    <b dir="ltr">
+                                      <i>{{ amountSign(item.amountKd) }}</i>
+                                      {{ amountAbs(item.amountKd) | number: '1.2-2' }}
+                                      <em>KD</em>
+                                    </b>
+                                  </div>
+                                </div>
+                                <div class="mm-stmt-balance">
+                                  <small>{{ text('الرصيد بعد الحركة', 'Balance after') }}</small>
+                                  <strong dir="ltr">
+                                    {{ item.balanceAfterKd | number: '1.2-2' }} KD
+                                  </strong>
+                                </div>
+                                @if (item.linkedRoute) {
+                                  <a
+                                    class="mm-ded-summary__link"
+                                    style="margin-top: 0.4rem"
+                                    [routerLink]="item.linkedRoute"
+                                  >
+                                    {{ text('فتح المرتبط', 'Open linked') }}
+                                    <ng-icon
+                                      [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                                      class="size-3"
+                                    />
+                                  </a>
+                                }
+                              </div>
+                            </article>
+                          }
+                        </div>
+                        <footer class="mm-inv-lines__foot">
+                          <div>
+                            <small>{{ text('رصيد ختامي للكشف', 'Statement closing') }}</small>
+                            <span>
+                              {{ line.entries.length }}
+                              {{ text('حركة', 'entries') }}
+                            </span>
+                          </div>
+                          <strong dir="ltr">
+                            {{ line.closingBalanceKd | number: '1.2-2' }}
+                            <em>KD</em>
+                          </strong>
+                        </footer>
+                      </div>
+
+                      <mm-ops-pager
+                        [range]="entriesRangeText()"
+                        [currentPage]="entriesPage()"
+                        [totalPages]="entriesTotalPages()"
+                        [pages]="entriesPageNumbers()"
+                        [rtl]="locale.isRtl()"
+                        [prevLabel]="prevLabel()"
+                        [nextLabel]="nextLabel()"
+                        (prev)="prevEntriesPage()"
+                        (next)="nextEntriesPage()"
+                        (goTo)="goToEntriesPage($event)"
+                      />
+                    }
+                  </div>
+                }
+
+                @case ('summary') {
+                  <div class="mm-ded-summary mm-pay-summary">
+                    <div class="mm-ded-summary__main">
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideHandCoins" class="size-3.5" />
+                          <strong>{{ text('ملخص الأرصدة', 'Balance summary') }}</strong>
+                        </header>
+                        <div class="mm-pay-summary__amount">
+                          <small>{{ text('الختامي', 'Closing') }}</small>
+                          <strong dir="ltr">
+                            {{ line.closingBalanceKd | number: '1.2-2' }}
+                            <em>KD</em>
+                          </strong>
+                        </div>
+                        <div class="mm-ded-summary__grid">
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('الحالة', 'Status') }}</span>
+                            <strong>{{ statusLabel(line.status) }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('البوكسات', 'Boxes') }}</span>
+                            <strong>{{ line.boxesDelivered }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('دائن', 'Credits') }}</span>
+                            <strong>{{ line.creditsKd | number: '1.2-2' }} KD</strong>
+                          </div>
+                          <div class="mm-ded-summary__row is-deduct">
+                            <span>{{ text('مدين', 'Debits') }}</span>
+                            <strong>−{{ line.debitsKd | number: '1.2-2' }} KD</strong>
+                          </div>
+                        </div>
+                      </section>
+
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideHistory" class="size-3.5" />
+                          <strong>{{ text('التايملاين', 'Timeline') }}</strong>
+                        </header>
+                        <ol class="mm-ded-summary__timeline">
+                          @for (event of line.timeline; track event.id) {
+                            <li [attr.data-tone]="event.tone">
+                              <span class="mm-ded-summary__dot" aria-hidden="true"></span>
+                              <div>
+                                <div class="mm-ded-summary__event-top">
+                                  <strong>{{ eventTitle(event) }}</strong>
+                                  <small>{{ eventTime(event) }}</small>
+                                </div>
+                                @if (eventDetail(event); as detailText) {
+                                  <p>{{ detailText }}</p>
+                                }
+                              </div>
+                            </li>
+                          }
+                        </ol>
+                      </section>
+                    </div>
+
+                    <aside class="mm-ded-summary__side">
+                      @if (impactNote(line); as impact) {
+                        <section class="mm-ded-summary__sheet">
+                          <header class="mm-ded-summary__head">
+                            <ng-icon name="lucideScrollText" class="size-3.5" />
+                            <strong>{{ text('أثر الكشف', 'Statement impact') }}</strong>
+                          </header>
+                          <p class="mm-ded-summary__copy">{{ impact }}</p>
+                        </section>
+                      }
+
+                      @if (nextAction(line); as action) {
+                        <section class="mm-ded-summary__sheet">
+                          <header class="mm-ded-summary__head">
+                            <ng-icon name="lucideInfo" class="size-3.5" />
+                            <strong>{{ text('الخطوة التالية', 'Next step') }}</strong>
+                          </header>
+                          <p class="mm-ded-summary__copy">{{ action }}</p>
+                        </section>
+                      }
+
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideReceipt" class="size-3.5" />
+                          <strong>{{ text('روابط', 'Links') }}</strong>
+                        </header>
+                        <p class="mm-ded-summary__copy">{{ policyNote() }}</p>
+                        <div class="mm-ded-summary__links">
+                          <a class="mm-ded-summary__link" routerLink="/restaurant/finance/invoices">
+                            {{ text('الفواتير', 'Invoices') }}
+                            <ng-icon
+                              [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                              class="size-3"
+                            />
+                          </a>
+                          <a class="mm-ded-summary__link" routerLink="/restaurant/finance/payouts">
+                            {{ text('الدفعات', 'Payouts') }}
+                            <ng-icon
+                              [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                              class="size-3"
+                            />
+                          </a>
+                        </div>
+                      </section>
+                    </aside>
+                  </div>
+                }
+              }
+            </div>
+          </section>
+        } @else {
+          <div class="mm-due-window mm-due-window--empty">
+            <header class="mm-due-window__bar">
+              <div class="mm-due-window__title">
+                <span class="mm-due-window__dots" aria-hidden="true">
+                  <i></i><i></i><i></i>
+                </span>
+                <div>
+                  <h2>{{ text('نافذة الكشف', 'Statement window') }}</h2>
+                  <p>
+                    {{
+                      text(
+                        'لم يتم اختيار نافذة بعد.',
+                        'No window selected yet.'
+                      )
+                    }}
+                  </p>
+                </div>
+              </div>
+            </header>
+            <div class="mm-due-window__body">
+              <p class="mm-due-empty">
+                {{
+                  text(
+                    'اضغط على أحد الأقسام أعلاه لفتح نافذته هنا داخل الصفحة.',
+                    'Click one of the sections above to open its window here inside the page.'
+                  )
+                }}
+              </p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

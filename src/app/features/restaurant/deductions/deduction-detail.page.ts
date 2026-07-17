@@ -356,12 +356,54 @@ export class DeductionDetailPageComponent implements OnInit {
     return line.note ? pickLocale(line.note, this.locale.locale()) : '';
   }
 
+  reason(line: DeductionLine): string {
+    return line.reason ? pickLocale(line.reason, this.locale.locale()) : '';
+  }
+
+  impactNote(line: DeductionLine): string {
+    return line.impactNote
+      ? pickLocale(line.impactNote, this.locale.locale())
+      : '';
+  }
+
+  nextAction(line: DeductionLine): string {
+    return line.nextAction
+      ? pickLocale(line.nextAction, this.locale.locale())
+      : '';
+  }
+
+  decidedBy(line: DeductionLine): string {
+    return line.decidedBy
+      ? pickLocale(line.decidedBy, this.locale.locale())
+      : '';
+  }
+
+  openedAt(line: DeductionLine): string {
+    return line.openedAtLabel
+      ? pickLocale(line.openedAtLabel, this.locale.locale())
+      : '';
+  }
+
+  coveragePct(line: DeductionLine): number {
+    if (typeof line.coveragePct === 'number') return line.coveragePct;
+    if (line.grossKd <= 0) return 0;
+    return Math.round((line.amountKd / line.grossKd) * 1000) / 10;
+  }
+
+  remainingKd(line: DeductionLine): number {
+    return Math.max(0, Math.round((line.grossKd - line.amountKd) * 100) / 100);
+  }
+
   eventTitle(event: DeductionTimelineEvent): string {
     return pickLocale(event.title, this.locale.locale());
   }
 
   eventTime(event: DeductionTimelineEvent): string {
     return pickLocale(event.timeLabel, this.locale.locale());
+  }
+
+  eventDetail(event: DeductionTimelineEvent): string {
+    return event.detail ? pickLocale(event.detail, this.locale.locale()) : '';
   }
 
   contents(box: DeductionBox): string {

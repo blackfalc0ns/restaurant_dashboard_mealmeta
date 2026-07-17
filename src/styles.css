@@ -13094,8 +13094,31 @@
     @apply border-[#cfe9da] bg-[#f8fbf9];
   }
 
-  .mm-due-card[data-status='reversed'] {
+  .mm-due-card[data-status='reversed'],
+  .mm-due-card[data-status='void'] {
     @apply border-[#e4eee8] bg-[#f8faf9];
+  }
+
+  .mm-due-card[data-status='draft'] {
+    @apply border-[#e4eee8] bg-[#fbfdfc];
+  }
+
+  .mm-due-card[data-status='issued'] {
+    @apply border-[#b7dff5] bg-[#f3faff];
+  }
+
+  .mm-due-card[data-status='overdue'],
+  .mm-due-card[data-status='failed'] {
+    @apply border-[#f5c2c2] bg-[#fff8f8];
+  }
+
+  .mm-due-card[data-status='processing'] {
+    @apply border-[#b7dff5] bg-[#f3faff];
+  }
+
+  .mm-due-card[data-status='completed'],
+  .mm-due-card[data-status='finalized'] {
+    @apply border-[#cfe9da] bg-[#f8fbf9];
   }
 
   .mm-due-card__topline {
@@ -13132,8 +13155,28 @@
     @apply bg-[#fff7e8] text-[#d97706];
   }
 
-  .mm-due-badge[data-status='reversed'] {
+  .mm-due-badge[data-status='reversed'],
+  .mm-due-badge[data-status='void'],
+  .mm-due-badge[data-status='draft'] {
     @apply bg-[#eef2f0] text-mm-ink-muted;
+  }
+
+  .mm-due-badge[data-status='issued'] {
+    @apply bg-[#e8f5fc] text-[#0284c7];
+  }
+
+  .mm-due-badge[data-status='overdue'],
+  .mm-due-badge[data-status='failed'] {
+    @apply bg-[#ffeded] text-[#c43d3d];
+  }
+
+  .mm-due-badge[data-status='processing'] {
+    @apply bg-[#e8f5fc] text-[#0284c7];
+  }
+
+  .mm-due-badge[data-status='completed'],
+  .mm-due-badge[data-status='finalized'] {
+    @apply bg-[#edf8f1] text-mm-primary;
   }
 
   .mm-due-card h3 {
@@ -13355,6 +13398,238 @@
     @apply mt-0.5 block text-[0.625rem] font-bold text-mm-ink-muted;
   }
 
+  .mm-due-timeline__detail {
+    @apply m-0 mt-1.5 text-[0.75rem] font-medium leading-relaxed text-mm-ink-muted;
+  }
+
+  .mm-due-summary-block {
+    @apply mt-3 rounded-xl border border-[#e8f0eb] bg-[#fbfdfc] px-3 py-3;
+  }
+
+  .mm-due-summary-block small {
+    @apply block text-[0.625rem] font-extrabold uppercase tracking-wide text-mm-ink-muted;
+  }
+
+  .mm-due-summary-block p {
+    @apply m-0 mt-1.5 text-[0.8125rem] font-medium leading-relaxed text-mm-secondary;
+  }
+
+  .mm-due-summary-boxes {
+    @apply grid gap-2.5;
+  }
+
+  .mm-due-summary-box {
+    @apply flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#e8f0eb] bg-[#fbfdfc] px-3 py-3;
+  }
+
+  .mm-due-summary-box strong {
+    @apply block font-mono text-[0.75rem] font-extrabold text-mm-primary;
+  }
+
+  .mm-due-summary-box small {
+    @apply mt-0.5 block text-[0.6875rem] font-medium text-mm-ink-muted;
+  }
+
+  .mm-due-summary-box__amounts {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .mm-due-summary-box__amounts > span {
+    @apply inline-flex items-center gap-1 rounded-lg border border-[#e4eee8] bg-white px-2.5 py-1 text-[0.625rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-due-summary-box__amounts b {
+    @apply font-extrabold text-mm-secondary;
+  }
+
+  .mm-due-summary-box__amounts > span.is-deduct {
+    @apply border-[#f5ddb0] bg-[#fffdf8] text-[#9a3412];
+  }
+
+  .mm-due-summary-box__amounts > span.is-deduct b {
+    @apply text-[#b45309];
+  }
+
+  /* Deduction / finance summary — dense flush layout */
+  .mm-ded-summary {
+    @apply grid gap-2.5 xl:grid-cols-[minmax(0,1fr)_15rem] xl:items-start;
+  }
+
+  .mm-ded-summary__main,
+  .mm-ded-summary__side {
+    @apply flex min-w-0 flex-col gap-2.5;
+  }
+
+  .mm-ded-summary__sheet {
+    @apply overflow-hidden rounded-xl border border-[#d9ebe1] bg-white;
+  }
+
+  .mm-ded-summary__head {
+    @apply flex items-center gap-1.5 border-b border-[#e8f0eb] bg-[#f7fbf8] px-3 py-2 text-mm-primary;
+  }
+
+  .mm-ded-summary__head strong {
+    @apply text-[0.75rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-ded-summary__head .mm-ded-summary__link {
+    @apply ms-auto;
+  }
+
+  .mm-ded-summary__grid {
+    @apply grid grid-cols-2;
+  }
+
+  .mm-ded-summary__stack {
+    @apply grid border-t border-[#edf3ef];
+  }
+
+  .mm-ded-summary__row {
+    @apply flex flex-col items-start justify-center gap-0.5 border-b border-[#edf3ef] px-3 py-2 sm:odd:border-e sm:odd:border-e-[#edf3ef];
+  }
+
+  .mm-ded-summary__row--full {
+    @apply col-span-2 sm:!border-e-0;
+  }
+
+  .mm-ded-summary__sheet > .mm-ded-summary__grid:last-child > .mm-ded-summary__row:last-child,
+  .mm-ded-summary__sheet > .mm-ded-summary__stack:last-child > .mm-ded-summary__row:last-child,
+  .mm-ded-summary__sheet > .mm-ded-summary__grid:last-child > .mm-ded-summary__row:nth-last-child(2):nth-child(odd) {
+    @apply border-b-0;
+  }
+
+  .mm-ded-summary__row > span {
+    @apply text-[0.5625rem] font-extrabold tracking-wide text-mm-ink-muted;
+  }
+
+  .mm-ded-summary__row > strong {
+    @apply max-w-full truncate text-start text-[0.8125rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-ded-summary__row.is-deduct {
+    @apply bg-[#fffdf8];
+  }
+
+  .mm-ded-summary__row.is-deduct > strong {
+    @apply text-[#b45309];
+  }
+
+  .mm-ded-summary__note {
+    @apply border-t border-[#edf3ef] px-3 py-2;
+  }
+
+  .mm-ded-summary__note small {
+    @apply block text-[0.5625rem] font-extrabold tracking-wide text-mm-ink-muted;
+  }
+
+  .mm-ded-summary__note p {
+    @apply m-0 mt-1 text-[0.75rem] font-medium leading-snug text-mm-secondary;
+  }
+
+  .mm-ded-summary__copy {
+    @apply m-0 px-3 py-2 text-[0.75rem] font-medium leading-snug text-mm-ink-muted;
+  }
+
+  .mm-due-window__body:has(.mm-ded-summary) {
+    @apply gap-0 p-2.5;
+  }
+
+  .mm-ded-summary__boxes {
+    @apply grid;
+  }
+
+  .mm-ded-summary__box {
+    @apply flex items-center justify-between gap-3 border-b border-[#edf3ef] px-3 py-2 last:border-b-0;
+  }
+
+  .mm-ded-summary__box-main strong {
+    @apply block font-mono text-[0.75rem] font-extrabold text-mm-primary;
+  }
+
+  .mm-ded-summary__box-main small {
+    @apply mt-0.5 block text-[0.6875rem] font-medium text-mm-ink-muted;
+  }
+
+  .mm-ded-summary__box-vals {
+    @apply flex shrink-0 items-center gap-2 text-[0.75rem];
+  }
+
+  .mm-ded-summary__box-vals > span {
+    @apply font-bold text-mm-secondary;
+  }
+
+  .mm-ded-summary__box-vals > b {
+    @apply font-extrabold text-[#b45309];
+  }
+
+  .mm-ded-summary__timeline {
+    @apply m-0 list-none p-0;
+  }
+
+  .mm-ded-summary__timeline > li {
+    @apply relative flex gap-2 border-b border-[#edf3ef] px-3 py-2 last:border-b-0;
+  }
+
+  .mm-ded-summary__dot {
+    @apply mt-1 size-1.5 shrink-0 rounded-full bg-mm-primary;
+  }
+
+  .mm-ded-summary__timeline > li[data-tone='warn'] .mm-ded-summary__dot {
+    @apply bg-[#d97706];
+  }
+
+  .mm-ded-summary__timeline > li[data-tone='danger'] .mm-ded-summary__dot {
+    @apply bg-[#c43d3d];
+  }
+
+  .mm-ded-summary__timeline > li[data-tone='neutral'] .mm-ded-summary__dot {
+    @apply bg-[#94a3b8];
+  }
+
+  .mm-ded-summary__event-top {
+    @apply flex flex-wrap items-baseline gap-x-2 gap-y-0.5;
+  }
+
+  .mm-ded-summary__event-top strong {
+    @apply text-[0.75rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-ded-summary__event-top small {
+    @apply text-[0.5625rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-ded-summary__timeline p {
+    @apply m-0 mt-0.5 max-w-[36rem] text-[0.6875rem] font-medium leading-snug text-mm-ink-muted;
+  }
+
+  .mm-pay-summary__amount {
+    @apply flex items-center justify-between gap-3 border-b border-[#cfe9da] bg-[#edf8f1] px-3 py-2.5;
+  }
+
+  .mm-pay-summary__amount small {
+    @apply text-[0.625rem] font-extrabold text-mm-ink-muted;
+  }
+
+  .mm-pay-summary__amount strong {
+    @apply text-[1.05rem] font-black tabular-nums text-mm-primary;
+  }
+
+  .mm-pay-summary__amount em {
+    @apply ms-1 text-[0.6875rem] font-bold not-italic text-mm-ink-muted;
+  }
+
+  .mm-ded-summary__link {
+    @apply inline-flex items-center gap-1 border-0 bg-transparent p-0 text-[0.6875rem] font-extrabold text-mm-primary no-underline hover:text-mm-secondary;
+  }
+
+  .mm-ded-summary__link--block {
+    @apply w-full justify-between border-t border-[#edf3ef] px-3.5 py-2.5;
+  }
+
+  .mm-ded-summary__links {
+    @apply flex flex-wrap gap-x-4 gap-y-1 border-t border-[#edf3ef] px-3.5 py-2.5;
+  }
+
   .mm-due-side-head {
     @apply mb-3 flex items-center gap-2 text-mm-primary;
   }
@@ -13495,6 +13770,344 @@
 
   .mm-ops-detail-hero[data-status='reversed'] {
     @apply border-[#e4eee8];
+  }
+
+  .mm-ops-detail-hero[data-status='reversed'],
+  .mm-ops-detail-hero[data-status='void'],
+  .mm-ops-detail-hero[data-status='draft'] {
+    @apply border-[#e4eee8];
+  }
+
+  .mm-ops-detail-hero[data-status='issued'] {
+    @apply border-[#b7dff5];
+  }
+
+  .mm-ops-detail-hero[data-status='overdue'],
+  .mm-ops-detail-hero[data-status='failed'] {
+    @apply border-[#f5c2c2];
+  }
+
+  .mm-ops-detail-hero[data-status='processing'] {
+    @apply border-[#b7dff5];
+  }
+
+  .mm-ops-detail-hero[data-status='completed'],
+  .mm-ops-detail-hero[data-status='finalized'] {
+    @apply border-[#d9ebe1];
+  }
+
+  .mm-due-callout[data-status='failed'] {
+    @apply border-[#f5c2c2] bg-[#fff8f8] text-[#9a3412];
+  }
+
+  .mm-due-callout[data-status='processing'],
+  .mm-due-callout[data-status='scheduled'] {
+    @apply border-[#b7dff5] bg-[#f3faff];
+  }
+
+  .mm-due-callout[data-status='completed'],
+  .mm-due-callout[data-status='finalized'] {
+    @apply border-[#cfe9da] bg-[#f3fbf6];
+  }
+
+  .mm-stmt-balance {
+    @apply mt-2.5 flex flex-wrap items-center justify-between gap-2 border-t border-[#edf3ef] pt-2;
+  }
+
+  .mm-stmt-balance > small {
+    @apply text-[0.6875rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-stmt-balance > strong {
+    @apply text-[0.875rem] font-black tabular-nums text-mm-secondary;
+  }
+
+  .mm-pay-proof-tag {
+    @apply !border-[#cfe9da] !bg-[#edf8f1] !text-mm-primary;
+  }
+
+  .mm-pay-proof {
+    @apply flex flex-col gap-2.5;
+  }
+
+  .mm-pay-proof__head {
+    @apply flex flex-wrap items-start gap-2.5 rounded-xl border border-[#d9ebe1] bg-[#f7fbf8] px-3 py-2.5;
+  }
+
+  .mm-pay-proof__icon {
+    @apply grid size-8 shrink-0 place-items-center rounded-lg bg-[#edf8f1] text-mm-primary;
+  }
+
+  .mm-pay-proof__head strong {
+    @apply block text-[0.8125rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-pay-proof__head p {
+    @apply m-0 mt-0.5 text-[0.6875rem] font-medium text-mm-ink-muted;
+  }
+
+  .mm-pay-proof__badge {
+    @apply ms-auto inline-flex rounded-md px-2 py-1 text-[0.625rem] font-extrabold;
+  }
+
+  .mm-pay-proof__badge[data-status='ready'] {
+    @apply bg-[#edf8f1] text-mm-primary;
+  }
+
+  .mm-pay-proof__badge[data-status='pending'] {
+    @apply bg-[#fff7e8] text-[#d97706];
+  }
+
+  .mm-pay-proof__badge[data-status='missing'] {
+    @apply bg-[#eef2f0] text-mm-ink-muted;
+  }
+
+  .mm-pay-proof__file {
+    @apply flex flex-wrap items-center gap-2.5 rounded-xl border border-[#d9ebe1] bg-white px-3 py-2.5;
+  }
+
+  .mm-pay-proof__file[data-status='pending'],
+  .mm-pay-proof__file[data-status='missing'] {
+    @apply border-dashed bg-[#fbfdfc];
+  }
+
+  .mm-pay-proof__file-icon {
+    @apply grid size-8 shrink-0 place-items-center rounded-lg bg-[#eef2f0] text-mm-secondary;
+  }
+
+  .mm-pay-proof__file[data-status='ready'] .mm-pay-proof__file-icon {
+    @apply bg-[#edf8f1] text-mm-primary;
+  }
+
+  .mm-pay-proof__file-copy {
+    @apply min-w-0 flex-1;
+  }
+
+  .mm-pay-proof__file-copy strong {
+    @apply block truncate font-mono text-[0.75rem] font-extrabold text-mm-secondary;
+  }
+
+  .mm-pay-proof__file-copy small {
+    @apply mt-0.5 block text-[0.625rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-pay-proof__download {
+    @apply inline-flex items-center gap-1.5 rounded-lg border-0 bg-mm-primary px-2.5 py-1.5 text-[0.6875rem] font-extrabold text-white hover:bg-mm-secondary;
+  }
+
+  .mm-pay-proof__wait {
+    @apply text-[0.6875rem] font-bold text-mm-ink-muted;
+  }
+
+  .mm-pay-proof__note {
+    @apply m-0 inline-flex items-start gap-1.5 text-[0.6875rem] font-medium leading-snug text-mm-ink-muted;
+  }
+
+  .mm-ded-summary__box-vals > b.is-neg {
+    @apply text-[#b45309];
+  }
+
+  /* Invoice lines — clear statement layout */
+  .mm-inv-lines {
+    @apply flex flex-col gap-2;
+  }
+
+  .mm-inv-lines__formula {
+    @apply flex flex-wrap items-stretch gap-1 rounded-xl border border-[#d9ebe1] bg-[#f7fbf8] p-1.5;
+  }
+
+  .mm-inv-lines__formula-item {
+    @apply min-w-[4rem] flex-1 rounded-lg border border-[#e4eee8] bg-white px-2 py-1.5;
+  }
+
+  .mm-inv-lines__formula-item small {
+    @apply block text-[0.5625rem] font-extrabold text-mm-ink-muted;
+  }
+
+  .mm-inv-lines__formula-item strong {
+    @apply mt-0.5 block text-[0.8125rem] font-black tabular-nums text-mm-secondary;
+  }
+
+  .mm-inv-lines__formula-item.is-gross {
+    @apply border-[#cfe9da] bg-[#edf8f1];
+  }
+
+  .mm-inv-lines__formula-item.is-gross strong {
+    @apply text-mm-primary;
+  }
+
+  .mm-inv-lines__formula-item.is-out {
+    @apply border-[#f5ddb0] bg-[#fffdf8];
+  }
+
+  .mm-inv-lines__formula-item.is-out strong {
+    @apply text-[#b45309];
+  }
+
+  .mm-inv-lines__formula-item.is-net {
+    @apply border-mm-primary/30 bg-[#015329];
+  }
+
+  .mm-inv-lines__formula-item.is-net small {
+    @apply text-white/70;
+  }
+
+  .mm-inv-lines__formula-item.is-net strong {
+    @apply text-white;
+  }
+
+  .mm-inv-lines__op {
+    @apply grid place-items-center self-center px-0.5 text-[0.8125rem] font-black text-mm-ink-muted;
+  }
+
+  .mm-inv-lines__op.is-eq {
+    @apply text-mm-primary;
+  }
+
+  .mm-inv-lines__sheet {
+    @apply overflow-hidden rounded-xl border border-[#d9ebe1] bg-white;
+  }
+
+  .mm-inv-lines__list {
+    @apply grid;
+  }
+
+  .mm-inv-lines__row {
+    @apply grid gap-2 border-b border-[#edf3ef] px-3 py-2.5 last:border-b-0 sm:grid-cols-[4.5rem_minmax(0,1fr)] sm:items-start;
+  }
+
+  .mm-inv-lines__row[data-tone='gross'] {
+    @apply bg-[#f8fbf9];
+  }
+
+  .mm-inv-lines__row[data-tone='commission'],
+  .mm-inv-lines__row[data-tone='deduction'],
+  .mm-inv-lines__row[data-tone='fee'] {
+    @apply bg-[#fffdf8];
+  }
+
+  .mm-inv-lines__row[data-tone='net'] {
+    @apply bg-[#edf8f1];
+  }
+
+  .mm-inv-lines__badge {
+    @apply inline-flex h-fit w-fit items-center justify-center rounded-md px-2 py-1 text-[0.625rem] font-black tracking-wide;
+  }
+
+  .mm-inv-lines__row[data-tone='gross'] .mm-inv-lines__badge {
+    @apply bg-[#04994e] text-white;
+  }
+
+  .mm-inv-lines__row[data-tone='commission'] .mm-inv-lines__badge,
+  .mm-inv-lines__row[data-tone='deduction'] .mm-inv-lines__badge,
+  .mm-inv-lines__row[data-tone='fee'] .mm-inv-lines__badge {
+    @apply bg-[#d97706] text-white;
+  }
+
+  .mm-inv-lines__row[data-tone='net'] .mm-inv-lines__badge {
+    @apply bg-[#015329] text-white;
+  }
+
+  .mm-inv-lines__body {
+    @apply min-w-0;
+  }
+
+  .mm-inv-lines__title {
+    @apply flex flex-wrap items-center gap-1.5;
+  }
+
+  .mm-inv-lines__title h3 {
+    @apply m-0 text-[0.8125rem] font-black text-mm-secondary;
+  }
+
+  .mm-inv-lines__title code {
+    @apply rounded px-1 py-0.5 font-mono text-[0.5625rem] font-bold text-mm-ink-muted bg-[#eef2f0];
+  }
+
+  .mm-inv-lines__body > p {
+    @apply m-0 mt-0.5 text-[0.6875rem] font-medium leading-snug text-mm-ink-muted;
+  }
+
+  .mm-inv-lines__meta {
+    @apply mt-2 grid grid-cols-2 gap-1.5;
+  }
+
+  .mm-inv-lines__meta > div {
+    @apply rounded-lg border border-[#e4eee8] bg-white px-2.5 py-1.5;
+  }
+
+  .mm-inv-lines__meta small {
+    @apply block text-[0.5625rem] font-extrabold text-mm-ink-muted;
+  }
+
+  .mm-inv-lines__meta b {
+    @apply mt-0.5 block text-[0.8125rem] font-black tabular-nums text-mm-secondary;
+  }
+
+  .mm-inv-lines__value b {
+    @apply inline-flex items-baseline gap-0.5;
+  }
+
+  .mm-inv-lines__value b > i {
+    @apply not-italic text-[0.8125rem] font-black;
+  }
+
+  .mm-inv-lines__value b > em {
+    @apply text-[0.5625rem] font-bold not-italic text-mm-ink-muted;
+  }
+
+  .mm-inv-lines__value.is-gross {
+    @apply !border-[#cfe9da] !bg-[#edf8f1];
+  }
+
+  .mm-inv-lines__value.is-gross b {
+    @apply !text-mm-primary;
+  }
+
+  .mm-inv-lines__value.is-neg {
+    @apply !border-[#f5ddb0] !bg-[#fff7e8];
+  }
+
+  .mm-inv-lines__value.is-neg b,
+  .mm-inv-lines__value.is-neg b > i {
+    @apply !text-[#b45309];
+  }
+
+  .mm-inv-lines__value.is-net {
+    @apply !border-[#04994e] !bg-[#edf8f1];
+  }
+
+  .mm-inv-lines__value.is-net b,
+  .mm-inv-lines__value.is-net b > i {
+    @apply !text-mm-primary;
+  }
+
+  .mm-inv-lines__foot {
+    @apply flex flex-wrap items-center justify-between gap-2 border-t-2 border-[#04994e] bg-[#015329] px-3 py-2.5 text-white;
+  }
+
+  .mm-inv-lines__foot small {
+    @apply block text-[0.625rem] font-extrabold text-white/70;
+  }
+
+  .mm-inv-lines__foot > div > span {
+    @apply mt-0.5 block text-[0.6875rem] font-bold text-white/90;
+  }
+
+  .mm-inv-lines__foot > strong {
+    @apply text-[1.05rem] font-black tabular-nums tracking-tight text-white;
+  }
+
+  .mm-inv-lines__foot > strong > em {
+    @apply ms-1 text-[0.625rem] font-bold not-italic text-white/70;
+  }
+
+  .mm-due-window__body:has(.mm-inv-lines) {
+    @apply gap-2 p-2.5;
+  }
+
+  .mm-due-window__body:has(.mm-ded-summary__sheet):not(:has(.mm-ded-summary)) {
+    @apply gap-3 p-3;
   }
 
   .mm-due-workspace {

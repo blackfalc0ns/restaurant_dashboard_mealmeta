@@ -20,6 +20,7 @@ export interface DeductionTimelineEvent {
   title: LocalizedText;
   timeLabel: LocalizedText;
   tone: 'ok' | 'warn' | 'danger' | 'neutral';
+  detail?: LocalizedText;
 }
 
 /** Box affected by a deduction. No customer PII. */
@@ -44,12 +45,23 @@ export interface DeductionLine {
   detail: LocalizedText;
   periodLabel: LocalizedText;
   complaintCode?: string;
+  /** Linked restaurant payable / due line code. */
+  linkedDueCode?: string;
+  /** Route id for the linked due detail page. */
+  linkedDueId?: string;
   boxesAffected: number;
   /** Gross box amount related to the deduction. */
   grossKd: number;
   /** Amount deducted from restaurant settlement. */
   amountKd: number;
+  /** Share of related gross covered by the deduction (0–100). */
+  coveragePct?: number;
+  openedAtLabel?: LocalizedText;
   updatedAtLabel: LocalizedText;
+  reason?: LocalizedText;
+  impactNote?: LocalizedText;
+  nextAction?: LocalizedText;
+  decidedBy?: LocalizedText;
   note?: LocalizedText;
   boxes?: DeductionBox[];
   timeline: DeductionTimelineEvent[];

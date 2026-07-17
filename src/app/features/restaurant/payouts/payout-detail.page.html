@@ -1,0 +1,575 @@
+<div class="mm-due-detail__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-payouts-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (notFound()) {
+    <mm-page-state
+      viewState="empty"
+      [emptyMessage]="text('الدفعة غير موجودة.', 'Payout not found.')"
+    />
+  }
+
+  @if (line(); as line) {
+    <div class="mm-ops-scroll">
+      <mm-ops-detail-hero
+        icon="lucideLandmark"
+        [title]="title(line)"
+        [subtitle]="detail(line)"
+        [kicker]="line.code"
+        [status]="line.status"
+      >
+        <a opsBack class="mm-ops-back" routerLink="/restaurant/finance/payouts">
+          <ng-icon
+            [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+            class="size-3.5"
+          />
+          {{ text('العودة للدفعات', 'Back to payouts') }}
+        </a>
+
+        <span opsBadge class="mm-due-badge" [attr.data-status]="line.status">
+          {{ statusLabel(line.status) }}
+        </span>
+
+        <div opsStats class="contents">
+          <div class="mm-due-stat">
+            <ng-icon name="lucidePackage" class="size-4" />
+            <div class="mm-due-stat__copy">
+              <small>{{ text('البوكسات', 'Boxes') }}</small>
+              <strong>{{ line.boxesCovered }}</strong>
+            </div>
+          </div>
+          <div class="mm-due-stat">
+            <ng-icon name="lucideHandCoins" class="size-4" />
+            <div class="mm-due-stat__copy">
+              <small>{{ text('المبلغ', 'Amount') }}</small>
+              <strong>{{ line.amountKd | number: '1.2-2' }} KD</strong>
+            </div>
+          </div>
+          <div class="mm-due-stat">
+            <ng-icon name="lucideLandmark" class="size-4" />
+            <div class="mm-due-stat__copy">
+              <small>{{ text('الحساب', 'Account') }}</small>
+              <strong dir="ltr">{{ line.accountMasked }}</strong>
+            </div>
+          </div>
+        </div>
+      </mm-ops-detail-hero>
+
+      @if (lineNote(line); as note) {
+        <div class="mm-due-callout" [attr.data-status]="line.status">
+          <span><ng-icon name="lucideInfo" class="size-4" /></span>
+          <p>{{ note }}</p>
+        </div>
+      }
+
+      <section class="mm-due-sections">
+        <div class="mm-due-sections__head">
+          <div>
+            <h2>{{ text('نوافذ الدفعة', 'Payout windows') }}</h2>
+            <p>
+              {{
+                text(
+                  'افتح كل قسم في نافذة داخل صفحة التفاصيل.',
+                  'Open each section in a window inside the detail page.'
+                )
+              }}
+            </p>
+          </div>
+        </div>
+
+        <mm-ops-toolbar>
+          <mm-ops-filters>
+            @for (item of windows(); track item.id) {
+              <button
+                type="button"
+                [class.is-active]="activeWindow() === item.id"
+                (click)="openWindow(item.id)"
+              >
+                <ng-icon [name]="item.icon" class="size-3.5" />
+                {{ windowCardTitle(item) }}
+                <b>{{ windowCount(item.id) }}</b>
+              </button>
+            }
+          </mm-ops-filters>
+        </mm-ops-toolbar>
+      </section>
+
+      <div class="mm-due-workspace">
+        @if (activeWindow(); as windowId) {
+          <section class="mm-due-window" [attr.data-window]="windowId">
+            <header class="mm-due-window__bar">
+              <div class="mm-due-window__title">
+                <span class="mm-due-window__dots" aria-hidden="true">
+                  <i></i><i></i><i></i>
+                </span>
+                <div>
+                  <h2>{{ windowTitle() }}</h2>
+                  <p>{{ windowSubtitle() }}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="mm-due-window__close"
+                [attr.aria-label]="text('إغلاق النافذة', 'Close window')"
+                (click)="closeWindow()"
+              >
+                <ng-icon name="lucideX" class="size-4" />
+              </button>
+            </header>
+
+            <div class="mm-due-window__body">
+              @switch (windowId) {
+                @case ('details') {
+                  <div class="mm-ded-summary__sheet">
+                    <div class="mm-ded-summary__grid">
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('رقم الدفعة', 'Payout code') }}</span>
+                        <strong dir="ltr">{{ line.code }}</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('الحالة', 'Status') }}</span>
+                        <strong>{{ statusLabel(line.status) }}</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('الفترة', 'Period') }}</span>
+                        <strong>{{ period(line) }}</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('موعد التحويل', 'Scheduled') }}</span>
+                        <strong>{{ scheduledAt(line) }}</strong>
+                      </div>
+                      @if (completedAt(line); as done) {
+                        <div class="mm-ded-summary__row">
+                          <span>{{ text('تاريخ الإكمال', 'Completed') }}</span>
+                          <strong>{{ done }}</strong>
+                        </div>
+                      }
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('آخر تحديث', 'Updated') }}</span>
+                        <strong>{{ updatedAt(line) }}</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('الطريقة', 'Method') }}</span>
+                        <strong>{{ method(line) }}</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('البنك', 'Bank') }}</span>
+                        <strong>{{ bank(line) }}</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('الحساب', 'Account') }}</span>
+                        <strong dir="ltr">{{ line.accountMasked }}</strong>
+                      </div>
+                      <div class="mm-ded-summary__row">
+                        <span>{{ text('البوكسات', 'Boxes') }}</span>
+                        <strong>{{ line.boxesCovered }}</strong>
+                      </div>
+                      <div class="mm-ded-summary__row mm-ded-summary__row--full">
+                        <span>{{ text('مبلغ التحويل', 'Transfer amount') }}</span>
+                        <strong>{{ line.amountKd | number: '1.2-2' }} KD</strong>
+                      </div>
+                      @if (line.transferRef) {
+                        <div class="mm-ded-summary__row">
+                          <span>{{ text('مرجع التحويل', 'Transfer ref') }}</span>
+                          <strong dir="ltr">{{ line.transferRef }}</strong>
+                        </div>
+                      }
+                      @if (line.linkedInvoiceCode) {
+                        <div class="mm-ded-summary__row">
+                          <span>{{ text('فاتورة مرتبطة', 'Linked invoice') }}</span>
+                          <strong dir="ltr">{{ line.linkedInvoiceCode }}</strong>
+                        </div>
+                      }
+                      @if (line.linkedDueCode) {
+                        <div class="mm-ded-summary__row">
+                          <span>{{ text('مستحق مرتبط', 'Linked due') }}</span>
+                          <strong dir="ltr">{{ line.linkedDueCode }}</strong>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+
+                @case ('allocations') {
+                  <div class="mm-inv-lines">
+                    <mm-ops-toolbar>
+                      <label class="mm-ops-search">
+                        <ng-icon name="lucideSearch" class="size-4" />
+                        <input
+                          type="search"
+                          [placeholder]="allocSearchPlaceholder()"
+                          [ngModel]="allocSearch()"
+                          (ngModelChange)="onAllocSearch($event)"
+                        />
+                      </label>
+                    </mm-ops-toolbar>
+
+                    @if (filteredAllocations().length === 0) {
+                      <p class="mm-due-empty">{{ emptyAllocLabel() }}</p>
+                    } @else {
+                      <div class="mm-inv-lines__sheet">
+                        <div class="mm-inv-lines__list">
+                          @for (item of pagedAllocations(); track item.id) {
+                            <article
+                              class="mm-inv-lines__row"
+                              [attr.data-tone]="item.kind === 'invoice' ? 'gross' : 'net'"
+                            >
+                              <div class="mm-inv-lines__badge">
+                                {{ kindLabel(item.kind) }}
+                              </div>
+                              <div class="mm-inv-lines__body">
+                                <div class="mm-inv-lines__title">
+                                  <h3>{{ allocLabel(item) }}</h3>
+                                  <code dir="ltr">{{ item.code }}</code>
+                                </div>
+                                <p>{{ allocDetail(item) }}</p>
+                                <div class="mm-inv-lines__meta">
+                                  <div>
+                                    <small>{{ text('البوكسات', 'Boxes') }}</small>
+                                    <b>{{ item.boxes > 0 ? item.boxes : '—' }}</b>
+                                  </div>
+                                  <div class="mm-inv-lines__value is-gross">
+                                    <small>{{ text('المبلغ', 'Amount') }}</small>
+                                    <b dir="ltr">
+                                      {{ item.amountKd | number: '1.2-2' }}
+                                      <em>KD</em>
+                                    </b>
+                                  </div>
+                                </div>
+                                @if (item.linkedRoute) {
+                                  <a
+                                    class="mm-ded-summary__link"
+                                    style="margin-top: 0.5rem"
+                                    [routerLink]="item.linkedRoute"
+                                  >
+                                    {{ text('فتح المصدر', 'Open source') }}
+                                    <ng-icon
+                                      [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                                      class="size-3"
+                                    />
+                                  </a>
+                                }
+                              </div>
+                            </article>
+                          }
+                        </div>
+                        <footer class="mm-inv-lines__foot">
+                          <div>
+                            <small>{{ text('إجمالي مصادر الدفعة', 'Total payout sources') }}</small>
+                            <span>
+                              {{ line.allocations.length }}
+                              {{ text('مصدر', 'sources') }}
+                            </span>
+                          </div>
+                          <strong dir="ltr">
+                            {{ line.amountKd | number: '1.2-2' }}
+                            <em>KD</em>
+                          </strong>
+                        </footer>
+                      </div>
+
+                      <mm-ops-pager
+                        [range]="allocRangeText()"
+                        [currentPage]="allocPage()"
+                        [totalPages]="allocTotalPages()"
+                        [pages]="allocPageNumbers()"
+                        [rtl]="locale.isRtl()"
+                        [prevLabel]="prevLabel()"
+                        [nextLabel]="nextLabel()"
+                        (prev)="prevAllocPage()"
+                        (next)="nextAllocPage()"
+                        (goTo)="goToAllocPage($event)"
+                      />
+                    }
+                  </div>
+                }
+
+                @case ('proof') {
+                  @if (line.proof; as proof) {
+                    <div class="mm-pay-proof" [attr.data-status]="proof.status">
+                      <header class="mm-pay-proof__head">
+                        <div class="mm-pay-proof__icon">
+                          <ng-icon name="lucideShieldCheck" class="size-4" />
+                        </div>
+                        <div>
+                          <strong>{{ text('إثبات التحويل', 'Transfer proof') }}</strong>
+                          <p>
+                            {{
+                              text(
+                                'إيصال تأكيد البنك لمبلغ الدفعة.',
+                                'Bank confirmation receipt for this payout amount.'
+                              )
+                            }}
+                          </p>
+                        </div>
+                        <span class="mm-pay-proof__badge" [attr.data-status]="proof.status">
+                          {{ proofStatusLabel(proof.status) }}
+                        </span>
+                      </header>
+
+                      <div class="mm-ded-summary__sheet">
+                        <div class="mm-ded-summary__grid">
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('المرجع', 'Reference') }}</span>
+                            <strong dir="ltr">{{ proof.reference }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('المبلغ', 'Amount') }}</span>
+                            <strong>{{ proof.amountKd | number: '1.2-2' }} KD</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('البنك', 'Bank') }}</span>
+                            <strong>{{ proofBank(proof) }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('الحساب', 'Account') }}</span>
+                            <strong dir="ltr">{{ proof.accountMasked }}</strong>
+                          </div>
+                          @if (proofConfirmedAt(proof); as confirmed) {
+                            <div class="mm-ded-summary__row">
+                              <span>{{ text('تأكيد البنك', 'Bank confirmed') }}</span>
+                              <strong>{{ confirmed }}</strong>
+                            </div>
+                          }
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('وقت الإرفاق', 'Attached at') }}</span>
+                            <strong>{{ proofUploadedAt(proof) }}</strong>
+                          </div>
+                        </div>
+                      </div>
+
+                      <article class="mm-pay-proof__file" [attr.data-status]="proof.status">
+                        <div class="mm-pay-proof__file-icon">
+                          <ng-icon name="lucideFileText" class="size-4" />
+                        </div>
+                        <div class="mm-pay-proof__file-copy">
+                          <strong dir="ltr">{{ proof.fileName }}</strong>
+                          <small>
+                            {{ proofFileType(proof) }}
+                            ·
+                            {{ proofFileSize(proof) }}
+                          </small>
+                        </div>
+                        @if (proof.status === 'ready') {
+                          <button
+                            type="button"
+                            class="mm-pay-proof__download"
+                            (click)="downloadProof(line)"
+                          >
+                            <ng-icon name="lucideDownload" class="size-3.5" />
+                            {{
+                              proofDownloaded()
+                                ? text('تم التحميل', 'Downloaded')
+                                : text('تنزيل', 'Download')
+                            }}
+                          </button>
+                        } @else {
+                          <span class="mm-pay-proof__wait">
+                            {{
+                              proof.status === 'pending'
+                                ? text('بانتظار البنك', 'Awaiting bank')
+                                : text('غير متاح', 'Unavailable')
+                            }}
+                          </span>
+                        }
+                      </article>
+
+                      @if (proofNote(proof); as note) {
+                        <p class="mm-pay-proof__note">
+                          <ng-icon name="lucideInfo" class="size-3.5" />
+                          {{ note }}
+                        </p>
+                      }
+                    </div>
+                  } @else {
+                    <p class="mm-due-empty">
+                      {{
+                        text(
+                          'لا يوجد إثبات تحويل لهذه الدفعة.',
+                          'No transfer proof for this payout.'
+                        )
+                      }}
+                    </p>
+                  }
+                }
+
+                @case ('summary') {
+                  <div class="mm-ded-summary mm-pay-summary">
+                    <div class="mm-ded-summary__main">
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideHandCoins" class="size-3.5" />
+                          <strong>{{ text('ملخص التحويل', 'Transfer summary') }}</strong>
+                        </header>
+
+                        <div class="mm-pay-summary__amount">
+                          <small>{{ text('مبلغ التحويل', 'Transfer amount') }}</small>
+                          <strong dir="ltr">
+                            {{ line.amountKd | number: '1.2-2' }}
+                            <em>KD</em>
+                          </strong>
+                        </div>
+
+                        <div class="mm-ded-summary__grid">
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('الحالة', 'Status') }}</span>
+                            <strong>{{ statusLabel(line.status) }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('البوكسات', 'Boxes') }}</span>
+                            <strong>{{ line.boxesCovered }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('الحساب', 'Account') }}</span>
+                            <strong dir="ltr">{{ line.accountMasked }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('البنك', 'Bank') }}</span>
+                            <strong>{{ bank(line) }}</strong>
+                          </div>
+                          @if (line.transferRef) {
+                            <div class="mm-ded-summary__row mm-ded-summary__row--full">
+                              <span>{{ text('المرجع', 'Ref') }}</span>
+                              <strong dir="ltr">{{ line.transferRef }}</strong>
+                            </div>
+                          }
+                        </div>
+                      </section>
+
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideHistory" class="size-3.5" />
+                          <strong>{{ text('التايملاين', 'Timeline') }}</strong>
+                        </header>
+                        <ol class="mm-ded-summary__timeline">
+                          @for (event of line.timeline; track event.id) {
+                            <li [attr.data-tone]="event.tone">
+                              <span class="mm-ded-summary__dot" aria-hidden="true"></span>
+                              <div>
+                                <div class="mm-ded-summary__event-top">
+                                  <strong>{{ eventTitle(event) }}</strong>
+                                  <small>{{ eventTime(event) }}</small>
+                                </div>
+                                @if (eventDetail(event); as detailText) {
+                                  <p>{{ detailText }}</p>
+                                }
+                              </div>
+                            </li>
+                          }
+                        </ol>
+                      </section>
+                    </div>
+
+                    <aside class="mm-ded-summary__side">
+                      @if (impactNote(line); as impact) {
+                        <section class="mm-ded-summary__sheet">
+                          <header class="mm-ded-summary__head">
+                            <ng-icon name="lucideLandmark" class="size-3.5" />
+                            <strong>{{ text('أثر التحويل', 'Transfer impact') }}</strong>
+                          </header>
+                          <p class="mm-ded-summary__copy">{{ impact }}</p>
+                        </section>
+                      }
+
+                      @if (nextAction(line); as action) {
+                        <section class="mm-ded-summary__sheet">
+                          <header class="mm-ded-summary__head">
+                            <ng-icon name="lucideInfo" class="size-3.5" />
+                            <strong>{{ text('الخطوة التالية', 'Next step') }}</strong>
+                          </header>
+                          <p class="mm-ded-summary__copy">{{ action }}</p>
+                        </section>
+                      }
+
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideReceipt" class="size-3.5" />
+                          <strong>{{ text('روابط', 'Links') }}</strong>
+                        </header>
+                        <p class="mm-ded-summary__copy">{{ policyNote() }}</p>
+                        <div class="mm-ded-summary__links">
+                          @if (line.proof) {
+                            <button
+                              type="button"
+                              class="mm-ded-summary__link"
+                              (click)="openWindow('proof')"
+                            >
+                              {{ text('إثبات التحويل', 'Transfer proof') }}
+                              <ng-icon
+                                [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                                class="size-3"
+                              />
+                            </button>
+                          }
+                          @if (line.linkedInvoiceId) {
+                            <a
+                              class="mm-ded-summary__link"
+                              [routerLink]="['/restaurant/finance/invoices', line.linkedInvoiceId]"
+                            >
+                              {{ text('الفاتورة', 'Invoice') }}
+                              <ng-icon
+                                [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                                class="size-3"
+                              />
+                            </a>
+                          }
+                          <a class="mm-ded-summary__link" routerLink="/restaurant/finance/dues">
+                            {{ text('المستحقات', 'Dues') }}
+                            <ng-icon
+                              [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                              class="size-3"
+                            />
+                          </a>
+                        </div>
+                      </section>
+                    </aside>
+                  </div>
+                }
+              }
+            </div>
+          </section>
+        } @else {
+          <div class="mm-due-window mm-due-window--empty">
+            <header class="mm-due-window__bar">
+              <div class="mm-due-window__title">
+                <span class="mm-due-window__dots" aria-hidden="true">
+                  <i></i><i></i><i></i>
+                </span>
+                <div>
+                  <h2>{{ text('نافذة الدفعة', 'Payout window') }}</h2>
+                  <p>
+                    {{
+                      text(
+                        'لم يتم اختيار نافذة بعد.',
+                        'No window selected yet.'
+                      )
+                    }}
+                  </p>
+                </div>
+              </div>
+            </header>
+            <div class="mm-due-window__body">
+              <p class="mm-due-empty">
+                {{
+                  text(
+                    'اضغط على أحد الأقسام أعلاه لفتح نافذته هنا داخل الصفحة.',
+                    'Click one of the sections above to open its window here inside the page.'
+                  )
+                }}
+              </p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

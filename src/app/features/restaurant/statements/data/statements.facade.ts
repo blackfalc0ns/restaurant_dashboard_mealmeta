@@ -3,26 +3,26 @@ import { Injectable, computed, signal } from '@angular/core';
 import { PageStateModel } from '@/shared/models/page-view-state.model';
 
 import {
-  DeductionFilter,
-  DeductionLine,
-  RestaurantDeductionsData,
-} from '../models/deductions.model';
-import { DEDUCTIONS_MOCK } from './deductions.mock';
+  StatementFilter,
+  StatementLine,
+  RestaurantStatementsData,
+} from '../models/statements.model';
+import { STATEMENTS_MOCK } from './statements.mock';
 
-export const DEDUCTIONS_PAGE_SIZE = 4;
+export const STATEMENTS_PAGE_SIZE = 4;
 
 @Injectable({ providedIn: 'root' })
-export class DeductionsFacade {
+export class StatementsFacade {
   readonly page = signal<PageStateModel>({ viewState: 'idle' });
-  readonly data = signal<RestaurantDeductionsData | null>(null);
-  readonly filter = signal<DeductionFilter>('all');
+  readonly data = signal<RestaurantStatementsData | null>(null);
+  readonly filter = signal<StatementFilter>('all');
   readonly search = signal('');
   readonly currentPage = signal(1);
-  readonly pageSize = DEDUCTIONS_PAGE_SIZE;
+  readonly pageSize = STATEMENTS_PAGE_SIZE;
 
   private loadTimer: ReturnType<typeof setTimeout> | null = null;
 
-  readonly filteredLines = computed<DeductionLine[]>(() => {
+  readonly filteredLines = computed<StatementLine[]>(() => {
     const data = this.data();
     if (!data) return [];
 
@@ -35,7 +35,6 @@ export class DeductionsFacade {
 
       const haystack = [
         line.code,
-        line.complaintCode ?? '',
         line.title.ar,
         line.title.en,
         line.detail.ar,
@@ -50,23 +49,16 @@ export class DeductionsFacade {
     });
   });
 
-  readonly filterCounts = computed<Record<DeductionFilter, number>>(() => {
+  readonly filterCounts = computed<Record<StatementFilter, number>>(() => {
     const data = this.data();
-    const empty = {
-      all: 0,
-      pending: 0,
-      applied: 0,
-      disputed: 0,
-      reversed: 0,
-    };
+    const empty = { all: 0, draft: 0, issued: 0, finalized: 0 };
     if (!data) return empty;
 
     return {
       all: data.lines.length,
-      pending: data.lines.filter((l) => l.status === 'pending').length,
-      applied: data.lines.filter((l) => l.status === 'applied').length,
-      disputed: data.lines.filter((l) => l.status === 'disputed').length,
-      reversed: data.lines.filter((l) => l.status === 'reversed').length,
+      draft: data.lines.filter((l) => l.status === 'draft').length,
+      issued: data.lines.filter((l) => l.status === 'issued').length,
+      finalized: data.lines.filter((l) => l.status === 'finalized').length,
     };
   });
 
@@ -99,7 +91,7 @@ export class DeductionsFacade {
     this.clearLoadTimer();
 
     if (this.data()) {
-      this.data.set(structuredClone(DEDUCTIONS_MOCK));
+      this.data.set(structuredClone(STATEMENTS_MOCK));
       this.page.set({ viewState: 'success' });
       return;
     }
@@ -108,13 +100,13 @@ export class DeductionsFacade {
     this.currentPage.set(1);
 
     this.loadTimer = setTimeout(() => {
-      this.data.set(structuredClone(DEDUCTIONS_MOCK));
+      this.data.set(structuredClone(STATEMENTS_MOCK));
       this.page.set({ viewState: 'success' });
       this.loadTimer = null;
     }, 650);
   }
 
-  setFilter(filter: DeductionFilter): void {
+  setFilter(filter: StatementFilter): void {
     this.filter.set(filter);
     this.currentPage.set(1);
   }
@@ -140,7 +132,7 @@ export class DeductionsFacade {
     this.setPage(page);
   }
 
-  lineById(id: string): DeductionLine | null {
+  lineById(id: string): StatementLine | null {
     return this.data()?.lines.find((line) => line.id === id) ?? null;
   }
 

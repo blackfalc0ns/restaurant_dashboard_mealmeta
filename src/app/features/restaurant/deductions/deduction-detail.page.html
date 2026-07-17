@@ -164,6 +164,12 @@
                         <strong dir="ltr">{{ line.complaintCode }}</strong>
                       </div>
                     }
+                    @if (line.linkedDueCode) {
+                      <div class="mm-due-detail-field">
+                        <small>{{ text('المستحق المرتبط', 'Linked payable') }}</small>
+                        <strong dir="ltr">{{ line.linkedDueCode }}</strong>
+                      </div>
+                    }
                     <div class="mm-due-detail-field">
                       <small>{{ text('المبلغ المتعلق', 'Related amount') }}</small>
                       <strong>{{ line.grossKd | number: '1.2-2' }} KD</strong>
@@ -172,6 +178,16 @@
                       <small>{{ text('مبلغ الخصم', 'Deduction amount') }}</small>
                       <strong>−{{ line.amountKd | number: '1.2-2' }} KD</strong>
                     </div>
+                    <div class="mm-due-detail-field">
+                      <small>{{ text('نسبة التغطية', 'Coverage') }}</small>
+                      <strong>{{ coveragePct(line) | number: '1.0-1' }}%</strong>
+                    </div>
+                    @if (decidedBy(line); as owner) {
+                      <div class="mm-due-detail-field">
+                        <small>{{ text('القرار / الجهة', 'Decision / owner') }}</small>
+                        <strong>{{ owner }}</strong>
+                      </div>
+                    }
                   </div>
                 }
 
@@ -239,41 +255,153 @@
                 }
 
                 @case ('summary') {
-                  <div class="mm-due-window__layout">
-                    <div class="mm-due-window__main">
-                      <section class="mm-due-panel">
-                        <div class="mm-due-side-head">
-                          <ng-icon name="lucideHandCoins" class="size-4" />
-                          <strong>{{ text('ملخص الخصم', 'Deduction summary') }}</strong>
-                        </div>
-                        <div class="mm-due-meta">
-                          <div class="mm-due-meta__item">
+                  <div class="mm-ded-summary">
+                    <div class="mm-ded-summary__main">
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideHandCoins" class="size-3.5" />
+                          <strong>{{ text('التفصيل المالي', 'Financial breakdown') }}</strong>
+                        </header>
+                        <div class="mm-ded-summary__grid">
+                          <div class="mm-ded-summary__row">
                             <span>{{ text('الحالة', 'Status') }}</span>
                             <strong>{{ statusLabel(line.status) }}</strong>
                           </div>
-                          <div class="mm-due-meta__item">
-                            <span>{{ text('المتعلق', 'Related') }}</span>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('النوع', 'Type') }}</span>
+                            <strong>{{ kindLabel(line.kind) }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('الفترة', 'Period') }}</span>
+                            <strong>{{ period(line) }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('البوكسات', 'Boxes') }}</span>
+                            <strong>{{ line.boxesAffected }}</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('قيمة المتعلقة', 'Related value') }}</span>
                             <strong>{{ line.grossKd | number: '1.2-2' }} KD</strong>
                           </div>
-                          <div class="mm-due-meta__item mm-due-meta__item--deduct">
-                            <span>{{ text('الخصم', 'Deduction') }}</span>
+                          <div class="mm-ded-summary__row is-deduct">
+                            <span>{{ text('مبلغ الخصم', 'Deduction') }}</span>
                             <strong>−{{ line.amountKd | number: '1.2-2' }} KD</strong>
                           </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('نسبة التغطية', 'Coverage') }}</span>
+                            <strong>{{ coveragePct(line) | number: '1.0-1' }}%</strong>
+                          </div>
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('المتبقي', 'Remaining') }}</span>
+                            <strong>{{ remainingKd(line) | number: '1.2-2' }} KD</strong>
+                          </div>
+                          @if (line.linkedDueCode) {
+                            <div class="mm-ded-summary__row mm-ded-summary__row--full">
+                              <span>{{ text('المستحق المرتبط', 'Linked payable') }}</span>
+                              <strong dir="ltr">{{ line.linkedDueCode }}</strong>
+                            </div>
+                          }
                         </div>
                       </section>
 
-                      <section class="mm-due-panel">
-                        <div class="mm-due-side-head">
-                          <ng-icon name="lucideHistory" class="size-4" />
-                          <strong>{{ text('آخر الأحداث', 'Recent events') }}</strong>
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideInfo" class="size-3.5" />
+                          <strong>{{ text('سياق الحالة', 'Case context') }}</strong>
+                        </header>
+                        <div class="mm-ded-summary__grid">
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('رقم الخصم', 'Deduction code') }}</span>
+                            <strong dir="ltr">{{ line.code }}</strong>
+                          </div>
+                          @if (line.complaintCode) {
+                            <div class="mm-ded-summary__row">
+                              <span>{{ text('رقم الشكوى', 'Complaint') }}</span>
+                              <strong dir="ltr">{{ line.complaintCode }}</strong>
+                            </div>
+                          }
+                          @if (openedAt(line); as opened) {
+                            <div class="mm-ded-summary__row">
+                              <span>{{ text('تاريخ الفتح', 'Opened') }}</span>
+                              <strong>{{ opened }}</strong>
+                            </div>
+                          }
+                          <div class="mm-ded-summary__row">
+                            <span>{{ text('آخر تحديث', 'Updated') }}</span>
+                            <strong>{{ updatedAt(line) }}</strong>
+                          </div>
+                          @if (decidedBy(line); as owner) {
+                            <div class="mm-ded-summary__row mm-ded-summary__row--full">
+                              <span>{{ text('القرار / الجهة', 'Decision / owner') }}</span>
+                              <strong>{{ owner }}</strong>
+                            </div>
+                          }
                         </div>
-                        <ol class="mm-due-timeline">
+                        @if (reason(line); as reasonText) {
+                          <div class="mm-ded-summary__note">
+                            <small>{{ text('سبب الخصم', 'Deduction reason') }}</small>
+                            <p>{{ reasonText }}</p>
+                          </div>
+                        }
+                        @if (lineNote(line); as note) {
+                          <div class="mm-ded-summary__note">
+                            <small>{{ text('ملاحظة تشغيلية', 'Ops note') }}</small>
+                            <p>{{ note }}</p>
+                          </div>
+                        }
+                      </section>
+
+                      @if (line.boxes?.length) {
+                        <section class="mm-ded-summary__sheet">
+                          <header class="mm-ded-summary__head">
+                            <ng-icon name="lucidePackage" class="size-3.5" />
+                            <strong>{{ text('أثر البوكسات', 'Box impact') }}</strong>
+                            <button
+                              type="button"
+                              class="mm-ded-summary__link"
+                              (click)="openWindow('boxes')"
+                            >
+                              {{ text('التفاصيل', 'Details') }}
+                              <ng-icon
+                                [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                                class="size-3"
+                              />
+                            </button>
+                          </header>
+                          <div class="mm-ded-summary__boxes">
+                            @for (box of line.boxes; track box.id) {
+                              <article class="mm-ded-summary__box">
+                                <div class="mm-ded-summary__box-main">
+                                  <strong dir="ltr">{{ box.boxCode }}</strong>
+                                  <small>{{ contents(box) }} · {{ zone(box) }}</small>
+                                </div>
+                                <div class="mm-ded-summary__box-vals">
+                                  <span>{{ box.unitPriceKd | number: '1.2-2' }}</span>
+                                  <b>−{{ box.deductedKd | number: '1.2-2' }}</b>
+                                </div>
+                              </article>
+                            }
+                          </div>
+                        </section>
+                      }
+
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideHistory" class="size-3.5" />
+                          <strong>{{ text('التايملاين', 'Timeline') }}</strong>
+                        </header>
+                        <ol class="mm-ded-summary__timeline">
                           @for (event of line.timeline; track event.id) {
                             <li [attr.data-tone]="event.tone">
-                              <span class="mm-due-timeline__dot" aria-hidden="true"></span>
+                              <span class="mm-ded-summary__dot" aria-hidden="true"></span>
                               <div>
-                                <strong>{{ eventTitle(event) }}</strong>
-                                <small>{{ eventTime(event) }}</small>
+                                <div class="mm-ded-summary__event-top">
+                                  <strong>{{ eventTitle(event) }}</strong>
+                                  <small>{{ eventTime(event) }}</small>
+                                </div>
+                                @if (eventDetail(event); as detailText) {
+                                  <p>{{ detailText }}</p>
+                                }
                               </div>
                             </li>
                           }
@@ -281,27 +409,73 @@
                       </section>
                     </div>
 
-                    <aside class="mm-due-window__side">
-                      <section class="mm-due-panel">
-                        <div class="mm-due-side-head">
-                          <ng-icon name="lucideScale" class="size-4" />
-                          <strong>{{ text('سياسة الخصم', 'Deduction policy') }}</strong>
+                    <aside class="mm-ded-summary__side">
+                      @if (impactNote(line); as impact) {
+                        <section class="mm-ded-summary__sheet">
+                          <header class="mm-ded-summary__head">
+                            <ng-icon name="lucideHandCoins" class="size-3.5" />
+                            <strong>{{ text('أثر المستحق', 'Payable impact') }}</strong>
+                          </header>
+                          <p class="mm-ded-summary__copy">{{ impact }}</p>
+                          <div class="mm-ded-summary__stack">
+                            <div class="mm-ded-summary__row is-deduct">
+                              <span>{{ text('قيمة الأثر', 'Impact') }}</span>
+                              <strong>−{{ line.amountKd | number: '1.2-2' }} KD</strong>
+                            </div>
+                            @if (line.linkedDueCode) {
+                              <div class="mm-ded-summary__row">
+                                <span>{{ text('يُطبَّق على', 'Against') }}</span>
+                                <strong dir="ltr">{{ line.linkedDueCode }}</strong>
+                              </div>
+                            }
+                          </div>
+                          @if (line.linkedDueId) {
+                            <a
+                              class="mm-ded-summary__link mm-ded-summary__link--block"
+                              [routerLink]="['/restaurant/finance/dues', line.linkedDueId]"
+                            >
+                              {{ text('عرض المستحق المرتبط', 'View linked payable') }}
+                              <ng-icon
+                                [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                                class="size-3"
+                              />
+                            </a>
+                          }
+                        </section>
+                      }
+
+                      @if (nextAction(line); as action) {
+                        <section class="mm-ded-summary__sheet">
+                          <header class="mm-ded-summary__head">
+                            <ng-icon name="lucideScale" class="size-3.5" />
+                            <strong>{{ text('الخطوة التالية', 'Next step') }}</strong>
+                          </header>
+                          <p class="mm-ded-summary__copy">{{ action }}</p>
+                        </section>
+                      }
+
+                      <section class="mm-ded-summary__sheet">
+                        <header class="mm-ded-summary__head">
+                          <ng-icon name="lucideScale" class="size-3.5" />
+                          <strong>{{ text('سياسة الخصم', 'Policy') }}</strong>
+                        </header>
+                        <p class="mm-ded-summary__copy">{{ policyNote() }}</p>
+                        <div class="mm-ded-summary__links">
+                          <a class="mm-ded-summary__link" routerLink="/restaurant/finance/dues">
+                            {{ text('المستحقات', 'Dues') }}
+                            <ng-icon
+                              [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                              class="size-3"
+                            />
+                          </a>
+                          <a class="mm-ded-summary__link" routerLink="/restaurant/finance/payouts">
+                            {{ text('الدفعات', 'Payouts') }}
+                            <ng-icon
+                              [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+                              class="size-3"
+                            />
+                          </a>
                         </div>
-                        <p class="mm-due-side-copy">{{ policyNote() }}</p>
-                        <a class="mm-due-side-link" routerLink="/restaurant/finance/dues">
-                          {{ text('المستحقات والعمولات', 'Dues & commissions') }}
-                          <ng-icon
-                            [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
-                            class="size-3.5"
-                          />
-                        </a>
-                        <a class="mm-due-side-link" routerLink="/restaurant/finance/payouts">
-                          {{ text('الدفعات والتحويلات', 'Payouts & transfers') }}
-                          <ng-icon
-                            [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
-                            class="size-3.5"
-                          />
-                        </a>
                       </section>
                     </aside>
                   </div>

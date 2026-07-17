@@ -149,10 +149,29 @@ const loadDeductionDetailPage = () =>
     (m) => m.DeductionDetailPageComponent,
   );
 
+const loadInvoicesPage = () =>
+  import('./invoices/invoices.page').then((m) => m.InvoicesPageComponent);
+
+const loadInvoiceDetailPage = () =>
+  import('./invoices/invoice-detail.page').then(
+    (m) => m.InvoiceDetailPageComponent,
+  );
+
+const loadPayoutsPage = () =>
+  import('./payouts/payouts.page').then((m) => m.PayoutsPageComponent);
+
+const loadPayoutDetailPage = () =>
+  import('./payouts/payout-detail.page').then((m) => m.PayoutDetailPageComponent);
+
+const loadStatementsPage = () =>
+  import('./statements/statements.page').then((m) => m.StatementsPageComponent);
+
+const loadStatementDetailPage = () =>
+  import('./statements/statement-detail.page').then(
+    (m) => m.StatementDetailPageComponent,
+  );
+
 const SIDEBAR_LINK_PATHS = [
-  'finance/invoices',
-  'finance/payouts',
-  'finance/statements',
   'finance/reports',
   'settings',
 ];
@@ -309,6 +328,30 @@ export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   {
     path: 'finance/deductions',
     loadComponent: loadDeductionsPage,
+  },
+  {
+    path: 'finance/invoices/:invoiceId',
+    loadComponent: loadInvoiceDetailPage,
+  },
+  {
+    path: 'finance/invoices',
+    loadComponent: loadInvoicesPage,
+  },
+  {
+    path: 'finance/payouts/:payoutId',
+    loadComponent: loadPayoutDetailPage,
+  },
+  {
+    path: 'finance/payouts',
+    loadComponent: loadPayoutsPage,
+  },
+  {
+    path: 'finance/statements/:statementId',
+    loadComponent: loadStatementDetailPage,
+  },
+  {
+    path: 'finance/statements',
+    loadComponent: loadStatementsPage,
   },
   ...SIDEBAR_LINK_PATHS.map((path) => ({
     path,
