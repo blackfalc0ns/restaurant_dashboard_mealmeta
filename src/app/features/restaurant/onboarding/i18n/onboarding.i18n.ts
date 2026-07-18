@@ -42,12 +42,19 @@ export interface OnboardingCopy {
     iban: string;
     accountHolder: string;
     serviceRegions: string;
+    programs: string;
+    bundles: string;
+    offeringsHintPrograms: string;
+    offeringsHintBundles: string;
+    offeringsComboEmpty: string;
+    offeringsPricingNote: string;
     uploadHint: string;
     uploadAction: string;
     uploaded: string;
     optional: string;
     reviewSectionAccount: string;
     reviewSectionBusiness: string;
+    reviewSectionOfferings: string;
     reviewSectionLocation: string;
     reviewSectionDocuments: string;
     reviewSectionRegions: string;
@@ -80,6 +87,11 @@ export const ONBOARDING_I18N: Record<RestaurantAuthLocale, OnboardingCopy> = {
         title: 'بيانات الشركة',
         subtitle: 'الاسم التجاري والسجل والمالك',
         tip: 'يجب أن تطابق البيانات السجل التجاري والوثائق الرسمية المرفقة.',
+      },
+      offerings: {
+        title: 'البرامج والباقات',
+        subtitle: 'اختر ما ستقدّمه عبر MealMate',
+        tip: 'الاختيار هنا يحدد تركيبات البوكس التي ستسعّرها لاحقاً من صفحة التسعير بعد الاعتماد.',
       },
       location: {
         title: 'الموقع والتواصل',
@@ -122,12 +134,19 @@ export const ONBOARDING_I18N: Record<RestaurantAuthLocale, OnboardingCopy> = {
       iban: 'رقم الآيبان',
       accountHolder: 'اسم صاحب الحساب',
       serviceRegions: 'مناطق الخدمة',
+      programs: 'البرامج',
+      bundles: 'الباقات',
+      offeringsHintPrograms: 'اختر برنامجاً واحداً على الأقل',
+      offeringsHintBundles: 'اختر باقة واحدة على الأقل',
+      offeringsComboEmpty: 'اختر برنامجاً وباقة لمعرفة عدد البوكسات',
+      offeringsPricingNote: 'التسعير يتم لاحقاً من صفحة التسعير بعد اعتماد الحساب — لا أسعار هنا.',
       uploadHint: 'PDF أو JPG — حتى ٥ ميجابايت',
       uploadAction: 'رفع الملف',
       uploaded: 'تم الرفع',
       optional: 'اختياري',
       reviewSectionAccount: 'بيانات الدخول',
       reviewSectionBusiness: 'بيانات الشركة',
+      reviewSectionOfferings: 'البرامج والباقات',
       reviewSectionLocation: 'الموقع والتواصل',
       reviewSectionDocuments: 'الوثائق',
       reviewSectionRegions: 'المناطق والبنك',
@@ -158,6 +177,11 @@ export const ONBOARDING_I18N: Record<RestaurantAuthLocale, OnboardingCopy> = {
         title: 'Company details',
         subtitle: 'Trade name, CR number, and owner',
         tip: 'Data must match your commercial register and attached official documents.',
+      },
+      offerings: {
+        title: 'Programs & bundles',
+        subtitle: 'Choose what you will offer on MealMate',
+        tip: 'Your selection defines the box combinations you will price later from the pricing page after approval.',
       },
       location: {
         title: 'Location & contact',
@@ -200,12 +224,19 @@ export const ONBOARDING_I18N: Record<RestaurantAuthLocale, OnboardingCopy> = {
       iban: 'IBAN',
       accountHolder: 'Account holder name',
       serviceRegions: 'Service regions',
+      programs: 'Programs',
+      bundles: 'Bundles',
+      offeringsHintPrograms: 'Select at least one program',
+      offeringsHintBundles: 'Select at least one bundle',
+      offeringsComboEmpty: 'Select a program and a bundle to see box count',
+      offeringsPricingNote: 'Pricing happens later on the pricing page after account approval — no prices here.',
       uploadHint: 'PDF or JPG — up to 5 MB',
       uploadAction: 'Upload file',
       uploaded: 'Uploaded',
       optional: 'Optional',
       reviewSectionAccount: 'Account',
       reviewSectionBusiness: 'Company',
+      reviewSectionOfferings: 'Programs & bundles',
       reviewSectionLocation: 'Location & contact',
       reviewSectionDocuments: 'Documents',
       reviewSectionRegions: 'Regions & bank',

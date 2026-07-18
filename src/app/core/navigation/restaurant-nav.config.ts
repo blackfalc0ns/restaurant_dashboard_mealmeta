@@ -185,6 +185,35 @@ export const RESTAURANT_NAV_SECTIONS: RestaurantNavSection[] = [
     ],
   },
   {
+    id: 'team',
+    labelAr: 'الفريق والفروع',
+    labelEn: 'Team & branches',
+    icon: 'lucideUsersRound',
+    items: [
+      {
+        id: 'team-branches',
+        labelAr: 'الفروع',
+        labelEn: 'Branches',
+        route: '/restaurant/team/branches',
+        icon: 'lucideStore',
+      },
+      {
+        id: 'team-staff',
+        labelAr: 'الموظفون',
+        labelEn: 'Staff',
+        route: '/restaurant/team/staff',
+        icon: 'lucideUserRound',
+      },
+      {
+        id: 'team-permissions',
+        labelAr: 'الصلاحيات',
+        labelEn: 'Permissions',
+        route: '/restaurant/team/permissions',
+        icon: 'lucideKeyRound',
+      },
+    ],
+  },
+  {
     id: 'finance',
     labelAr: 'المالية',
     labelEn: 'Finance',

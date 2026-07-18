@@ -66,6 +66,8 @@ interface SettingsSectionCard {
     PageStateComponent,
     SettingsSkeletonComponent,
     RestaurantOpsHeroComponent,
+    RestaurantOpsToolbarComponent,
+    RestaurantOpsFiltersComponent,
   ],
   templateUrl: './settings.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -94,7 +96,7 @@ export class SettingsPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  readonly activeSection = signal<SettingsSectionId | null>(null);
+  readonly activeSection = signal<SettingsSectionId>('business-location');
 
   private readonly routeSection = toSignal(
     this.route.queryParamMap.pipe(
@@ -125,8 +127,8 @@ export class SettingsPageComponent implements OnInit {
       icon: 'lucideBuilding2',
       titleAr: 'الملف التجاري',
       titleEn: 'Business profile',
-      detailAr: 'الشركة والموقع والتواصل',
-      detailEn: 'Company, location, and contact',
+      detailAr: 'الشركة والموقع والبرامج',
+      detailEn: 'Company, location, and offerings',
     },
     {
       id: 'documents-settlement',
@@ -193,7 +195,7 @@ export class SettingsPageComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      this.activeSection.set(this.routeSection());
+      this.activeSection.set(this.routeSection() ?? 'business-location');
     });
   }
 
@@ -228,7 +230,12 @@ export class SettingsPageComponent implements OnInit {
       case 'account-security':
         return 2 + draft.security.sessions.length + 2;
       case 'business-location':
-        return 7 + 6;
+        return (
+          7 +
+          6 +
+          (draft.offerings?.programIds.length ?? 0) +
+          (draft.offerings?.bundleIds.length ?? 0)
+        );
       case 'documents-settlement':
         return draft.documents.length + 5 + draft.regions.serviceRegions.length;
       case 'operations-notifications':
@@ -242,14 +249,6 @@ export class SettingsPageComponent implements OnInit {
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { section },
-      queryParamsHandling: 'merge',
-    });
-  }
-
-  closeSection(): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { section: null },
       queryParamsHandling: 'merge',
     });
   }
@@ -312,6 +311,30 @@ export class SettingsPageComponent implements OnInit {
 
   isRegionSelected(id: string): boolean {
     return !!this.facade.draft()?.regions.serviceRegions.includes(id);
+  }
+
+  isProgramSelected(id: string): boolean {
+    return !!this.facade.draft()?.offerings.programIds.includes(id);
+  }
+
+  isBundleSelected(id: string): boolean {
+    return !!this.facade.draft()?.offerings.bundleIds.includes(id);
+  }
+
+  comboHint(): string {
+    const offerings = this.facade.draft()?.offerings;
+    if (!offerings) return '';
+    const count = offerings.programIds.length * offerings.bundleIds.length;
+    if (count === 0) {
+      return this.text(
+        'اختر برنامجاً وباقة لمعرفة عدد البوكسات التي ستسعّرها لاحقاً.',
+        'Select a program and a bundle to see how many boxes you will price later.',
+      );
+    }
+    return this.text(
+      `ستسعّر لاحقاً ${count} بوكس من صفحة التسعير. التعديل هنا لا يغيّر الأسعار الحالية.`,
+      `You will price ${count} box${count === 1 ? '' : 'es'} later on the pricing page. Editing here does not change current prices.`,
+    );
   }
 
   onToggle(

@@ -1,0 +1,235 @@
+<div class="mm-team-page__inner">
+  @if (facade.page().viewState === 'loading' || !facade.data()) {
+    <mm-team-skeleton />
+  } @else if (!member()) {
+    <mm-page-state
+      viewState="empty"
+      [errorMessage]="text('الموظف غير موجود', 'Staff member not found')"
+      (retry)="facade.retry()"
+    />
+  } @else {
+    @if (member(); as item) {
+      <div class="mm-ops-scroll">
+        <mm-ops-detail-hero
+          icon="lucideUserRound"
+          [title]="name(item)"
+          [subtitle]="roleName(item.roleId)"
+          [status]="item.status"
+        >
+          <a opsBack routerLink="/restaurant/team/staff" class="mm-team-back">
+            <ng-icon
+              [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+              class="size-4"
+            />
+            {{ text('العودة للموظفين', 'Back to staff') }}
+          </a>
+          <div opsActions>
+            @if (!isOwner()) {
+              @if (item.status === 'invited') {
+                <button
+                  type="button"
+                  class="mm-team-btn is-ghost"
+                  (click)="facade.setStaffStatus(item.id, 'invited')"
+                >
+                  {{ text('إعادة الدعوة', 'Resend invite') }}
+                </button>
+                <button
+                  type="button"
+                  class="mm-team-btn"
+                  (click)="facade.setStaffStatus(item.id, 'active')"
+                >
+                  {{ text('تفعيل', 'Activate') }}
+                </button>
+              } @else if (item.status === 'active') {
+                <button
+                  type="button"
+                  class="mm-team-btn is-ghost"
+                  (click)="facade.setStaffStatus(item.id, 'disabled')"
+                >
+                  {{ text('تعطيل', 'Disable') }}
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  class="mm-team-btn"
+                  (click)="facade.setStaffStatus(item.id, 'active')"
+                >
+                  {{ text('إعادة التفعيل', 'Re-enable') }}
+                </button>
+              }
+            }
+          </div>
+        </mm-ops-detail-hero>
+
+        <div class="mm-team-detail-grid">
+          <mm-ops-board>
+            <div class="mm-ops-board__head">
+              <div>
+                <h2>{{ text('بيانات الموظف', 'Staff profile') }}</h2>
+                <p>{{ text('التواصل والدور والحالة', 'Contact, role, and status') }}</p>
+              </div>
+            </div>
+
+            <div class="mm-team-fields">
+              <div>
+                <small>{{ text('البريد', 'Email') }}</small>
+                <strong dir="ltr">
+                  <ng-icon name="lucideMail" class="size-3.5" />
+                  {{ item.email }}
+                </strong>
+              </div>
+              <div>
+                <small>{{ text('الجوال', 'Phone') }}</small>
+                <strong dir="ltr">
+                  <ng-icon name="lucidePhone" class="size-3.5" />
+                  {{ item.phone }}
+                </strong>
+              </div>
+              <div>
+                <small>{{ text('الحالة', 'Status') }}</small>
+                <strong>
+                  <span class="mm-team-status" [attr.data-status]="item.status">
+                    {{ statusLabel(item.status) }}
+                  </span>
+                </strong>
+              </div>
+              <div>
+                <small>{{ text('آخر نشاط', 'Last active') }}</small>
+                <strong>{{ locale.isRtl() ? item.lastActiveAtLabel.ar : item.lastActiveAtLabel.en }}</strong>
+              </div>
+            </div>
+
+            @if (!isOwner()) {
+              <label class="mm-team-field-block">
+                <span>{{ text('الدور', 'Role') }}</span>
+                <select
+                  [ngModel]="item.roleId"
+                  (ngModelChange)="setRole(item, $event)"
+                >
+                  @for (role of roleOptions; track role.id) {
+                    <option [value]="role.id">
+                      {{ locale.isRtl() ? role.labelAr : role.labelEn }}
+                    </option>
+                  }
+                </select>
+              </label>
+            } @else {
+              <p class="mm-team-hint">
+                {{ text('حساب المالك لا يُعاد تعيين دوره من هنا.', 'Owner role cannot be reassigned here.') }}
+              </p>
+            }
+          </mm-ops-board>
+
+          <mm-ops-board>
+            <div class="mm-ops-board__head">
+              <div>
+                <h2>{{ text('نطاق الفروع', 'Branch scope') }}</h2>
+                <p>{{ text('أي مواقع يستطيع الوصول إليها', 'Which locations they can access') }}</p>
+              </div>
+            </div>
+
+            @if (isOwner()) {
+              <p class="mm-team-hint">{{ text('المالك يصل لكل الفروع تلقائياً.', 'Owner always has all branches.') }}</p>
+            } @else {
+              <label class="mm-team-toggle-field">
+                <span>{{ text('كل الفروع', 'All branches') }}</span>
+                <input
+                  type="checkbox"
+                  [checked]="draftAllBranches()"
+                  (change)="draftAllBranches.set($any($event.target).checked)"
+                />
+              </label>
+
+              @if (!draftAllBranches()) {
+                <div class="mm-team-chips">
+                  @for (branch of facade.data()!.branches; track branch.id) {
+                    <button
+                      type="button"
+                      class="mm-team-chip"
+                      [class.is-active]="draftBranchIds().includes(branch.id)"
+                      (click)="toggleBranch(branch.id)"
+                    >
+                      {{ locale.isRtl() ? branch.name.ar : branch.name.en }}
+                    </button>
+                  }
+                </div>
+              }
+
+              <div class="mm-team-form__actions">
+                <button type="button" class="mm-team-btn" (click)="saveBranches(item)">
+                  {{ text('حفظ النطاق', 'Save scope') }}
+                </button>
+              </div>
+            }
+          </mm-ops-board>
+        </div>
+
+        <mm-ops-board>
+          <div class="mm-ops-board__head">
+            <div>
+              <h2>
+                <ng-icon name="lucideKeyRound" class="size-4" />
+                {{ text('صلاحيات فعّالة', 'Effective permissions') }}
+              </h2>
+              <p>
+                {{
+                  text(
+                    'من الدور مع أي استثناءات فردية',
+                    'From role plus any individual overrides'
+                  )
+                }}
+              </p>
+            </div>
+            <a routerLink="/restaurant/team/permissions" class="mm-team-link">
+              {{ text('تعديل الأدوار', 'Edit roles') }}
+            </a>
+          </div>
+
+          <div class="mm-team-perm-grid">
+            @for (mod of facade.data()!.modules; track mod.key) {
+              <div class="mm-team-perm-row">
+                <div>
+                  <strong>{{ moduleLabel(mod.key) }}</strong>
+                  <span>{{ locale.isRtl() ? mod.detail.ar : mod.detail.en }}</span>
+                </div>
+                @if (isOwner()) {
+                  <em class="mm-team-status" data-status="active">{{ text('إدارة', 'Manage') }}</em>
+                } @else {
+                  <select
+                    [ngModel]="item.permissionOverrides?.[mod.key] ?? ''"
+                    (ngModelChange)="
+                      facade.setStaffOverride(
+                        item.id,
+                        mod.key,
+                        $event === '' ? null : $event
+                      )
+                    "
+                  >
+                    <option value="">
+                      {{ text('حسب الدور', 'From role') }} ({{ levelLabel(effective(item, mod.key)) }})
+                    </option>
+                    @for (level of levels; track level.id) {
+                      <option [value]="level.id">
+                        {{ locale.isRtl() ? level.labelAr : level.labelEn }}
+                      </option>
+                    }
+                  </select>
+                }
+              </div>
+            }
+          </div>
+
+          <p class="mm-team-note">
+            <ng-icon name="lucideInfo" class="size-3.5" />
+            {{
+              text(
+                'فرض الصلاحيات على المسارات سيُفعَّل لاحقاً مع ربط الهوية.',
+                'Route enforcement will activate later with identity wiring.'
+              )
+            }}
+          </p>
+        </mm-ops-board>
+      </div>
+    }
+  }
+</div>

@@ -24,7 +24,6 @@ import {
   lucidePackage,
   lucideChartPie,
   lucideSearch,
-  lucideX,
 } from '@ng-icons/lucide';
 import { map } from 'rxjs';
 
@@ -113,7 +112,6 @@ interface ReportDetailWindowCard {
       lucidePackage,
       lucideChartPie,
       lucideSearch,
-      lucideX,
     }),
   ],
 })
@@ -495,13 +493,12 @@ export class ReportDetailPageComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const windowId = this.routeWindow();
       const available = this.windows().map((item) => item.id);
-      if (windowId && available.includes(windowId)) {
-        this.activeWindow.set(windowId);
-        return;
-      }
-      this.activeWindow.set(null);
+      if (available.length === 0) return;
+      const windowId = this.routeWindow();
+      const next =
+        windowId && available.includes(windowId) ? windowId : available[0];
+      this.activeWindow.set(next);
     });
 
     effect(() => {
@@ -566,13 +563,6 @@ export class ReportDetailPageComponent implements OnInit {
     });
   }
 
-  closeWindow(): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { window: null },
-      queryParamsHandling: 'merge',
-    });
-  }
 
   onBreakdownSearch(value: string): void {
     this.breakdownSearch.set(value);

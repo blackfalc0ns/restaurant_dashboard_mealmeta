@@ -78,8 +78,8 @@
             <p>
               {{
                 text(
-                  'افتح كل قسم في نافذة داخل صفحة التفاصيل.',
-                  'Open each section in a window inside the detail page.'
+                  'اختر قسماً لعرض تفاصيله داخل الصفحة.',
+                  'Choose a section to view its details on this page.'
                 )
               }}
             </p>
@@ -108,22 +108,11 @@
           <section class="mm-due-window" [attr.data-window]="windowId">
             <header class="mm-due-window__bar">
               <div class="mm-due-window__title">
-                <span class="mm-due-window__dots" aria-hidden="true">
-                  <i></i><i></i><i></i>
-                </span>
                 <div>
                   <h2>{{ windowTitle() }}</h2>
                   <p>{{ windowSubtitle() }}</p>
                 </div>
               </div>
-              <button
-                type="button"
-                class="mm-due-window__close"
-                [attr.aria-label]="text('إغلاق النافذة', 'Close window')"
-                (click)="closeWindow()"
-              >
-                <ng-icon name="lucideX" class="size-4" />
-              </button>
             </header>
 
             <div class="mm-due-window__body">
@@ -537,37 +526,6 @@
               }
             </div>
           </section>
-        } @else {
-          <div class="mm-due-window mm-due-window--empty">
-            <header class="mm-due-window__bar">
-              <div class="mm-due-window__title">
-                <span class="mm-due-window__dots" aria-hidden="true">
-                  <i></i><i></i><i></i>
-                </span>
-                <div>
-                  <h2>{{ text('نافذة الدفعة', 'Payout window') }}</h2>
-                  <p>
-                    {{
-                      text(
-                        'لم يتم اختيار نافذة بعد.',
-                        'No window selected yet.'
-                      )
-                    }}
-                  </p>
-                </div>
-              </div>
-            </header>
-            <div class="mm-due-window__body">
-              <p class="mm-due-empty">
-                {{
-                  text(
-                    'اضغط على أحد الأقسام أعلاه لفتح نافذته هنا داخل الصفحة.',
-                    'Click one of the sections above to open its window here inside the page.'
-                  )
-                }}
-              </p>
-            </div>
-          </div>
         }
       </div>
     </div>

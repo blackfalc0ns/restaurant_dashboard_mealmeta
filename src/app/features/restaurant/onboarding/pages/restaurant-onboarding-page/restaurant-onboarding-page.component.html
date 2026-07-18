@@ -143,6 +143,9 @@
               @case ('business') {
                 <svg class="size-6" viewBox="0 0 24 24" fill="none"><path d="M4 21V7l8-4 8 4v14" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="1.5"/></svg>
               }
+              @case ('offerings') {
+                <svg class="size-6" viewBox="0 0 24 24" fill="none"><path d="M12 3 3.5 7.5v9L12 21l8.5-4.5v-9L12 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3.5 7.5M12 12v9M12 12l8.5-4.5M7 5l10 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              }
               @case ('location') {
                 <svg class="size-6" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-4.5 7-10a7 7 0 1 0-14 0c0 5.5 7 10 7 10Z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="11" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg>
               }
@@ -171,6 +174,7 @@
           @switch (facade.currentStep()) {
             @case ('account') { <mm-onboarding-account-step /> }
             @case ('business') { <mm-onboarding-business-step /> }
+            @case ('offerings') { <mm-onboarding-offerings-step /> }
             @case ('location') { <mm-onboarding-location-step /> }
             @case ('documents') { <mm-onboarding-documents-step /> }
             @case ('regions') { <mm-onboarding-regions-step /> }

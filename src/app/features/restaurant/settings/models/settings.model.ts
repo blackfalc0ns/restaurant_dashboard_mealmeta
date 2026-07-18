@@ -74,6 +74,11 @@ export interface SettingsRegionsDraft {
   commissionRatePct: number;
 }
 
+export interface SettingsOfferingsDraft {
+  programIds: string[];
+  bundleIds: string[];
+}
+
 export interface SettingsSecurityDraft {
   passwordHint: string;
   twoFactorEnabled: boolean;
@@ -90,6 +95,7 @@ export interface SettingsDraft {
   account: SettingsAccountDraft;
   business: SettingsBusinessDraft;
   location: SettingsLocationDraft;
+  offerings: SettingsOfferingsDraft;
   documents: SettingsDocumentItem[];
   regions: SettingsRegionsDraft;
   operationsToggles: SettingsToggle[];
@@ -107,6 +113,8 @@ export interface RestaurantSettingsData {
   countries: SettingsOption[];
   regions: SettingsOption[];
   serviceAreaOptions: SettingsOption[];
+  programOptions: SettingsOption[];
+  bundleOptions: SettingsOption[];
   payoutDayOptions: SettingsOption[];
   draft: SettingsDraft;
   operationsPolicyNote: LocalizedText;

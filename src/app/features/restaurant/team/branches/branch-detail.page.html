@@ -1,0 +1,230 @@
+<div class="mm-team-page__inner">
+  @if (facade.page().viewState === 'loading' || !facade.data()) {
+    <mm-team-skeleton />
+  } @else if (!branch()) {
+    <mm-page-state
+      viewState="empty"
+      [errorMessage]="text('الفرع غير موجود', 'Branch not found')"
+      (retry)="facade.retry()"
+    />
+  } @else {
+    @if (branch(); as item) {
+      <div class="mm-ops-scroll">
+        <mm-ops-detail-hero
+          icon="lucideStore"
+          [title]="name(item)"
+          [subtitle]="item.code"
+          [status]="item.status"
+        >
+          <a opsBack routerLink="/restaurant/team/branches" class="mm-team-back">
+            <ng-icon
+              [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+              class="size-4"
+            />
+            {{ text('العودة للفروع', 'Back to branches') }}
+          </a>
+          <div opsActions>
+            @if (!item.isPrimary) {
+              <button type="button" class="mm-team-btn is-ghost" (click)="setPrimary(item)">
+                <ng-icon name="lucideStar" class="size-4" />
+                {{ text('تعيين كرئيسي', 'Make primary') }}
+              </button>
+            }
+            <button type="button" class="mm-team-btn" (click)="startEdit(item)">
+              {{ text('تعديل', 'Edit') }}
+            </button>
+          </div>
+        </mm-ops-detail-hero>
+
+        <div class="mm-team-detail-grid">
+          <mm-ops-board>
+            <div class="mm-ops-board__head">
+              <div>
+                <h2>{{ text('تفاصيل الفرع', 'Branch details') }}</h2>
+                <p>{{ text('العنوان والحالة والتواصل', 'Address, status, and contact') }}</p>
+              </div>
+            </div>
+
+            @if (facade.branchFormOpen()) {
+              <div class="mm-team-form">
+                <label>
+                  <span>{{ text('الاسم (عربي)', 'Name (AR)') }}</span>
+                  <input
+                    type="text"
+                    [ngModel]="facade.branchDraft().nameAr"
+                    (ngModelChange)="facade.patchBranchDraft({ nameAr: $event })"
+                  />
+                </label>
+                <label>
+                  <span>{{ text('الاسم (EN)', 'Name (EN)') }}</span>
+                  <input
+                    type="text"
+                    dir="ltr"
+                    [ngModel]="facade.branchDraft().nameEn"
+                    (ngModelChange)="facade.patchBranchDraft({ nameEn: $event })"
+                  />
+                </label>
+                <label>
+                  <span>{{ text('الرمز', 'Code') }}</span>
+                  <input
+                    type="text"
+                    dir="ltr"
+                    [ngModel]="facade.branchDraft().code"
+                    (ngModelChange)="facade.patchBranchDraft({ code: $event })"
+                  />
+                </label>
+                <label>
+                  <span>{{ text('الهاتف', 'Phone') }}</span>
+                  <input
+                    type="tel"
+                    dir="ltr"
+                    [ngModel]="facade.branchDraft().phone"
+                    (ngModelChange)="facade.patchBranchDraft({ phone: $event })"
+                  />
+                </label>
+                <label class="mm-team-form__wide">
+                  <span>{{ text('العنوان', 'Address') }}</span>
+                  <input
+                    type="text"
+                    [ngModel]="facade.branchDraft().addressAr"
+                    (ngModelChange)="facade.patchBranchDraft({ addressAr: $event })"
+                  />
+                </label>
+                <label>
+                  <span>{{ text('المحافظة', 'Governorate') }}</span>
+                  <input
+                    type="text"
+                    [ngModel]="facade.branchDraft().governorateAr"
+                    (ngModelChange)="facade.patchBranchDraft({ governorateAr: $event })"
+                  />
+                </label>
+                <label>
+                  <span>{{ text('الحالة', 'Status') }}</span>
+                  <select
+                    [ngModel]="facade.branchDraft().status"
+                    (ngModelChange)="facade.patchBranchDraft({ status: $event })"
+                    [disabled]="item.isPrimary"
+                  >
+                    <option value="active">{{ text('نشط', 'Active') }}</option>
+                    <option value="paused">{{ text('متوقف', 'Paused') }}</option>
+                  </select>
+                </label>
+                <label class="mm-team-form__wide">
+                  <span>{{ text('ملاحظات', 'Notes') }}</span>
+                  <input
+                    type="text"
+                    [ngModel]="facade.branchDraft().notesAr"
+                    (ngModelChange)="facade.patchBranchDraft({ notesAr: $event })"
+                  />
+                </label>
+              </div>
+              <div class="mm-team-form__actions">
+                <button type="button" class="mm-team-btn is-ghost" (click)="facade.closeBranchForm()">
+                  {{ text('إلغاء', 'Cancel') }}
+                </button>
+                <button
+                  type="button"
+                  class="mm-team-btn"
+                  [disabled]="facade.saving()"
+                  (click)="save(item)"
+                >
+                  <ng-icon name="lucideSave" class="size-4" />
+                  {{ text('حفظ', 'Save') }}
+                </button>
+              </div>
+            } @else {
+              <div class="mm-team-fields">
+                <div>
+                  <small>{{ text('المحافظة', 'Governorate') }}</small>
+                  <strong>
+                    <ng-icon name="lucideMapPinned" class="size-3.5" />
+                    {{ governorate(item) }}
+                  </strong>
+                </div>
+                <div>
+                  <small>{{ text('الهاتف', 'Phone') }}</small>
+                  <strong dir="ltr">
+                    <ng-icon name="lucidePhone" class="size-3.5" />
+                    {{ item.phone }}
+                  </strong>
+                </div>
+                <div class="mm-team-fields__wide">
+                  <small>{{ text('العنوان', 'Address') }}</small>
+                  <strong>{{ address(item) }}</strong>
+                </div>
+                <div>
+                  <small>{{ text('الحالة', 'Status') }}</small>
+                  <strong>
+                    <span class="mm-team-status" [attr.data-status]="item.status">
+                      {{ item.status === 'active' ? text('نشط', 'Active') : text('متوقف', 'Paused') }}
+                    </span>
+                  </strong>
+                </div>
+                @if (notes(item)) {
+                  <div class="mm-team-fields__wide">
+                    <small>{{ text('ملاحظات', 'Notes') }}</small>
+                    <strong>{{ notes(item) }}</strong>
+                  </div>
+                }
+              </div>
+
+              @if (!item.isPrimary) {
+                <div class="mm-team-form__actions">
+                  <button
+                    type="button"
+                    class="mm-team-btn is-ghost"
+                    (click)="setStatus(item, item.status === 'active' ? 'paused' : 'active')"
+                  >
+                    {{
+                      item.status === 'active'
+                        ? text('إيقاف الفرع', 'Pause branch')
+                        : text('تفعيل الفرع', 'Activate branch')
+                    }}
+                  </button>
+                </div>
+              }
+            }
+          </mm-ops-board>
+
+          <mm-ops-board>
+            <div class="mm-ops-board__head">
+              <div>
+                <h2>{{ text('الموظفون على الفرع', 'Staff on branch') }}</h2>
+                <p>{{ text('من لديهم وصول لهذا الموقع', 'People with access to this location') }}</p>
+              </div>
+              <span class="mm-ops-count">{{ staffOnBranch().length }}</span>
+            </div>
+
+            @if (staffOnBranch().length === 0) {
+              <p class="mm-team-empty">{{ text('لا موظفون مرتبطون.', 'No linked staff.') }}</p>
+            } @else {
+              <ul class="mm-team-mini-list">
+                @for (member of staffOnBranch(); track member.id) {
+                  <li>
+                    <a [routerLink]="['/restaurant/team/staff', member.id]">
+                      <strong>{{ pickName(member) }}</strong>
+                      <span>{{ member.email }}</span>
+                    </a>
+                    <em class="mm-team-status" [attr.data-status]="member.status">
+                      {{ staffStatus(member.status) }}
+                    </em>
+                  </li>
+                }
+              </ul>
+            }
+
+            <p class="mm-team-note">
+              <ng-icon name="lucideInfo" class="size-3.5" />
+              {{
+                text(
+                  'إيقاف فرع عليه موظفون لا يحذف الوصول تلقائياً — راجع تعيينات الموظفين.',
+                  'Pausing a branch with staff does not remove access automatically — review staff assignments.'
+                )
+              }}
+            </p>
+          </mm-ops-board>
+        </div>
+      </div>
+    }
+  }
+</div>

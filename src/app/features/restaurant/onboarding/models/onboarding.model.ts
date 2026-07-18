@@ -1,6 +1,7 @@
 export type OnboardingStepId =
   | 'account'
   | 'business'
+  | 'offerings'
   | 'location'
   | 'documents'
   | 'regions'
@@ -49,9 +50,23 @@ export interface OnboardingRegionsData {
   accountHolder: string;
 }
 
+export interface OnboardingCatalogOption {
+  id: string;
+  ar: string;
+  en: string;
+  detailAr?: string;
+  detailEn?: string;
+}
+
+export interface OnboardingOfferingsData {
+  programIds: string[];
+  bundleIds: string[];
+}
+
 export interface RestaurantOnboardingDraft {
   account: OnboardingAccountData;
   business: OnboardingBusinessData;
+  offerings: OnboardingOfferingsData;
   location: OnboardingLocationData;
   documents: OnboardingDocumentItem[];
   regions: OnboardingRegionsData;

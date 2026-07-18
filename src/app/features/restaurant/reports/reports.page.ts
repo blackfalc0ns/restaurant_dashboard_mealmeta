@@ -20,7 +20,6 @@ import {
   lucideLoaderCircle,
   lucidePackage,
   lucideSearch,
-  lucideX,
 } from '@ng-icons/lucide';
 import { map } from 'rxjs';
 
@@ -81,7 +80,6 @@ interface ReportSectionCard {
       lucideLoaderCircle,
       lucidePackage,
       lucideSearch,
-      lucideX,
     }),
   ],
 })
@@ -91,7 +89,7 @@ export class ReportsPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  readonly activeSection = signal<ReportSection | null>(null);
+  readonly activeSection = signal<ReportSection>('library');
 
   private readonly routeSection = toSignal(
     this.route.queryParamMap.pipe(
@@ -223,7 +221,7 @@ export class ReportsPageComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const section = this.routeSection();
+      const section = this.routeSection() ?? 'library';
       this.activeSection.set(section);
       if (section === 'library') {
         this.facade.setFilter('all');
@@ -237,6 +235,14 @@ export class ReportsPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.facade.load();
+    if (!this.route.snapshot.queryParamMap.get('section')) {
+      void this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { section: 'library' },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
   }
 
   text(ar: string, en: string): string {
@@ -270,13 +276,6 @@ export class ReportsPageComponent implements OnInit {
     });
   }
 
-  closeSection(): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { section: null },
-      queryParamsHandling: 'merge',
-    });
-  }
 
   openLine(line: ReportLine): void {
     void this.router.navigate(['/restaurant/finance/reports', line.id]);

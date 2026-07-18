@@ -1,0 +1,259 @@
+<div class="mm-team-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-team-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <div class="mm-ops-scroll">
+      <mm-ops-hero
+        icon="lucideStore"
+        [eyebrow]="dateLabel()"
+        [title]="title()"
+        [subtitle]="subtitle()"
+      >
+        <div opsActions>
+          <button type="button" class="mm-team-btn" (click)="openCreate()">
+            <ng-icon name="lucidePlus" class="size-4" />
+            {{ text('إضافة فرع', 'Add branch') }}
+          </button>
+        </div>
+        <ng-container opsMetrics>
+          @for (card of data.summaries; track card.id) {
+            <div>
+              <small>{{ summaryLabel(card) }}</small>
+              <strong>{{ card.value }}</strong>
+            </div>
+          }
+        </ng-container>
+      </mm-ops-hero>
+
+      @if (facade.branchFormOpen()) {
+        <mm-ops-board>
+          <div class="mm-ops-board__head">
+            <div>
+              <h2>{{ text('فرع جديد', 'New branch') }}</h2>
+              <p>{{ text('أدخل بيانات الموقع التشغيلي', 'Enter the operating location details') }}</p>
+            </div>
+          </div>
+          <div class="mm-team-form">
+            <label>
+              <span>{{ text('الاسم (عربي)', 'Name (AR)') }}</span>
+              <input
+                type="text"
+                [ngModel]="facade.branchDraft().nameAr"
+                (ngModelChange)="facade.patchBranchDraft({ nameAr: $event })"
+              />
+            </label>
+            <label>
+              <span>{{ text('الاسم (EN)', 'Name (EN)') }}</span>
+              <input
+                type="text"
+                dir="ltr"
+                [ngModel]="facade.branchDraft().nameEn"
+                (ngModelChange)="facade.patchBranchDraft({ nameEn: $event })"
+              />
+            </label>
+            <label>
+              <span>{{ text('الرمز', 'Code') }}</span>
+              <input
+                type="text"
+                dir="ltr"
+                [ngModel]="facade.branchDraft().code"
+                (ngModelChange)="facade.patchBranchDraft({ code: $event })"
+              />
+            </label>
+            <label>
+              <span>{{ text('الهاتف', 'Phone') }}</span>
+              <input
+                type="tel"
+                dir="ltr"
+                [ngModel]="facade.branchDraft().phone"
+                (ngModelChange)="facade.patchBranchDraft({ phone: $event })"
+              />
+            </label>
+            <label class="mm-team-form__wide">
+              <span>{{ text('العنوان (عربي)', 'Address (AR)') }}</span>
+              <input
+                type="text"
+                [ngModel]="facade.branchDraft().addressAr"
+                (ngModelChange)="facade.patchBranchDraft({ addressAr: $event })"
+              />
+            </label>
+            <label>
+              <span>{{ text('المحافظة', 'Governorate') }}</span>
+              <input
+                type="text"
+                [ngModel]="facade.branchDraft().governorateAr"
+                (ngModelChange)="facade.patchBranchDraft({ governorateAr: $event })"
+              />
+            </label>
+            <label>
+              <span>{{ text('الحالة', 'Status') }}</span>
+              <select
+                [ngModel]="facade.branchDraft().status"
+                (ngModelChange)="facade.patchBranchDraft({ status: $event })"
+              >
+                <option value="active">{{ text('نشط', 'Active') }}</option>
+                <option value="paused">{{ text('متوقف', 'Paused') }}</option>
+              </select>
+            </label>
+          </div>
+          <div class="mm-team-form__actions">
+            <button type="button" class="mm-team-btn is-ghost" (click)="facade.closeBranchForm()">
+              {{ text('إلغاء', 'Cancel') }}
+            </button>
+            <button
+              type="button"
+              class="mm-team-btn"
+              [disabled]="facade.saving()"
+              (click)="facade.saveBranch()"
+            >
+              {{ text('حفظ الفرع', 'Save branch') }}
+            </button>
+          </div>
+        </mm-ops-board>
+      }
+
+      <mm-ops-board>
+        <div class="mm-ops-board__head">
+          <div>
+            <h2>{{ text('قائمة الفروع', 'Branch list') }}</h2>
+            <p>{{ text('إدارة الحالة والفرع الرئيسي', 'Manage status and primary branch') }}</p>
+          </div>
+          <span class="mm-ops-count">{{ facade.filteredBranches().length }}</span>
+        </div>
+
+        <mm-ops-toolbar>
+          <label class="mm-ops-search">
+            <ng-icon name="lucideSearch" class="size-4" />
+            <input
+              type="search"
+              [placeholder]="text('بحث بالاسم أو الرمز…', 'Search by name or code…')"
+              [ngModel]="facade.branchSearch()"
+              (ngModelChange)="onSearch($event)"
+            />
+          </label>
+          <mm-ops-filters>
+            @for (option of filters; track option.id) {
+              <button
+                type="button"
+                [class.is-active]="facade.branchFilter() === option.id"
+                (click)="setFilter(option.id)"
+              >
+                {{ filterLabel(option) }}
+                <b>{{ facade.branchFilterCounts()[option.id] }}</b>
+              </button>
+            }
+          </mm-ops-filters>
+        </mm-ops-toolbar>
+
+        @if (facade.filteredBranches().length === 0) {
+          <p class="mm-team-empty">{{ text('لا توجد فروع مطابقة.', 'No matching branches.') }}</p>
+        } @else {
+          <div class="mm-team-table" role="table">
+            <div class="mm-team-table__head mm-team-table__head--branches" role="row">
+              <span>{{ text('الفرع', 'Branch') }}</span>
+              <span>{{ text('الموقع', 'Location') }}</span>
+              <span>{{ text('الموظفون', 'Staff') }}</span>
+              <span>{{ text('الحالة', 'Status') }}</span>
+              <span>{{ text('إجراء', 'Action') }}</span>
+            </div>
+
+            @for (branch of facade.pagedBranches(); track branch.id) {
+              <a
+                class="mm-team-row mm-team-row--branches"
+                role="row"
+                [attr.data-status]="branch.status"
+                [routerLink]="['/restaurant/team/branches', branch.id]"
+              >
+                <div class="mm-team-cell mm-team-cell--branch">
+                  <strong>
+                    {{ branchName(branch) }}
+                    @if (branch.isPrimary) {
+                      <em class="mm-team-tag">{{ text('رئيسي', 'Primary') }}</em>
+                    }
+                  </strong>
+                  <span class="mm-team-cell__meta" dir="ltr">{{ branch.code }}</span>
+                </div>
+                <div class="mm-team-cell mm-team-cell--location">
+                  <strong>
+                    <ng-icon name="lucideMapPinned" class="size-3.5 shrink-0" />
+                    {{ branchGovernorate(branch) }}
+                  </strong>
+                  <span class="mm-team-cell__meta">{{ branchAddress(branch) }}</span>
+                  <span class="mm-team-cell__meta" dir="ltr">
+                    <ng-icon name="lucidePhone" class="size-3 shrink-0" />
+                    {{ branch.phone }}
+                  </span>
+                </div>
+                <div class="mm-team-cell mm-team-cell--center">
+                  <strong class="mm-team-staff-count">
+                    <ng-icon name="lucideUsers" class="size-3.5 shrink-0" />
+                    {{ branch.staffCount }}
+                  </strong>
+                </div>
+                <div class="mm-team-cell mm-team-cell--center">
+                  <span class="mm-team-status" [attr.data-status]="branch.status">
+                    {{ statusLabel(branch) }}
+                  </span>
+                </div>
+                <div
+                  class="mm-team-cell mm-team-cell--action"
+                  (click)="$event.preventDefault(); $event.stopPropagation()"
+                >
+                  @if (!branch.isPrimary) {
+                    <button
+                      type="button"
+                      class="mm-team-btn is-ghost is-compact"
+                      (click)="toggleStatus(branch, $event)"
+                    >
+                      <ng-icon
+                        [name]="branch.status === 'active' ? 'lucidePause' : 'lucidePlay'"
+                        class="size-3.5"
+                      />
+                      {{
+                        branch.status === 'active'
+                          ? text('إيقاف', 'Pause')
+                          : text('تفعيل', 'Activate')
+                      }}
+                    </button>
+                  } @else {
+                    <small class="mm-team-hint">{{ text('لا يُوقف', 'Cannot pause') }}</small>
+                  }
+                </div>
+              </a>
+            }
+          </div>
+
+          @if (facade.branchTotalPages() > 1) {
+            <mm-ops-pager
+              [range]="rangeText()"
+              [currentPage]="facade.branchPage()"
+              [totalPages]="facade.branchTotalPages()"
+              [pages]="facade.branchPageNumbers()"
+              [rtl]="locale.isRtl()"
+              [prevLabel]="text('السابق', 'Prev')"
+              [nextLabel]="text('التالي', 'Next')"
+              (prev)="prevPage()"
+              (next)="nextPage()"
+              (goTo)="goToPage($event)"
+            />
+          }
+        }
+
+        <p class="mm-team-note">
+          <ng-icon name="lucideInfo" class="size-3.5" />
+          {{ note() }}
+        </p>
+      </mm-ops-board>
+    </div>
+  }
+</div>

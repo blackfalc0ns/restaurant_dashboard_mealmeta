@@ -20,7 +20,6 @@ import {
   lucideScale,
   lucideSearch,
   lucideShieldAlert,
-  lucideX,
 } from '@ng-icons/lucide';
 import { map } from 'rxjs';
 
@@ -81,7 +80,6 @@ interface DeductionSectionCard {
       lucideScale,
       lucideSearch,
       lucideShieldAlert,
-      lucideX,
     }),
   ],
 })
@@ -91,7 +89,7 @@ export class DeductionsPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  readonly activeSection = signal<DeductionSection | null>(null);
+  readonly activeSection = signal<DeductionSection>('ledger');
 
   private readonly routeSection = toSignal(
     this.route.queryParamMap.pipe(
@@ -229,7 +227,7 @@ export class DeductionsPageComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const section = this.routeSection();
+      const section = this.routeSection() ?? 'ledger';
       this.activeSection.set(section);
       if (section === 'ledger') {
         this.facade.setFilter('all');
@@ -243,6 +241,14 @@ export class DeductionsPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.facade.load();
+    if (!this.route.snapshot.queryParamMap.get('section')) {
+      void this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { section: 'ledger' },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
   }
 
   text(ar: string, en: string): string {
@@ -276,13 +282,6 @@ export class DeductionsPageComponent implements OnInit {
     });
   }
 
-  closeSection(): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { section: null },
-      queryParamsHandling: 'merge',
-    });
-  }
 
   openLine(line: DeductionLine): void {
     void this.router.navigate(['/restaurant/finance/deductions', line.id]);

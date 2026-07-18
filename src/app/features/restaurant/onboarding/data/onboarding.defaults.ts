@@ -1,12 +1,49 @@
-import type { OnboardingDocumentItem, OnboardingStepMeta } from '../models/onboarding.model';
+import type {
+  OnboardingCatalogOption,
+  OnboardingDocumentItem,
+  OnboardingStepMeta,
+  RestaurantOnboardingDraft,
+} from '../models/onboarding.model';
 
 export const ONBOARDING_STEPS: OnboardingStepMeta[] = [
   { id: 'account', order: 1, icon: 'user' },
   { id: 'business', order: 2, icon: 'building' },
-  { id: 'location', order: 3, icon: 'map' },
-  { id: 'documents', order: 4, icon: 'file' },
-  { id: 'regions', order: 5, icon: 'globe' },
-  { id: 'review', order: 6, icon: 'check' },
+  { id: 'offerings', order: 3, icon: 'package' },
+  { id: 'location', order: 4, icon: 'map' },
+  { id: 'documents', order: 5, icon: 'file' },
+  { id: 'regions', order: 6, icon: 'globe' },
+  { id: 'review', order: 7, icon: 'check' },
+];
+
+export const ONBOARDING_PROGRAM_OPTIONS: OnboardingCatalogOption[] = [
+  { id: 'PRG-001', ar: 'رشاقة', en: 'Cutting' },
+  { id: 'PRG-002', ar: 'ضخامة', en: 'Bulking' },
+  { id: 'PRG-003', ar: 'محافظة', en: 'Maintain' },
+  { id: 'PRG-004', ar: 'كيتو', en: 'Keto' },
+];
+
+export const ONBOARDING_BUNDLE_OPTIONS: OnboardingCatalogOption[] = [
+  {
+    id: 'BND-001',
+    ar: 'باقة كاملة',
+    en: 'Full bundle',
+    detailAr: 'فطور + وجبتان رئيسيتان + سناك + سلطة',
+    detailEn: 'Breakfast + 2 mains + snack + salad',
+  },
+  {
+    id: 'BND-002',
+    ar: 'باقة الغداء',
+    en: 'Lunch bundle',
+    detailAr: 'وجبة رئيسية + سلطة',
+    detailEn: '1 main + salad',
+  },
+  {
+    id: 'BND-003',
+    ar: 'باقة مخصصة',
+    en: 'Custom bundle',
+    detailAr: 'تركيبة حسب اختيار العميل',
+    detailEn: 'Customer-configured composition',
+  },
 ];
 
 export const DEFAULT_DOCUMENTS: OnboardingDocumentItem[] = [
@@ -80,7 +117,7 @@ export const SERVICE_AREA_OPTIONS = [
   { id: 'dasma', ar: 'الدسمة', en: 'Dasma' },
 ];
 
-export function createEmptyDraft(): import('../models/onboarding.model').RestaurantOnboardingDraft {
+export function createEmptyDraft(): RestaurantOnboardingDraft {
   return {
     account: { email: '', phone: '', password: '', confirmPassword: '' },
     business: {
@@ -90,6 +127,7 @@ export function createEmptyDraft(): import('../models/onboarding.model').Restaur
       ownerName: '',
       ownerNationalId: '',
     },
+    offerings: { programIds: [], bundleIds: [] },
     location: {
       countryId: 'kw',
       regionId: '',

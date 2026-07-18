@@ -1,5 +1,7 @@
 import {
   KUWAIT_REGIONS,
+  ONBOARDING_BUNDLE_OPTIONS,
+  ONBOARDING_PROGRAM_OPTIONS,
   SERVICE_AREA_OPTIONS,
 } from '../../onboarding/data/onboarding.defaults';
 import { RestaurantSettingsData } from '../models/settings.model';
@@ -54,6 +56,14 @@ export const SETTINGS_MOCK: RestaurantSettingsData = {
     id: item.id,
     label: { ar: item.ar, en: item.en },
   })),
+  programOptions: ONBOARDING_PROGRAM_OPTIONS.map((item) => ({
+    id: item.id,
+    label: { ar: item.ar, en: item.en },
+  })),
+  bundleOptions: ONBOARDING_BUNDLE_OPTIONS.map((item) => ({
+    id: item.id,
+    label: { ar: item.ar, en: item.en },
+  })),
   payoutDayOptions: [
     { id: 'sunday', label: { ar: 'الأحد', en: 'Sunday' } },
     { id: 'monday', label: { ar: 'الإثنين', en: 'Monday' } },
@@ -81,6 +91,10 @@ export const SETTINGS_MOCK: RestaurantSettingsData = {
       contactPersonName: 'سارة العتيبي',
       contactPhone: '+965 5000 2140',
       contactEmail: 'ops@mealmate-kitchen.kw',
+    },
+    offerings: {
+      programIds: ['PRG-001', 'PRG-003'],
+      bundleIds: ['BND-001', 'BND-002'],
     },
     documents: [
       {

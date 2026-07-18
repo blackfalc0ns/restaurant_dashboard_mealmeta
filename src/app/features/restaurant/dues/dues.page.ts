@@ -20,7 +20,6 @@ import {
   lucidePackage,
   lucideSearch,
   lucideWallet,
-  lucideX,
 } from '@ng-icons/lucide';
 import { map } from 'rxjs';
 
@@ -81,7 +80,6 @@ interface DueSectionCard {
       lucidePackage,
       lucideSearch,
       lucideWallet,
-      lucideX,
     }),
   ],
 })
@@ -91,7 +89,7 @@ export class DuesPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  readonly activeSection = signal<DueSection | null>(null);
+  readonly activeSection = signal<DueSection>('ledger');
 
   private readonly routeSection = toSignal(
     this.route.queryParamMap.pipe(
@@ -256,7 +254,7 @@ export class DuesPageComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const section = this.routeSection();
+      const section = this.routeSection() ?? 'ledger';
       this.activeSection.set(section);
       if (section === 'ledger') {
         this.facade.setFilter('all');
@@ -268,6 +266,14 @@ export class DuesPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.facade.load();
+    if (!this.route.snapshot.queryParamMap.get('section')) {
+      void this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { section: 'ledger' },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
   }
 
   text(ar: string, en: string): string {
@@ -301,13 +307,6 @@ export class DuesPageComponent implements OnInit {
     });
   }
 
-  closeSection(): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { section: null },
-      queryParamsHandling: 'merge',
-    });
-  }
 
   openDue(line: DueLine): void {
     void this.router.navigate(['/restaurant/finance/dues', line.id]);

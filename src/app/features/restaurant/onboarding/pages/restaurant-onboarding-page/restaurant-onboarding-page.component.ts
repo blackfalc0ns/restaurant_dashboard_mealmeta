@@ -11,6 +11,7 @@ import { OnboardingAccountStepComponent } from '../../steps/onboarding-account-s
 import { OnboardingBusinessStepComponent } from '../../steps/onboarding-business-step/onboarding-business-step.component';
 import { OnboardingDocumentsStepComponent } from '../../steps/onboarding-documents-step/onboarding-documents-step.component';
 import { OnboardingLocationStepComponent } from '../../steps/onboarding-location-step/onboarding-location-step.component';
+import { OnboardingOfferingsStepComponent } from '../../steps/onboarding-offerings-step/onboarding-offerings-step.component';
 import { OnboardingRegionsStepComponent } from '../../steps/onboarding-regions-step/onboarding-regions-step.component';
 import { OnboardingReviewStepComponent } from '../../steps/onboarding-review-step/onboarding-review-step.component';
 
@@ -23,6 +24,7 @@ import { OnboardingReviewStepComponent } from '../../steps/onboarding-review-ste
     OnboardingStepperComponent,
     OnboardingAccountStepComponent,
     OnboardingBusinessStepComponent,
+    OnboardingOfferingsStepComponent,
     OnboardingLocationStepComponent,
     OnboardingDocumentsStepComponent,
     OnboardingRegionsStepComponent,

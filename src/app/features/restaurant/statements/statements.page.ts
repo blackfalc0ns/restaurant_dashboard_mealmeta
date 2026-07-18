@@ -19,7 +19,6 @@ import {
   lucidePackage,
   lucideScrollText,
   lucideSearch,
-  lucideX,
 } from '@ng-icons/lucide';
 import { map } from 'rxjs';
 
@@ -78,7 +77,6 @@ interface StatementSectionCard {
       lucidePackage,
       lucideScrollText,
       lucideSearch,
-      lucideX,
     }),
   ],
 })
@@ -88,7 +86,7 @@ export class StatementsPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  readonly activeSection = signal<StatementSection | null>(null);
+  readonly activeSection = signal<StatementSection>('ledger');
 
   private readonly routeSection = toSignal(
     this.route.queryParamMap.pipe(
@@ -223,7 +221,7 @@ export class StatementsPageComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const section = this.routeSection();
+      const section = this.routeSection() ?? 'ledger';
       this.activeSection.set(section);
       if (section === 'ledger') {
         this.facade.setFilter('all');
@@ -237,6 +235,14 @@ export class StatementsPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.facade.load();
+    if (!this.route.snapshot.queryParamMap.get('section')) {
+      void this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { section: 'ledger' },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
   }
 
   text(ar: string, en: string): string {
@@ -270,13 +276,6 @@ export class StatementsPageComponent implements OnInit {
     });
   }
 
-  closeSection(): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { section: null },
-      queryParamsHandling: 'merge',
-    });
-  }
 
   openLine(line: StatementLine): void {
     void this.router.navigate(['/restaurant/finance/statements', line.id]);

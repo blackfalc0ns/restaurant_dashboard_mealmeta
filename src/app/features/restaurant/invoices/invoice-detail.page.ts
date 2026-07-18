@@ -24,7 +24,6 @@ import {
   lucidePrinter,
   lucideReceipt,
   lucideSearch,
-  lucideX,
 } from '@ng-icons/lucide';
 import { map } from 'rxjs';
 
@@ -91,7 +90,6 @@ interface InvoiceDetailWindowCard {
       lucidePrinter,
       lucideReceipt,
       lucideSearch,
-      lucideX,
     }),
   ],
 })
@@ -254,13 +252,12 @@ export class InvoiceDetailPageComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const windowId = this.routeWindow();
       const available = this.windows().map((item) => item.id);
-      if (windowId && available.includes(windowId)) {
-        this.activeWindow.set(windowId);
-        return;
-      }
-      this.activeWindow.set(null);
+      if (available.length === 0) return;
+      const windowId = this.routeWindow();
+      const next =
+        windowId && available.includes(windowId) ? windowId : available[0];
+      this.activeWindow.set(next);
     });
 
     effect(() => {
@@ -314,13 +311,6 @@ export class InvoiceDetailPageComponent implements OnInit {
     });
   }
 
-  closeWindow(): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { window: null },
-      queryParamsHandling: 'merge',
-    });
-  }
 
   onItemSearch(value: string): void {
     this.itemSearch.set(value);

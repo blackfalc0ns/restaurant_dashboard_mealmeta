@@ -22,7 +22,6 @@ import {
   lucideReceipt,
   lucideScrollText,
   lucideSearch,
-  lucideX,
 } from '@ng-icons/lucide';
 import { map } from 'rxjs';
 
@@ -88,7 +87,6 @@ interface StatementDetailWindowCard {
       lucideReceipt,
       lucideScrollText,
       lucideSearch,
-      lucideX,
     }),
   ],
 })
@@ -249,13 +247,12 @@ export class StatementDetailPageComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const windowId = this.routeWindow();
       const available = this.windows().map((item) => item.id);
-      if (windowId && available.includes(windowId)) {
-        this.activeWindow.set(windowId);
-        return;
-      }
-      this.activeWindow.set(null);
+      if (available.length === 0) return;
+      const windowId = this.routeWindow();
+      const next =
+        windowId && available.includes(windowId) ? windowId : available[0];
+      this.activeWindow.set(next);
     });
 
     effect(() => {
@@ -309,13 +306,6 @@ export class StatementDetailPageComponent implements OnInit {
     });
   }
 
-  closeWindow(): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { window: null },
-      queryParamsHandling: 'merge',
-    });
-  }
 
   onEntrySearch(value: string): void {
     this.entrySearch.set(value);

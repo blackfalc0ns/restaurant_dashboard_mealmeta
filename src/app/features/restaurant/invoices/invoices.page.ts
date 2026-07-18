@@ -19,7 +19,6 @@ import {
   lucidePackage,
   lucidePrinter,
   lucideSearch,
-  lucideX,
 } from '@ng-icons/lucide';
 import { map } from 'rxjs';
 
@@ -78,7 +77,6 @@ interface InvoiceSectionCard {
       lucidePackage,
       lucidePrinter,
       lucideSearch,
-      lucideX,
     }),
   ],
 })
@@ -88,7 +86,7 @@ export class InvoicesPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  readonly activeSection = signal<InvoiceSection | null>(null);
+  readonly activeSection = signal<InvoiceSection>('ledger');
 
   private readonly routeSection = toSignal(
     this.route.queryParamMap.pipe(
@@ -228,7 +226,7 @@ export class InvoicesPageComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const section = this.routeSection();
+      const section = this.routeSection() ?? 'ledger';
       this.activeSection.set(section);
       if (section === 'ledger') {
         this.facade.setFilter('all');
@@ -242,6 +240,14 @@ export class InvoicesPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.facade.load();
+    if (!this.route.snapshot.queryParamMap.get('section')) {
+      void this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { section: 'ledger' },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
   }
 
   text(ar: string, en: string): string {
@@ -275,13 +281,6 @@ export class InvoicesPageComponent implements OnInit {
     });
   }
 
-  closeSection(): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { section: null },
-      queryParamsHandling: 'merge',
-    });
-  }
 
   openLine(line: InvoiceLine): void {
     void this.router.navigate(['/restaurant/finance/invoices', line.id]);

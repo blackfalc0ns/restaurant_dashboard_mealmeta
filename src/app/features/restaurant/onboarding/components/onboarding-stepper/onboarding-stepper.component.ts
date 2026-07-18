@@ -37,6 +37,9 @@ import { RestaurantOnboardingFacade } from '../../state/onboarding.facade';
                   @case ('building') {
                     <svg class="size-4" viewBox="0 0 24 24" fill="none"><path d="M4 21V7l8-4 8 4v14" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 21v-6h6v6M9 9h.01M15 9h.01M9 13h.01M15 13h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                   }
+                  @case ('package') {
+                    <svg class="size-4" viewBox="0 0 24 24" fill="none"><path d="M12 3 3.5 7.5v9L12 21l8.5-4.5v-9L12 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3.5 7.5M12 12v9M12 12l8.5-4.5M7 5l10 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  }
                   @case ('map') {
                     <svg class="size-4" viewBox="0 0 24 24" fill="none"><path d="M9 18l-6-3V6l6 3 6-3 6 3v9l-6-3-6 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 6v12M15 3v12" stroke="currentColor" stroke-width="1.5"/></svg>
                   }

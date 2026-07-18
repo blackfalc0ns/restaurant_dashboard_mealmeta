@@ -28,6 +28,10 @@ export class RestaurantOnboardingFacade {
   readonly isLastStep = computed(() => this.currentStepIndex() === this.steps.length - 1);
   readonly isSubmitting = computed(() => this.viewState() === 'submitting');
   readonly isSubmitted = computed(() => this.viewState() === 'submitted');
+  readonly comboCount = computed(() => {
+    const { programIds, bundleIds } = this.draft().offerings;
+    return programIds.length * bundleIds.length;
+  });
 
   updateDraft<K extends keyof RestaurantOnboardingDraft>(
     section: K,
@@ -56,6 +60,45 @@ export class RestaurantOnboardingFacade {
       return {
         ...current,
         regions: { ...current.regions, serviceRegions: [...selected] },
+      };
+    });
+  }
+
+  patchOfferings(
+    patch: Partial<RestaurantOnboardingDraft['offerings']>,
+  ): void {
+    this.draft.update((current) => ({
+      ...current,
+      offerings: { ...current.offerings, ...patch },
+    }));
+  }
+
+  toggleProgram(programId: string): void {
+    this.draft.update((current) => {
+      const selected = new Set(current.offerings.programIds);
+      if (selected.has(programId)) {
+        selected.delete(programId);
+      } else {
+        selected.add(programId);
+      }
+      return {
+        ...current,
+        offerings: { ...current.offerings, programIds: [...selected] },
+      };
+    });
+  }
+
+  toggleBundle(bundleId: string): void {
+    this.draft.update((current) => {
+      const selected = new Set(current.offerings.bundleIds);
+      if (selected.has(bundleId)) {
+        selected.delete(bundleId);
+      } else {
+        selected.add(bundleId);
+      }
+      return {
+        ...current,
+        offerings: { ...current.offerings, bundleIds: [...selected] },
       };
     });
   }

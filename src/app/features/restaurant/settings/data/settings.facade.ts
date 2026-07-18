@@ -8,6 +8,7 @@ import {
   SettingsBusinessDraft,
   SettingsDocumentItem,
   SettingsLocationDraft,
+  SettingsOfferingsDraft,
   SettingsRegionsDraft,
 } from '../models/settings.model';
 import { SETTINGS_MOCK } from './settings.mock';
@@ -93,6 +94,30 @@ export class SettingsFacade {
   patchRegions(patch: Partial<SettingsRegionsDraft>): void {
     this.patchDraft((draft) => {
       draft.regions = { ...draft.regions, ...patch };
+    });
+  }
+
+  patchOfferings(patch: Partial<SettingsOfferingsDraft>): void {
+    this.patchDraft((draft) => {
+      draft.offerings = { ...draft.offerings, ...patch };
+    });
+  }
+
+  toggleProgram(programId: string): void {
+    this.patchDraft((draft) => {
+      const selected = new Set(draft.offerings.programIds);
+      if (selected.has(programId)) selected.delete(programId);
+      else selected.add(programId);
+      draft.offerings.programIds = Array.from(selected);
+    });
+  }
+
+  toggleBundle(bundleId: string): void {
+    this.patchDraft((draft) => {
+      const selected = new Set(draft.offerings.bundleIds);
+      if (selected.has(bundleId)) selected.delete(bundleId);
+      else selected.add(bundleId);
+      draft.offerings.bundleIds = Array.from(selected);
     });
   }
 

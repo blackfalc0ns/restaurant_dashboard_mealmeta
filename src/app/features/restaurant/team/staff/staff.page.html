@@ -1,0 +1,238 @@
+<div class="mm-team-page__inner">
+  @if (facade.page().viewState === 'loading') {
+    <mm-team-skeleton />
+  }
+
+  @if (facade.page().viewState === 'error' || facade.page().viewState === 'empty') {
+    <mm-page-state
+      [viewState]="facade.page().viewState"
+      [errorMessage]="facade.page().errorMessage ?? ''"
+      (retry)="facade.retry()"
+    />
+  }
+
+  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+    <div class="mm-ops-scroll">
+      <mm-ops-hero
+        icon="lucideUserRound"
+        [eyebrow]="dateLabel()"
+        [title]="title()"
+        [subtitle]="subtitle()"
+      >
+        <div opsActions>
+          <button type="button" class="mm-team-btn" (click)="facade.openInviteForm()">
+            <ng-icon name="lucideUserPlus" class="size-4" />
+            {{ text('دعوة موظف', 'Invite staff') }}
+          </button>
+        </div>
+        <ng-container opsMetrics>
+          @for (card of data.summaries; track card.id) {
+            <div>
+              <small>{{ summaryLabel(card) }}</small>
+              <strong>{{ card.value }}</strong>
+            </div>
+          }
+        </ng-container>
+      </mm-ops-hero>
+
+      @if (facade.inviteOpen()) {
+        <mm-ops-board>
+          <div class="mm-ops-board__head">
+            <div>
+              <h2>{{ text('دعوة جديدة', 'New invite') }}</h2>
+              <p>{{ text('يصل رابط الدخول للبريد أو الجوال', 'Login link is sent to email or phone') }}</p>
+            </div>
+          </div>
+          <div class="mm-team-form">
+            <label>
+              <span>{{ text('الاسم (عربي)', 'Name (AR)') }}</span>
+              <input
+                type="text"
+                [ngModel]="facade.inviteDraft().fullNameAr"
+                (ngModelChange)="facade.patchInviteDraft({ fullNameAr: $event })"
+              />
+            </label>
+            <label>
+              <span>{{ text('الاسم (EN)', 'Name (EN)') }}</span>
+              <input
+                type="text"
+                dir="ltr"
+                [ngModel]="facade.inviteDraft().fullNameEn"
+                (ngModelChange)="facade.patchInviteDraft({ fullNameEn: $event })"
+              />
+            </label>
+            <label>
+              <span>{{ text('البريد', 'Email') }}</span>
+              <input
+                type="email"
+                dir="ltr"
+                [ngModel]="facade.inviteDraft().email"
+                (ngModelChange)="facade.patchInviteDraft({ email: $event })"
+              />
+            </label>
+            <label>
+              <span>{{ text('الجوال', 'Phone') }}</span>
+              <input
+                type="tel"
+                dir="ltr"
+                [ngModel]="facade.inviteDraft().phone"
+                (ngModelChange)="facade.patchInviteDraft({ phone: $event })"
+              />
+            </label>
+            <label>
+              <span>{{ text('الدور', 'Role') }}</span>
+              <select
+                [ngModel]="facade.inviteDraft().roleId"
+                (ngModelChange)="facade.patchInviteDraft({ roleId: $event })"
+              >
+                @for (role of roles; track role.id) {
+                  <option [value]="role.id">{{ filterLabel(role) }}</option>
+                }
+              </select>
+            </label>
+            <label class="mm-team-toggle-field">
+              <span>{{ text('كل الفروع', 'All branches') }}</span>
+              <input
+                type="checkbox"
+                [checked]="facade.inviteDraft().allBranches"
+                (change)="facade.patchInviteDraft({ allBranches: $any($event.target).checked, branchIds: [] })"
+              />
+            </label>
+          </div>
+
+          @if (!facade.inviteDraft().allBranches) {
+            <div class="mm-team-chips">
+              @for (branch of data.branches; track branch.id) {
+                <button
+                  type="button"
+                  class="mm-team-chip"
+                  [class.is-active]="facade.inviteDraft().branchIds.includes(branch.id)"
+                  (click)="facade.toggleInviteBranch(branch.id)"
+                >
+                  {{ locale.isRtl() ? branch.name.ar : branch.name.en }}
+                </button>
+              }
+            </div>
+          }
+
+          <div class="mm-team-form__actions">
+            <button type="button" class="mm-team-btn is-ghost" (click)="facade.closeInviteForm()">
+              {{ text('إلغاء', 'Cancel') }}
+            </button>
+            <button
+              type="button"
+              class="mm-team-btn"
+              [disabled]="facade.saving()"
+              (click)="facade.sendInvite()"
+            >
+              {{ text('إرسال الدعوة', 'Send invite') }}
+            </button>
+          </div>
+        </mm-ops-board>
+      }
+
+      <mm-ops-board>
+        <div class="mm-ops-board__head">
+          <div>
+            <h2>{{ text('قائمة الموظفين', 'Staff list') }}</h2>
+            <p>{{ text('الحالة والدور ونطاق الفروع', 'Status, role, and branch scope') }}</p>
+          </div>
+          <span class="mm-ops-count">{{ facade.filteredStaff().length }}</span>
+        </div>
+
+        <mm-ops-toolbar>
+          <label class="mm-ops-search">
+            <ng-icon name="lucideSearch" class="size-4" />
+            <input
+              type="search"
+              [placeholder]="text('بحث بالاسم أو البريد…', 'Search by name or email…')"
+              [ngModel]="facade.staffSearch()"
+              (ngModelChange)="onSearch($event)"
+            />
+          </label>
+          <mm-ops-filters>
+            @for (option of filters; track option.id) {
+              <button
+                type="button"
+                [class.is-active]="facade.staffFilter() === option.id"
+                (click)="setFilter(option.id)"
+              >
+                {{ filterLabel(option) }}
+                <b>{{ facade.staffFilterCounts()[option.id] }}</b>
+              </button>
+            }
+          </mm-ops-filters>
+        </mm-ops-toolbar>
+
+        @if (facade.filteredStaff().length === 0) {
+          <p class="mm-team-empty">{{ text('لا موظفون مطابقون.', 'No matching staff.') }}</p>
+        } @else {
+          <div class="mm-team-table" role="table">
+            <div class="mm-team-table__head mm-team-table__head--staff" role="row">
+              <span>{{ text('الموظف', 'Member') }}</span>
+              <span>{{ text('الدور', 'Role') }}</span>
+              <span>{{ text('الفروع', 'Branches') }}</span>
+              <span>{{ text('الحالة', 'Status') }}</span>
+              <span>{{ text('آخر نشاط', 'Last active') }}</span>
+            </div>
+
+            @for (member of facade.pagedStaff(); track member.id) {
+              <a
+                class="mm-team-row mm-team-row--staff"
+                role="row"
+                [attr.data-status]="member.status"
+                [routerLink]="['/restaurant/team/staff', member.id]"
+              >
+                <div class="mm-team-cell">
+                  <strong>{{ memberName(member) }}</strong>
+                  <span class="mm-team-cell__meta" dir="ltr">
+                    <ng-icon name="lucideMail" class="size-3 shrink-0" />
+                    {{ member.email }}
+                  </span>
+                  <span class="mm-team-cell__meta" dir="ltr">
+                    <ng-icon name="lucidePhone" class="size-3 shrink-0" />
+                    {{ member.phone }}
+                  </span>
+                </div>
+                <div class="mm-team-cell">
+                  <strong>{{ roleName(member.roleId) }}</strong>
+                </div>
+                <div class="mm-team-cell">
+                  <span class="mm-team-cell__meta">{{ branchScope(member) }}</span>
+                </div>
+                <div class="mm-team-cell mm-team-cell--center">
+                  <span class="mm-team-status" [attr.data-status]="member.status">
+                    {{ statusLabel(member) }}
+                  </span>
+                </div>
+                <div class="mm-team-cell mm-team-cell--meta">
+                  <span class="mm-team-cell__meta">{{ pickLocaleLabel(member.lastActiveAtLabel) }}</span>
+                </div>
+              </a>
+            }
+          </div>
+
+          @if (facade.staffTotalPages() > 1) {
+            <mm-ops-pager
+              [range]="rangeText()"
+              [currentPage]="facade.staffPage()"
+              [totalPages]="facade.staffTotalPages()"
+              [pages]="facade.staffPageNumbers()"
+              [rtl]="locale.isRtl()"
+              [prevLabel]="text('السابق', 'Prev')"
+              [nextLabel]="text('التالي', 'Next')"
+              (prev)="prevPage()"
+              (next)="nextPage()"
+              (goTo)="goToPage($event)"
+            />
+          }
+        }
+
+        <p class="mm-team-note">
+          <ng-icon name="lucideInfo" class="size-3.5" />
+          {{ note() }}
+        </p>
+      </mm-ops-board>
+    </div>
+  }
+</div>

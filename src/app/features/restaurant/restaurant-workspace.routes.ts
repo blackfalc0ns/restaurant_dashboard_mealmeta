@@ -182,6 +182,27 @@ const loadReportDetailPage = () =>
 const loadSettingsPage = () =>
   import('./settings/settings.page').then((m) => m.SettingsPageComponent);
 
+const loadBranchesPage = () =>
+  import('./team/branches/branches.page').then((m) => m.BranchesPageComponent);
+
+const loadBranchDetailPage = () =>
+  import('./team/branches/branch-detail.page').then(
+    (m) => m.BranchDetailPageComponent,
+  );
+
+const loadStaffPage = () =>
+  import('./team/staff/staff.page').then((m) => m.StaffPageComponent);
+
+const loadStaffDetailPage = () =>
+  import('./team/staff/staff-detail.page').then(
+    (m) => m.StaffDetailPageComponent,
+  );
+
+const loadPermissionsPage = () =>
+  import('./team/permissions/permissions.page').then(
+    (m) => m.PermissionsPageComponent,
+  );
+
 const SIDEBAR_LINK_PATHS: string[] = [];
 
 export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
@@ -368,6 +389,26 @@ export const RESTAURANT_WORKSPACE_ROUTES: Routes = [
   {
     path: 'finance/reports',
     loadComponent: loadReportsPage,
+  },
+  {
+    path: 'team/branches/:branchId',
+    loadComponent: loadBranchDetailPage,
+  },
+  {
+    path: 'team/branches',
+    loadComponent: loadBranchesPage,
+  },
+  {
+    path: 'team/staff/:staffId',
+    loadComponent: loadStaffDetailPage,
+  },
+  {
+    path: 'team/staff',
+    loadComponent: loadStaffPage,
+  },
+  {
+    path: 'team/permissions',
+    loadComponent: loadPermissionsPage,
   },
   {
     path: 'settings',
