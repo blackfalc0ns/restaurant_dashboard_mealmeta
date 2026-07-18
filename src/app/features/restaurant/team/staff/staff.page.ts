@@ -35,6 +35,7 @@ import {
   TeamRoleId,
 } from '../models/team.model';
 import { TeamSkeletonComponent } from '../team-skeleton.component';
+import { StaffInviteModalComponent } from './staff-invite-modal.component';
 
 @Component({
   selector: 'mm-staff-page',
@@ -45,6 +46,7 @@ import { TeamSkeletonComponent } from '../team-skeleton.component';
     NgIcon,
     PageStateComponent,
     TeamSkeletonComponent,
+    StaffInviteModalComponent,
     RestaurantOpsHeroComponent,
     RestaurantOpsBoardComponent,
     RestaurantOpsToolbarComponent,
@@ -75,14 +77,6 @@ export class StaffPageComponent implements OnInit {
     { id: 'invited', labelAr: 'مدعو', labelEn: 'Invited' },
     { id: 'disabled', labelAr: 'معطّل', labelEn: 'Disabled' },
   ];
-
-  readonly roles: { id: TeamRoleId; labelAr: string; labelEn: string }[] = [
-    { id: 'viewer', labelAr: 'مشاهد', labelEn: 'Viewer' },
-    { id: 'kitchen', labelAr: 'مطبخ', labelEn: 'Kitchen' },
-    { id: 'finance', labelAr: 'مالية', labelEn: 'Finance' },
-    { id: 'branch_manager', labelAr: 'مدير فرع', labelEn: 'Branch manager' },
-  ];
-
   readonly title = computed(() => this.text('الموظفون', 'Staff'));
   readonly subtitle = computed(() =>
     this.text(

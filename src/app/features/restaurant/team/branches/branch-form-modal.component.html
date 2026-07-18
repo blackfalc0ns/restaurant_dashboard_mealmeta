@@ -1,0 +1,408 @@
+<div
+  class="mm-dsp-modal"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="title()"
+>
+  <button
+    type="button"
+    class="mm-dsp-modal__backdrop"
+    [attr.aria-label]="text('إغلاق', 'Close')"
+    (click)="close()"
+  ></button>
+
+  <div class="mm-dsp-modal__panel mm-team-wizard-panel">
+    <div class="mm-dsp-modal__head">
+      <div>
+        <h2>{{ title() }}</h2>
+        <p>{{ stepMeta().detail }}</p>
+      </div>
+      <button
+        type="button"
+        class="mm-dsp-modal__close"
+        [attr.aria-label]="text('إغلاق', 'Close')"
+        [disabled]="facade.saving()"
+        (click)="close()"
+      >
+        <ng-icon name="lucideX" class="size-4" />
+      </button>
+    </div>
+
+    <ol class="mm-team-wizard-steps" [attr.aria-label]="text('مراحل الإنشاء', 'Creation steps')">
+      @for (n of [1, 2, 3]; track n) {
+        <li
+          class="mm-team-wizard-steps__item"
+          [class.is-active]="step() === n"
+          [class.is-done]="step() > n"
+        >
+          <span class="mm-team-wizard-steps__num">
+            @if (step() > n) {
+              <ng-icon name="lucideCheck" class="size-3.5" />
+            } @else {
+              {{ n }}
+            }
+          </span>
+          <span class="mm-team-wizard-steps__label">
+            @switch (n) {
+              @case (1) {
+                {{ text('الفرع', 'Branch') }}
+              }
+              @case (2) {
+                {{ text('المدير', 'Manager') }}
+              }
+              @case (3) {
+                {{ text('المراجعة', 'Review') }}
+              }
+            }
+          </span>
+        </li>
+      }
+    </ol>
+
+    <div class="mm-dsp-modal__body">
+      @if (step() === 1) {
+        <div class="mm-dsp-form">
+          <label>
+            <span>{{ text('الاسم (عربي)', 'Name (Arabic)') }}</span>
+            <input
+              type="text"
+              [ngModel]="facade.branchDraft().nameAr"
+              (ngModelChange)="facade.patchBranchDraft({ nameAr: $event })"
+              [placeholder]="text('مثال: فرع الشويخ', 'e.g. Shuwaikh branch')"
+            />
+          </label>
+          <label>
+            <span>{{ text('الاسم (إنجليزي)', 'Name (English)') }}</span>
+            <input
+              type="text"
+              dir="ltr"
+              [ngModel]="facade.branchDraft().nameEn"
+              (ngModelChange)="facade.patchBranchDraft({ nameEn: $event })"
+              placeholder="Shuwaikh branch"
+            />
+          </label>
+          <label>
+            <span>{{ text('الرمز', 'Code') }}</span>
+            <input
+              type="text"
+              dir="ltr"
+              [ngModel]="facade.branchDraft().code"
+              (ngModelChange)="facade.patchBranchDraft({ code: $event })"
+              placeholder="SHW-01"
+            />
+          </label>
+          <label>
+            <span>{{ text('الهاتف', 'Phone') }}</span>
+            <input
+              type="tel"
+              dir="ltr"
+              [ngModel]="facade.branchDraft().phone"
+              (ngModelChange)="facade.patchBranchDraft({ phone: $event })"
+              placeholder="+965 2xxx xxxx"
+            />
+          </label>
+          <label class="mm-team-form__wide">
+            <span>{{ text('العنوان (عربي)', 'Address (Arabic)') }}</span>
+            <input
+              type="text"
+              [ngModel]="facade.branchDraft().addressAr"
+              (ngModelChange)="facade.patchBranchDraft({ addressAr: $event })"
+            />
+          </label>
+          <label>
+            <span>{{ text('المحافظة', 'Governorate') }}</span>
+            <input
+              type="text"
+              [ngModel]="facade.branchDraft().governorateAr"
+              (ngModelChange)="facade.patchBranchDraft({ governorateAr: $event })"
+            />
+          </label>
+          <label>
+            <span>{{ text('الحالة', 'Status') }}</span>
+            <select
+              [ngModel]="facade.branchDraft().status"
+              (ngModelChange)="facade.patchBranchDraft({ status: $event })"
+            >
+              <option value="active">{{ text('نشط', 'Active') }}</option>
+              <option value="paused">{{ text('متوقف', 'Paused') }}</option>
+            </select>
+          </label>
+          <label class="mm-team-form__wide">
+            <span>{{ text('ملاحظات', 'Notes') }}</span>
+            <input
+              type="text"
+              [ngModel]="facade.branchDraft().notesAr"
+              (ngModelChange)="facade.patchBranchDraft({ notesAr: $event })"
+            />
+          </label>
+        </div>
+
+        @if (!step1Valid() && (facade.branchDraft().nameAr || facade.branchDraft().code)) {
+          <p class="mm-dsp-alert">
+            <ng-icon name="lucideTriangleAlert" class="size-3.5" />
+            {{ text('أدخل الاسم والرمز للمتابعة.', 'Enter name and code to continue.') }}
+          </p>
+        }
+      }
+
+      @if (step() === 2) {
+        <div class="mm-team-mode-cards">
+          <button
+            type="button"
+            class="mm-team-mode-card"
+            [class.is-active]="facade.branchDraft().managerMode === 'none'"
+            (click)="setMode('none')"
+          >
+            <strong>{{ text('لاحقاً', 'Later') }}</strong>
+            <span>{{ text('بدون مدير الآن', 'No manager for now') }}</span>
+          </button>
+          <button
+            type="button"
+            class="mm-team-mode-card"
+            [class.is-active]="facade.branchDraft().managerMode === 'existing'"
+            (click)="setMode('existing')"
+          >
+            <strong>{{ text('موظف موجود', 'Existing staff') }}</strong>
+            <span>{{ text('اختيار من الفريق', 'Pick from the team') }}</span>
+          </button>
+          <button
+            type="button"
+            class="mm-team-mode-card"
+            [class.is-active]="facade.branchDraft().managerMode === 'invite'"
+            (click)="setMode('invite')"
+          >
+            <strong>{{ text('مدير جديد', 'New manager') }}</strong>
+            <span>{{ text('دعوة بالإيميل', 'Invite by email') }}</span>
+          </button>
+        </div>
+
+        @if (facade.branchDraft().managerMode === 'existing') {
+          <label class="mm-team-field-block">
+            <span>{{ text('اختر المدير', 'Select manager') }}</span>
+            <select
+              [ngModel]="facade.branchDraft().managerId"
+              (ngModelChange)="facade.patchBranchDraft({ managerId: $event })"
+            >
+              <option value="">{{ text('اختر موظفاً…', 'Choose a staff member…') }}</option>
+              @for (member of managers(); track member.id) {
+                <option [value]="member.id">
+                  {{ memberName(member) }} — {{ roleName(member.roleId) }}
+                </option>
+              }
+            </select>
+          </label>
+        }
+
+        @if (facade.branchDraft().managerMode === 'invite') {
+          <div class="mm-dsp-callout">
+            <span><ng-icon name="lucideMail" class="size-4" /></span>
+            <p>
+              {{
+                text(
+                  'بعد الحفظ تُرسل دعوة لبريد المدير ويظهر بحالة «مدعو» حتى يسجّل الدخول.',
+                  'After saving, an invite is sent to the manager email and they appear as Invited until sign-in.'
+                )
+              }}
+            </p>
+          </div>
+
+          <div class="mm-dsp-form">
+            <label>
+              <span>{{ text('اسم المدير (عربي)', 'Manager name (Arabic)') }}</span>
+              <input
+                type="text"
+                [ngModel]="facade.branchDraft().inviteNameAr"
+                (ngModelChange)="facade.patchBranchDraft({ inviteNameAr: $event })"
+                [placeholder]="text('مثال: سارة الحربي', 'e.g. Sara Al Harbi')"
+              />
+            </label>
+            <label>
+              <span>{{ text('الاسم (إنجليزي)', 'Name (English)') }}</span>
+              <input
+                type="text"
+                dir="ltr"
+                [ngModel]="facade.branchDraft().inviteNameEn"
+                (ngModelChange)="facade.patchBranchDraft({ inviteNameEn: $event })"
+                placeholder="Sara Al Harbi"
+              />
+            </label>
+            <label>
+              <span>{{ text('البريد', 'Email') }}</span>
+              <input
+                type="email"
+                dir="ltr"
+                [ngModel]="facade.branchDraft().inviteEmail"
+                (ngModelChange)="facade.patchBranchDraft({ inviteEmail: $event })"
+                placeholder="manager@restaurant.kw"
+              />
+            </label>
+            <label>
+              <span>{{ text('الجوال', 'Phone') }}</span>
+              <input
+                type="tel"
+                dir="ltr"
+                [ngModel]="facade.branchDraft().invitePhone"
+                (ngModelChange)="facade.patchBranchDraft({ invitePhone: $event })"
+                placeholder="+965 5xxx xxxx"
+              />
+            </label>
+          </div>
+        }
+
+        @if (!step2Valid()) {
+          <p class="mm-dsp-alert">
+            <ng-icon name="lucideTriangleAlert" class="size-3.5" />
+            @if (facade.branchDraft().managerMode === 'existing') {
+              {{ text('اختر مديراً من القائمة.', 'Pick a manager from the list.') }}
+            } @else {
+              {{ text('أدخل اسم المدير وبريده.', 'Enter manager name and email.') }}
+            }
+          </p>
+        }
+      }
+
+      @if (step() === 3) {
+        <div class="mm-team-review">
+          <div class="mm-team-review__card">
+            <small>{{ text('الفرع', 'Branch') }}</small>
+            <strong>{{ facade.branchDraft().nameAr || '—' }}</strong>
+            <ul class="mm-team-review__meta">
+              <li>
+                <b>{{ text('الرمز', 'Code') }}</b>
+                <span dir="ltr">{{ facade.branchDraft().code || '—' }}</span>
+              </li>
+              <li>
+                <b>{{ text('المحافظة', 'Governorate') }}</b>
+                <span>{{ facade.branchDraft().governorateAr || '—' }}</span>
+              </li>
+              @if (facade.branchDraft().addressAr) {
+                <li>
+                  <b>{{ text('العنوان', 'Address') }}</b>
+                  <span>{{ facade.branchDraft().addressAr }}</span>
+                </li>
+              }
+              <li>
+                <b>{{ text('الحالة', 'Status') }}</b>
+                <span>
+                  {{
+                    facade.branchDraft().status === 'active'
+                      ? text('نشط', 'Active')
+                      : text('متوقف', 'Paused')
+                  }}
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="mm-team-review__card">
+            <small>{{ text('مدير الفرع', 'Branch manager') }}</small>
+            <strong>{{ selectedManagerName() }}</strong>
+            <ul class="mm-team-review__meta">
+              @if (facade.branchDraft().managerMode === 'invite') {
+                <li>
+                  <b>{{ text('البريد', 'Email') }}</b>
+                  <span dir="ltr">{{ facade.branchDraft().inviteEmail }}</span>
+                </li>
+                @if (facade.branchDraft().invitePhone) {
+                  <li>
+                    <b>{{ text('الجوال', 'Phone') }}</b>
+                    <span dir="ltr">{{ facade.branchDraft().invitePhone }}</span>
+                  </li>
+                }
+              } @else if (facade.branchDraft().managerMode === 'existing' && selectedManagerEmail()) {
+                <li>
+                  <b>{{ text('البريد', 'Email') }}</b>
+                  <span dir="ltr">{{ selectedManagerEmail() }}</span>
+                </li>
+              }
+            </ul>
+            @if (facade.branchDraft().managerMode === 'invite') {
+              <em class="mm-team-tag">{{ text('ستُرسل دعوة بالإيميل', 'Email invite will be sent') }}</em>
+            } @else if (facade.branchDraft().managerMode === 'existing') {
+              <em class="mm-team-tag">{{ text('موظف موجود', 'Existing staff') }}</em>
+            } @else {
+              <em class="mm-team-tag">{{ text('يُعيَّن لاحقاً', 'Assign later') }}</em>
+            }
+          </div>
+        </div>
+
+        @if (facade.branchDraft().managerMode === 'invite') {
+          <div class="mm-dsp-callout">
+            <span><ng-icon name="lucideUserPlus" class="size-4" /></span>
+            <p>
+              {{
+                text(
+                  `سيتم إنشاء حساب مدير فرع وإرسال رابط الدعوة إلى ${facade.branchDraft().inviteEmail}.`,
+                  `A branch manager account will be created and an invite link sent to ${facade.branchDraft().inviteEmail}.`
+                )
+              }}
+            </p>
+          </div>
+        }
+      }
+    </div>
+
+    <div class="mm-dsp-modal__foot mm-team-wizard-foot">
+      @if (step() > 1) {
+        <button
+          type="button"
+          class="mm-dsp-modal__cancel"
+          [disabled]="facade.saving()"
+          (click)="back()"
+        >
+          <ng-icon
+            [name]="locale.isRtl() ? 'lucideArrowRight' : 'lucideArrowLeft'"
+            class="size-4"
+          />
+          {{ text('السابق', 'Back') }}
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="mm-dsp-modal__cancel"
+          [disabled]="facade.saving()"
+          (click)="close()"
+        >
+          {{ text('إلغاء', 'Cancel') }}
+        </button>
+      }
+
+      @if (step() < 3) {
+        <button
+          type="button"
+          class="mm-ops-cta"
+          [disabled]="!canGoNext()"
+          (click)="next()"
+        >
+          {{ text('التالي', 'Next') }}
+          <ng-icon
+            [name]="locale.isRtl() ? 'lucideArrowLeft' : 'lucideArrowRight'"
+            class="size-4"
+          />
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="mm-ops-cta"
+          [disabled]="!canGoNext()"
+          (click)="submit()"
+        >
+          @if (facade.saving()) {
+            <ng-icon name="lucideLoaderCircle" class="size-4 animate-spin" />
+          } @else if (facade.branchDraft().managerMode === 'invite') {
+            <ng-icon name="lucideMail" class="size-4" />
+          } @else {
+            <ng-icon name="lucideCheck" class="size-4" />
+          }
+          {{
+            facade.branchDraft().managerMode === 'invite'
+              ? text('حفظ وإرسال الدعوة', 'Save & send invite')
+              : isEdit()
+                ? text('حفظ التعديلات', 'Save changes')
+                : text('حفظ الفرع', 'Save branch')
+          }}
+        </button>
+      }
+    </div>
+  </div>
+</div>

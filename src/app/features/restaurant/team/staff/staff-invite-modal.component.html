@@ -1,0 +1,169 @@
+<div
+  class="mm-dsp-modal"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="text('دعوة جديدة', 'New invite')"
+>
+  <button
+    type="button"
+    class="mm-dsp-modal__backdrop"
+    [attr.aria-label]="text('إغلاق', 'Close')"
+    (click)="close()"
+  ></button>
+
+  <div class="mm-dsp-modal__panel mm-team-invite-panel">
+    <div class="mm-dsp-modal__head">
+      <div>
+        <h2>{{ text('دعوة جديدة', 'New invite') }}</h2>
+        <p>
+          {{
+            text(
+              'يصل رابط الدخول للبريد أو الجوال.',
+              'A login link is sent to email or phone.'
+            )
+          }}
+        </p>
+      </div>
+      <button
+        type="button"
+        class="mm-dsp-modal__close"
+        [attr.aria-label]="text('إغلاق', 'Close')"
+        [disabled]="facade.saving()"
+        (click)="close()"
+      >
+        <ng-icon name="lucideX" class="size-4" />
+      </button>
+    </div>
+
+    <div class="mm-dsp-modal__body">
+      <div class="mm-dsp-callout">
+        <span><ng-icon name="lucideMail" class="size-4" /></span>
+        <p>
+          {{
+            text(
+              'بعد الإرسال يظهر الموظف بحالة «مدعو» حتى يسجّل الدخول لأول مرة.',
+              'After sending, the member appears as Invited until first sign-in.'
+            )
+          }}
+        </p>
+      </div>
+
+      @if (!canSubmit() && (facade.inviteDraft().fullNameAr || facade.inviteDraft().email)) {
+        <p class="mm-dsp-alert">
+          <ng-icon name="lucideTriangleAlert" class="size-3.5" />
+          {{ errorMessage() }}
+        </p>
+      }
+
+      <div class="mm-dsp-form">
+        <label>
+          <span>{{ text('الاسم (عربي)', 'Name (Arabic)') }}</span>
+          <input
+            type="text"
+            [ngModel]="facade.inviteDraft().fullNameAr"
+            (ngModelChange)="facade.patchInviteDraft({ fullNameAr: $event })"
+            [placeholder]="text('مثال: يوسف العازمي', 'e.g. Yousef Al Azmi')"
+          />
+        </label>
+        <label>
+          <span>{{ text('الاسم (إنجليزي)', 'Name (English)') }}</span>
+          <input
+            type="text"
+            dir="ltr"
+            [ngModel]="facade.inviteDraft().fullNameEn"
+            (ngModelChange)="facade.patchInviteDraft({ fullNameEn: $event })"
+            placeholder="Yousef Al Azmi"
+          />
+        </label>
+        <label>
+          <span>{{ text('البريد', 'Email') }}</span>
+          <input
+            type="email"
+            dir="ltr"
+            [ngModel]="facade.inviteDraft().email"
+            (ngModelChange)="facade.patchInviteDraft({ email: $event })"
+            placeholder="staff@restaurant.kw"
+          />
+        </label>
+        <label>
+          <span>{{ text('الجوال', 'Phone') }}</span>
+          <input
+            type="tel"
+            dir="ltr"
+            [ngModel]="facade.inviteDraft().phone"
+            (ngModelChange)="facade.patchInviteDraft({ phone: $event })"
+            placeholder="+965 5xxx xxxx"
+          />
+        </label>
+        <label>
+          <span>{{ text('الدور', 'Role') }}</span>
+          <select
+            [ngModel]="facade.inviteDraft().roleId"
+            (ngModelChange)="facade.patchInviteDraft({ roleId: $event })"
+          >
+            @for (role of roles; track role.id) {
+              <option [value]="role.id">{{ roleLabel(role) }}</option>
+            }
+          </select>
+        </label>
+        <label class="mm-team-toggle-field mm-team-invite-toggle">
+          <span>{{ text('كل الفروع', 'All branches') }}</span>
+          <input
+            type="checkbox"
+            [checked]="facade.inviteDraft().allBranches"
+            (change)="
+              facade.patchInviteDraft({
+                allBranches: $any($event.target).checked,
+                branchIds: []
+              })
+            "
+          />
+        </label>
+      </div>
+
+      @if (!facade.inviteDraft().allBranches) {
+        <div>
+          <p class="mm-team-invite-branches-label">
+            {{ text('اختر الفروع', 'Select branches') }}
+          </p>
+          <div class="mm-team-chips">
+            @for (branch of branches(); track branch.id) {
+              <button
+                type="button"
+                class="mm-team-chip"
+                [class.is-active]="facade.inviteDraft().branchIds.includes(branch.id)"
+                (click)="facade.toggleInviteBranch(branch.id)"
+              >
+                {{ branchName(branch) }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="mm-dsp-modal__foot">
+      <button
+        type="button"
+        class="mm-dsp-modal__cancel"
+        [disabled]="facade.saving()"
+        (click)="close()"
+      >
+        {{ text('إلغاء', 'Cancel') }}
+      </button>
+      <button
+        type="button"
+        class="mm-ops-cta"
+        [disabled]="!canSubmit()"
+        (click)="submit()"
+      >
+        @if (facade.saving()) {
+          <ng-icon name="lucideLoaderCircle" class="size-4 animate-spin" />
+        } @else {
+          <ng-icon name="lucideUserPlus" class="size-4" />
+        }
+        {{ text('إرسال الدعوة', 'Send invite') }}
+      </button>
+    </div>
+  </div>
+</div>

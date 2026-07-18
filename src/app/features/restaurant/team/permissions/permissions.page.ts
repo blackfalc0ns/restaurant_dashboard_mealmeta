@@ -18,9 +18,7 @@ import { AppLocaleService } from '@/core/i18n/app-locale.service';
 import { PageStateComponent } from '@/shared/components/page-state/page-state.component';
 import {
   RestaurantOpsBoardComponent,
-  RestaurantOpsFiltersComponent,
   RestaurantOpsHeroComponent,
-  RestaurantOpsToolbarComponent,
 } from '@/shared/components/restaurant-workspace/restaurant-ops-ui.component';
 
 import { pickLocale } from '../../overview/overview-i18n';
@@ -43,8 +41,6 @@ import { TeamSkeletonComponent } from '../team-skeleton.component';
     TeamSkeletonComponent,
     RestaurantOpsHeroComponent,
     RestaurantOpsBoardComponent,
-    RestaurantOpsToolbarComponent,
-    RestaurantOpsFiltersComponent,
   ],
   templateUrl: './permissions.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -71,8 +67,8 @@ export class PermissionsPageComponent implements OnInit {
   readonly title = computed(() => this.text('الصلاحيات', 'Permissions'));
   readonly subtitle = computed(() =>
     this.text(
-      'مصفوفة الوحدات لكل دور في الداشبورد',
-      'Module matrix for each dashboard role',
+      'مصفوفة الإدارات لكل دور في الداشبورد',
+      'Department matrix for each dashboard role',
     ),
   );
 
@@ -85,8 +81,6 @@ export class PermissionsPageComponent implements OnInit {
     const data = this.facade.data();
     return data ? pickLocale(data.note, this.locale.locale()) : '';
   });
-
-  readonly selectedRole = computed(() => this.facade.selectedRole());
 
   ngOnInit(): void {
     this.facade.load();
@@ -105,19 +99,20 @@ export class PermissionsPageComponent implements OnInit {
     return role ? pickLocale(role.name, this.locale.locale()) : roleId;
   }
 
-  roleDetail(roleId: TeamRoleId): string {
-    const role = this.facade.data()?.roles.find((r) => r.id === roleId);
-    return role ? pickLocale(role.description, this.locale.locale()) : '';
-  }
-
-  moduleLabel(key: ModuleKey): string {
-    const mod = this.facade.data()?.modules.find((m) => m.key === key);
-    return mod ? pickLocale(mod.label, this.locale.locale()) : key;
-  }
-
   moduleDetail(key: ModuleKey): string {
     const mod = this.facade.data()?.modules.find((m) => m.key === key);
     return mod ? pickLocale(mod.detail, this.locale.locale()) : '';
+  }
+
+  /** Compact header label for the departments matrix. */
+  shortDeptLabel(key: ModuleKey): string {
+    const mod = this.facade.data()?.modules.find((m) => m.key === key);
+    if (!mod) return key;
+    const full = pickLocale(mod.label, this.locale.locale());
+    if (this.locale.isRtl()) {
+      return full.replace(/^إدارة\s+/, '');
+    }
+    return full.replace(/\s+dept$/i, '');
   }
 
   staffCount(roleId: TeamRoleId): number {

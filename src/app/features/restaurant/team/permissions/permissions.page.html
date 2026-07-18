@@ -38,82 +38,64 @@
       <mm-ops-board>
         <div class="mm-ops-board__head">
           <div>
-            <h2>{{ text('الأدوار', 'Roles') }}</h2>
-            <p>{{ text('اختر دوراً لعرض وتعديل مصفوفة الصلاحيات', 'Pick a role to view and edit its permission matrix') }}</p>
-          </div>
-        </div>
-
-        <mm-ops-toolbar>
-          <mm-ops-filters>
-            @for (role of data.roles; track role.id) {
-              <button
-                type="button"
-                [class.is-active]="facade.selectedRoleId() === role.id"
-                (click)="facade.selectRole(role.id)"
-              >
-                {{ roleName(role.id) }}
-                <b>{{ staffCount(role.id) }}</b>
-              </button>
-            }
-          </mm-ops-filters>
-        </mm-ops-toolbar>
-
-        @if (selectedRole(); as role) {
-          <div class="mm-team-role-banner">
-            <div>
-              <strong>{{ roleName(role.id) }}</strong>
-              <p>{{ roleDetail(role.id) }}</p>
-            </div>
-            <div class="mm-team-role-banner__meta">
-              @if (role.isSystem) {
-                <em class="mm-team-tag">{{ text('نظامي', 'System') }}</em>
-              }
-              <span>
-                {{ staffCount(role.id) }}
-                {{ text('موظف', 'staff') }}
-              </span>
-            </div>
-          </div>
-
-          @if (role.id === 'owner') {
-            <p class="mm-team-hint">
+            <h2>{{ text('مصفوفة الإدارات', 'Departments matrix') }}</h2>
+            <p>
               {{
                 text(
-                  'دور المالك ثابت على «إدارة» لكل الوحدات ولا يُخفَّض في هذه المرحلة التجريبية.',
-                  'Owner stays locked to Manage on every module in this demo stage.'
+                  'كل دور مقابل صلاحية كل إدارة — بدون / عرض / إدارة',
+                  'Each role vs every department — none / view / manage'
                 )
               }}
             </p>
-          }
-
-          <div class="mm-team-matrix" role="table">
-            <div class="mm-team-matrix__head" role="row">
-              <span>{{ text('الوحدة', 'Module') }}</span>
-              <span>{{ text('المستوى', 'Level') }}</span>
-            </div>
-            @for (mod of data.modules; track mod.key) {
-              <div class="mm-team-matrix__row" role="row">
-                <div>
-                  <strong>{{ moduleLabel(mod.key) }}</strong>
-                  <span>{{ moduleDetail(mod.key) }}</span>
-                </div>
-                <div class="mm-team-matrix__levels">
-                  @for (level of levels; track level.id) {
-                    <button
-                      type="button"
-                      class="mm-team-level"
-                      [class.is-active]="role.permissions[mod.key] === level.id"
-                      [disabled]="role.id === 'owner' && level.id !== 'manage'"
-                      (click)="setLevel(role.id, mod.key, level.id)"
-                    >
-                      {{ locale.isRtl() ? level.labelAr : level.labelEn }}
-                    </button>
-                  }
-                </div>
-              </div>
-            }
           </div>
-        }
+        </div>
+
+        <div class="mm-team-dept-matrix-wrap">
+          <table class="mm-team-dept-matrix">
+            <thead>
+              <tr>
+                <th scope="col" class="mm-team-dept-matrix__sticky">
+                  {{ text('الدور', 'Role') }}
+                </th>
+                @for (mod of data.modules; track mod.key) {
+                  <th scope="col" [title]="moduleDetail(mod.key)">
+                    {{ shortDeptLabel(mod.key) }}
+                  </th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (role of data.roles; track role.id) {
+                <tr>
+                  <th scope="row" class="mm-team-dept-matrix__sticky">
+                    <strong>{{ roleName(role.id) }}</strong>
+                    <span>
+                      {{ staffCount(role.id) }}
+                      {{ text('موظف', 'staff') }}
+                    </span>
+                  </th>
+                  @for (mod of data.modules; track mod.key) {
+                    <td>
+                      <select
+                        class="mm-team-dept-select"
+                        [attr.data-level]="role.permissions[mod.key]"
+                        [disabled]="role.id === 'owner'"
+                        [ngModel]="role.permissions[mod.key]"
+                        (ngModelChange)="setLevel(role.id, mod.key, $event)"
+                      >
+                        @for (level of levels; track level.id) {
+                          <option [value]="level.id">
+                            {{ locale.isRtl() ? level.labelAr : level.labelEn }}
+                          </option>
+                        }
+                      </select>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
 
         <p class="mm-team-note">
           <ng-icon name="lucideInfo" class="size-3.5" />

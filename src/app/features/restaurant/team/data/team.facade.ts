@@ -32,6 +32,12 @@ const emptyBranchDraft = (): BranchDraft => ({
   status: 'active',
   notesAr: '',
   notesEn: '',
+  managerMode: 'none',
+  managerId: '',
+  inviteNameAr: '',
+  inviteNameEn: '',
+  inviteEmail: '',
+  invitePhone: '',
 });
 
 const emptyInviteDraft = (): StaffInviteDraft => ({
@@ -62,6 +68,7 @@ export class TeamFacade {
   readonly inviteDraft = signal<StaffInviteDraft>(emptyInviteDraft());
   readonly inviteOpen = signal(false);
   readonly branchFormOpen = signal(false);
+  readonly editingBranchId = signal<string | null>(null);
   readonly saving = signal(false);
 
   readonly pageSize = TEAM_PAGE_SIZE;
@@ -186,6 +193,21 @@ export class TeamFacade {
     return counts;
   });
 
+  /** Active staff eligible to manage a branch. */
+  readonly managerCandidates = computed(() => {
+    const data = this.data();
+    if (!data) return [];
+    return data.staff.filter(
+      (member) =>
+        member.status !== 'disabled' &&
+        (member.roleId === 'branch_manager' ||
+          member.roleId === 'owner' ||
+          member.roleId === 'viewer' ||
+          member.roleId === 'kitchen' ||
+          member.roleId === 'finance'),
+    );
+  });
+
   load(): void {
     if (this.loadTimer) clearTimeout(this.loadTimer);
     this.page.set({ viewState: 'loading' });
@@ -242,6 +264,7 @@ export class TeamFacade {
 
   openBranchForm(branch?: RestaurantBranch): void {
     if (branch) {
+      this.editingBranchId.set(branch.id);
       this.branchDraft.set({
         nameAr: branch.name.ar,
         nameEn: branch.name.en,
@@ -254,8 +277,15 @@ export class TeamFacade {
         status: branch.status,
         notesAr: branch.notes?.ar ?? '',
         notesEn: branch.notes?.en ?? '',
+        managerMode: branch.managerId ? 'existing' : 'none',
+        managerId: branch.managerId ?? '',
+        inviteNameAr: '',
+        inviteNameEn: '',
+        inviteEmail: '',
+        invitePhone: '',
       });
     } else {
+      this.editingBranchId.set(null);
       this.branchDraft.set(emptyBranchDraft());
     }
     this.branchFormOpen.set(true);
@@ -263,6 +293,7 @@ export class TeamFacade {
 
   closeBranchForm(): void {
     this.branchFormOpen.set(false);
+    this.editingBranchId.set(null);
     this.branchDraft.set(emptyBranchDraft());
   }
 
@@ -273,71 +304,147 @@ export class TeamFacade {
   saveBranch(editingId?: string): void {
     const data = this.data();
     const draft = this.branchDraft();
+    const targetId = editingId ?? this.editingBranchId() ?? undefined;
     if (!data || !draft.nameAr.trim() || !draft.code.trim()) return;
+    if (draft.managerMode === 'existing' && !draft.managerId) return;
+    if (
+      draft.managerMode === 'invite' &&
+      (!draft.inviteNameAr.trim() || !draft.inviteEmail.trim())
+    ) {
+      return;
+    }
 
     this.saving.set(true);
     if (this.actionTimer) clearTimeout(this.actionTimer);
     this.actionTimer = setTimeout(() => {
       const next = structuredClone(data);
-      if (editingId) {
-        const idx = next.branches.findIndex((b) => b.id === editingId);
+      let branchId = targetId ?? '';
+
+      const branchPayload = {
+        name: {
+          ar: draft.nameAr.trim(),
+          en: draft.nameEn.trim() || draft.nameAr.trim(),
+        },
+        code: draft.code.trim().toUpperCase(),
+        address: {
+          ar: draft.addressAr.trim(),
+          en: draft.addressEn.trim() || draft.addressAr.trim(),
+        },
+        governorate: {
+          ar: draft.governorateAr.trim(),
+          en: draft.governorateEn.trim() || draft.governorateAr.trim(),
+        },
+        phone: draft.phone.trim(),
+        status: draft.status,
+        managerId: null as string | null,
+        notes:
+          draft.notesAr.trim() || draft.notesEn.trim()
+            ? {
+                ar: draft.notesAr.trim(),
+                en: draft.notesEn.trim() || draft.notesAr.trim(),
+              }
+            : undefined,
+      };
+
+      if (targetId) {
+        const idx = next.branches.findIndex((b) => b.id === targetId);
         if (idx >= 0) {
-          const current = next.branches[idx];
           next.branches[idx] = {
-            ...current,
-            name: { ar: draft.nameAr.trim(), en: draft.nameEn.trim() || draft.nameAr.trim() },
-            code: draft.code.trim().toUpperCase(),
-            address: {
-              ar: draft.addressAr.trim(),
-              en: draft.addressEn.trim() || draft.addressAr.trim(),
-            },
-            governorate: {
-              ar: draft.governorateAr.trim(),
-              en: draft.governorateEn.trim() || draft.governorateAr.trim(),
-            },
-            phone: draft.phone.trim(),
-            status: draft.status,
-            notes:
-              draft.notesAr.trim() || draft.notesEn.trim()
-                ? {
-                    ar: draft.notesAr.trim(),
-                    en: draft.notesEn.trim() || draft.notesAr.trim(),
-                  }
-                : undefined,
+            ...next.branches[idx],
+            ...branchPayload,
           };
+          branchId = targetId;
         }
       } else {
+        branchId = `BR-${String(next.branches.length + 1).padStart(3, '0')}`;
         next.branches.push({
-          id: `BR-${String(next.branches.length + 1).padStart(3, '0')}`,
-          name: { ar: draft.nameAr.trim(), en: draft.nameEn.trim() || draft.nameAr.trim() },
-          code: draft.code.trim().toUpperCase(),
-          address: {
-            ar: draft.addressAr.trim(),
-            en: draft.addressEn.trim() || draft.addressAr.trim(),
-          },
-          governorate: {
-            ar: draft.governorateAr.trim(),
-            en: draft.governorateEn.trim() || draft.governorateAr.trim(),
-          },
-          phone: draft.phone.trim(),
-          status: draft.status,
+          id: branchId,
+          ...branchPayload,
           isPrimary: next.branches.length === 0,
           staffCount: 0,
-          notes:
-            draft.notesAr.trim() || draft.notesEn.trim()
-              ? {
-                  ar: draft.notesAr.trim(),
-                  en: draft.notesEn.trim() || draft.notesAr.trim(),
-                }
-              : undefined,
         });
       }
+
+      let managerId: string | null = null;
+      if (draft.managerMode === 'existing') {
+        managerId = draft.managerId || null;
+      } else if (draft.managerMode === 'invite') {
+        managerId = this.createInvitedManager(next, draft, branchId);
+      }
+
+      this.applyBranchManager(next, branchId, managerId);
+      this.recomputeBranchStaffCounts(next);
       this.refreshSummaries(next);
       this.data.set(next);
       this.saving.set(false);
       this.closeBranchForm();
       this.actionTimer = null;
-    }, 280);
+    }, 320);
+  }
+
+  private createInvitedManager(
+    data: RestaurantTeamData,
+    draft: BranchDraft,
+    branchId: string,
+  ): string {
+    const member: RestaurantStaffMember = {
+      id: `ST-${String(data.staff.length + 1).padStart(3, '0')}`,
+      fullName: {
+        ar: draft.inviteNameAr.trim(),
+        en: draft.inviteNameEn.trim() || draft.inviteNameAr.trim(),
+      },
+      email: draft.inviteEmail.trim().toLowerCase(),
+      phone: draft.invitePhone.trim(),
+      roleId: 'branch_manager',
+      allBranches: false,
+      branchIds: [branchId],
+      status: 'invited',
+      lastActiveAtLabel: { ar: 'لم يسجّل بعد', en: 'Not signed in yet' },
+      invitedAtLabel: {
+        ar: 'دعوة مدير فرع · الآن',
+        en: 'Branch manager invite · just now',
+      },
+    };
+    data.staff.unshift(member);
+    return member.id;
+  }
+
+  private applyBranchManager(
+    data: RestaurantTeamData,
+    branchId: string,
+    managerId: string | null,
+  ): void {
+    const branch = data.branches.find((b) => b.id === branchId);
+    if (!branch) return;
+
+    // Clear this branch from previous managers who were only managing this one as managerId
+    for (const other of data.branches) {
+      if (other.id !== branchId && other.managerId === managerId && managerId) {
+        // allow same person to manage multiple branches
+      }
+    }
+
+    branch.managerId = managerId;
+
+    if (!managerId) return;
+
+    const member = data.staff.find((s) => s.id === managerId);
+    if (!member) {
+      branch.managerId = null;
+      return;
+    }
+
+    if (member.roleId !== 'owner' && member.roleId !== 'branch_manager') {
+      member.roleId = 'branch_manager';
+    }
+
+    if (!member.allBranches && !member.branchIds.includes(branchId)) {
+      member.branchIds = [...member.branchIds, branchId];
+    }
+
+    if (member.status === 'disabled') {
+      member.status = 'active';
+    }
   }
 
   setBranchStatus(branchId: string, status: BranchStatus): void {

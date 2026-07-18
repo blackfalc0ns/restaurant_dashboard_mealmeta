@@ -105,8 +105,8 @@ const ROLES: TeamRole[] = [
     id: 'viewer',
     name: { ar: 'مشاهد', en: 'Viewer' },
     description: {
-      ar: 'عرض فقط لمعظم وحدات الداشبورد',
-      en: 'Read-only access to most dashboard modules',
+      ar: 'عرض فقط لمعظم إدارات الداشبورد',
+      en: 'Read-only access to most dashboard departments',
     },
     isSystem: true,
     permissions: viewMost(),
@@ -121,8 +121,8 @@ export const TEAM_MOCK: RestaurantTeamData = {
   },
   dateLabel: { ar: 'تحديث تجريبي · يوليو 2026', en: 'Demo update · Jul 2026' },
   note: {
-    ar: 'البيانات تجريبية. ربط الهوية والصلاحيات الفعلية يأتي لاحقاً من الخادم.',
-    en: 'Demo data. Real identity and permission enforcement comes later from the API.',
+    ar: 'البيانات تجريبية. مصفوفة الإدارات تُحفظ محلياً حتى ربط الهوية من الخادم.',
+    en: 'Demo data. The departments matrix is local until identity wiring from the API.',
   },
   summaries: [
     {
@@ -149,47 +149,47 @@ export const TEAM_MOCK: RestaurantTeamData = {
   modules: [
     {
       key: 'overview',
-      label: { ar: 'الرئيسية', en: 'Overview' },
+      label: { ar: 'إدارة الرئيسية', en: 'Overview dept' },
       detail: { ar: 'نظرة عامة وتحليلات', en: 'Overview and analytics' },
     },
     {
       key: 'orders',
-      label: { ar: 'الطلبات', en: 'Orders' },
+      label: { ar: 'إدارة الطلبات', en: 'Orders dept' },
       detail: { ar: 'اليوم والتأكيد والملصقات', en: 'Daily, confirmation, labels' },
     },
     {
       key: 'menu',
-      label: { ar: 'القوائم', en: 'Menus' },
+      label: { ar: 'إدارة القوائم', en: 'Menus dept' },
       detail: { ar: 'الوجبات والتسعير', en: 'Meals and pricing' },
     },
     {
       key: 'operations',
-      label: { ar: 'التشغيل', en: 'Operations' },
+      label: { ar: 'إدارة التشغيل', en: 'Operations dept' },
       detail: { ar: 'المناطق والسعة', en: 'Regions and capacity' },
     },
     {
       key: 'delivery',
-      label: { ar: 'التوصيل', en: 'Delivery' },
+      label: { ar: 'إدارة التوصيل', en: 'Delivery dept' },
       detail: { ar: 'السائقون والرحلات', en: 'Drivers and trips' },
     },
     {
       key: 'finance',
-      label: { ar: 'المالية', en: 'Finance' },
+      label: { ar: 'إدارة المالية', en: 'Finance dept' },
       detail: { ar: 'مستحقات وفواتير', en: 'Dues and invoices' },
     },
     {
       key: 'quality',
-      label: { ar: 'الجودة', en: 'Quality' },
+      label: { ar: 'إدارة الجودة', en: 'Quality dept' },
       detail: { ar: 'التقييمات والشكاوى', en: 'Ratings and complaints' },
     },
     {
       key: 'team',
-      label: { ar: 'الفريق', en: 'Team' },
+      label: { ar: 'إدارة الفريق', en: 'Team dept' },
       detail: { ar: 'فروع وموظفون وصلاحيات', en: 'Branches, staff, permissions' },
     },
     {
       key: 'settings',
-      label: { ar: 'الإعدادات', en: 'Settings' },
+      label: { ar: 'إدارة الإعدادات', en: 'Settings dept' },
       detail: { ar: 'ملف المطعم والأمان', en: 'Restaurant profile and security' },
     },
   ],
@@ -208,6 +208,7 @@ export const TEAM_MOCK: RestaurantTeamData = {
       status: 'active',
       isPrimary: true,
       staffCount: 4,
+      managerId: 'ST-002',
       notes: {
         ar: 'مطبخ مركزي وتجهيز ملصقات اليوم',
         en: 'Central kitchen and daily label prep',
@@ -226,6 +227,7 @@ export const TEAM_MOCK: RestaurantTeamData = {
       status: 'active',
       isPrimary: false,
       staffCount: 2,
+      managerId: 'ST-002',
     },
     {
       id: 'BR-003',
@@ -240,6 +242,7 @@ export const TEAM_MOCK: RestaurantTeamData = {
       status: 'paused',
       isPrimary: false,
       staffCount: 1,
+      managerId: 'ST-006',
       notes: {
         ar: 'متوقف مؤقتاً لصيانة المطبخ',
         en: 'Temporarily paused for kitchen maintenance',

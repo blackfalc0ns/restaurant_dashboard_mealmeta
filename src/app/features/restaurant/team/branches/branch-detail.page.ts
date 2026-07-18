@@ -6,7 +6,6 @@ import {
   inject,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -15,9 +14,10 @@ import {
   lucideInfo,
   lucideMapPinned,
   lucidePhone,
-  lucideSave,
   lucideStar,
   lucideStore,
+  lucideUserRound,
+  lucideUsers,
 } from '@ng-icons/lucide';
 import { map } from 'rxjs';
 
@@ -30,18 +30,19 @@ import {
 
 import { pickLocale } from '../../overview/overview-i18n';
 import { TeamFacade } from '../data/team.facade';
-import { RestaurantBranch } from '../models/team.model';
+import { RestaurantBranch, RestaurantStaffMember } from '../models/team.model';
 import { TeamSkeletonComponent } from '../team-skeleton.component';
+import { BranchFormModalComponent } from './branch-form-modal.component';
 
 @Component({
   selector: 'mm-branch-detail-page',
   standalone: true,
   imports: [
-    FormsModule,
     RouterLink,
     NgIcon,
     PageStateComponent,
     TeamSkeletonComponent,
+    BranchFormModalComponent,
     RestaurantOpsDetailHeroComponent,
     RestaurantOpsBoardComponent,
   ],
@@ -55,9 +56,10 @@ import { TeamSkeletonComponent } from '../team-skeleton.component';
       lucideInfo,
       lucideMapPinned,
       lucidePhone,
-      lucideSave,
       lucideStar,
       lucideStore,
+      lucideUserRound,
+      lucideUsers,
     }),
   ],
 })
@@ -97,6 +99,20 @@ export class BranchDetailPageComponent implements OnInit {
     return pickLocale(branch.name, this.locale.locale());
   }
 
+  heroSubtitle(branch: RestaurantBranch): string {
+    const parts = [branch.code, this.governorate(branch)];
+    if (branch.isPrimary) {
+      parts.push(this.text('رئيسي', 'Primary'));
+    }
+    return parts.join(' · ');
+  }
+
+  statusLabel(status: string): string {
+    return status === 'active'
+      ? this.text('نشط', 'Active')
+      : this.text('متوقف', 'Paused');
+  }
+
   address(branch: RestaurantBranch): string {
     return pickLocale(branch.address, this.locale.locale());
   }
@@ -109,12 +125,14 @@ export class BranchDetailPageComponent implements OnInit {
     return branch.notes ? pickLocale(branch.notes, this.locale.locale()) : '';
   }
 
-  startEdit(branch: RestaurantBranch): void {
-    this.facade.openBranchForm(branch);
+  managerOf(branch: RestaurantBranch): RestaurantStaffMember | undefined {
+    return branch.managerId
+      ? this.facade.staffById(branch.managerId)
+      : undefined;
   }
 
-  save(branch: RestaurantBranch): void {
-    this.facade.saveBranch(branch.id);
+  startEdit(branch: RestaurantBranch): void {
+    this.facade.openBranchForm(branch);
   }
 
   setPrimary(branch: RestaurantBranch): void {

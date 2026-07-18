@@ -35,98 +35,11 @@
         </ng-container>
       </mm-ops-hero>
 
-      @if (facade.branchFormOpen()) {
-        <mm-ops-board>
-          <div class="mm-ops-board__head">
-            <div>
-              <h2>{{ text('فرع جديد', 'New branch') }}</h2>
-              <p>{{ text('أدخل بيانات الموقع التشغيلي', 'Enter the operating location details') }}</p>
-            </div>
-          </div>
-          <div class="mm-team-form">
-            <label>
-              <span>{{ text('الاسم (عربي)', 'Name (AR)') }}</span>
-              <input
-                type="text"
-                [ngModel]="facade.branchDraft().nameAr"
-                (ngModelChange)="facade.patchBranchDraft({ nameAr: $event })"
-              />
-            </label>
-            <label>
-              <span>{{ text('الاسم (EN)', 'Name (EN)') }}</span>
-              <input
-                type="text"
-                dir="ltr"
-                [ngModel]="facade.branchDraft().nameEn"
-                (ngModelChange)="facade.patchBranchDraft({ nameEn: $event })"
-              />
-            </label>
-            <label>
-              <span>{{ text('الرمز', 'Code') }}</span>
-              <input
-                type="text"
-                dir="ltr"
-                [ngModel]="facade.branchDraft().code"
-                (ngModelChange)="facade.patchBranchDraft({ code: $event })"
-              />
-            </label>
-            <label>
-              <span>{{ text('الهاتف', 'Phone') }}</span>
-              <input
-                type="tel"
-                dir="ltr"
-                [ngModel]="facade.branchDraft().phone"
-                (ngModelChange)="facade.patchBranchDraft({ phone: $event })"
-              />
-            </label>
-            <label class="mm-team-form__wide">
-              <span>{{ text('العنوان (عربي)', 'Address (AR)') }}</span>
-              <input
-                type="text"
-                [ngModel]="facade.branchDraft().addressAr"
-                (ngModelChange)="facade.patchBranchDraft({ addressAr: $event })"
-              />
-            </label>
-            <label>
-              <span>{{ text('المحافظة', 'Governorate') }}</span>
-              <input
-                type="text"
-                [ngModel]="facade.branchDraft().governorateAr"
-                (ngModelChange)="facade.patchBranchDraft({ governorateAr: $event })"
-              />
-            </label>
-            <label>
-              <span>{{ text('الحالة', 'Status') }}</span>
-              <select
-                [ngModel]="facade.branchDraft().status"
-                (ngModelChange)="facade.patchBranchDraft({ status: $event })"
-              >
-                <option value="active">{{ text('نشط', 'Active') }}</option>
-                <option value="paused">{{ text('متوقف', 'Paused') }}</option>
-              </select>
-            </label>
-          </div>
-          <div class="mm-team-form__actions">
-            <button type="button" class="mm-team-btn is-ghost" (click)="facade.closeBranchForm()">
-              {{ text('إلغاء', 'Cancel') }}
-            </button>
-            <button
-              type="button"
-              class="mm-team-btn"
-              [disabled]="facade.saving()"
-              (click)="facade.saveBranch()"
-            >
-              {{ text('حفظ الفرع', 'Save branch') }}
-            </button>
-          </div>
-        </mm-ops-board>
-      }
-
       <mm-ops-board>
         <div class="mm-ops-board__head">
           <div>
             <h2>{{ text('قائمة الفروع', 'Branch list') }}</h2>
-            <p>{{ text('إدارة الحالة والفرع الرئيسي', 'Manage status and primary branch') }}</p>
+            <p>{{ text('إدارة الحالة والمدير والفرع الرئيسي', 'Manage status, manager, and primary branch') }}</p>
           </div>
           <span class="mm-ops-count">{{ facade.filteredBranches().length }}</span>
         </div>
@@ -182,6 +95,10 @@
                     }
                   </strong>
                   <span class="mm-team-cell__meta" dir="ltr">{{ branch.code }}</span>
+                  <span class="mm-team-cell__meta">
+                    {{ text('المدير', 'Manager') }}:
+                    {{ managerName(branch) }}
+                  </span>
                 </div>
                 <div class="mm-team-cell mm-team-cell--location">
                   <strong>
@@ -189,7 +106,7 @@
                     {{ branchGovernorate(branch) }}
                   </strong>
                   <span class="mm-team-cell__meta">{{ branchAddress(branch) }}</span>
-                  <span class="mm-team-cell__meta" dir="ltr">
+                  <span class="mm-team-cell__meta mm-team-cell__meta--icon" dir="ltr">
                     <ng-icon name="lucidePhone" class="size-3 shrink-0" />
                     {{ branch.phone }}
                   </span>
@@ -255,5 +172,9 @@
         </p>
       </mm-ops-board>
     </div>
+  }
+
+  @if (facade.branchFormOpen()) {
+    <mm-branch-form-modal (closed)="facade.closeBranchForm()" />
   }
 </div>

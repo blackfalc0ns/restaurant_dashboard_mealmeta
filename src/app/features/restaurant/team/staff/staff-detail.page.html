@@ -13,7 +13,8 @@
         <mm-ops-detail-hero
           icon="lucideUserRound"
           [title]="name(item)"
-          [subtitle]="roleName(item.roleId)"
+          [subtitle]="heroSubtitle(item)"
+          [kicker]="text('ملف الموظف', 'Staff profile')"
           [status]="item.status"
         >
           <a opsBack routerLink="/restaurant/team/staff" class="mm-team-back">
@@ -23,6 +24,11 @@
             />
             {{ text('العودة للموظفين', 'Back to staff') }}
           </a>
+
+          <span opsBadge class="mm-team-status" [attr.data-status]="item.status">
+            {{ statusLabel(item.status) }}
+          </span>
+
           <div opsActions>
             @if (!isOwner()) {
               @if (item.status === 'invited') {
@@ -59,30 +65,67 @@
               }
             }
           </div>
+
+          <div opsStats class="contents">
+            <div class="mm-team-hero-stat">
+              <ng-icon name="lucideMail" class="size-4" />
+              <div>
+                <small>{{ text('البريد', 'Email') }}</small>
+                <strong dir="ltr">{{ item.email }}</strong>
+              </div>
+            </div>
+            <div class="mm-team-hero-stat">
+              <ng-icon name="lucidePhone" class="size-4" />
+              <div>
+                <small>{{ text('الجوال', 'Phone') }}</small>
+                <strong dir="ltr">{{ item.phone }}</strong>
+              </div>
+            </div>
+            <div class="mm-team-hero-stat">
+              <ng-icon name="lucideShield" class="size-4" />
+              <div>
+                <small>{{ text('الدور', 'Role') }}</small>
+                <strong>{{ roleName(item.roleId) }}</strong>
+              </div>
+            </div>
+            <div class="mm-team-hero-stat">
+              <ng-icon name="lucideStore" class="size-4" />
+              <div>
+                <small>{{ text('الفروع', 'Branches') }}</small>
+                <strong>{{ branchScopeLabel(item) }}</strong>
+              </div>
+            </div>
+          </div>
         </mm-ops-detail-hero>
+
+        @if (isOwner()) {
+          <div class="mm-team-callout" data-tone="owner">
+            <ng-icon name="lucideShieldCheck" class="size-4" />
+            <p>
+              {{
+                text(
+                  'حساب المالك يملك صلاحية إدارة كاملة على كل الإدارات والفروع، ولا يُعاد تعيين دوره من هنا.',
+                  'Owner has full manage access on every department and branch, and cannot be reassigned here.'
+                )
+              }}
+            </p>
+          </div>
+        }
 
         <div class="mm-team-detail-grid">
           <mm-ops-board>
             <div class="mm-ops-board__head">
               <div>
-                <h2>{{ text('بيانات الموظف', 'Staff profile') }}</h2>
-                <p>{{ text('التواصل والدور والحالة', 'Contact, role, and status') }}</p>
+                <h2>{{ text('النشاط والدور', 'Activity & role') }}</h2>
+                <p>{{ text('آخر تواجد وتعيين الدور التشغيلي', 'Last seen and operating role') }}</p>
               </div>
             </div>
 
             <div class="mm-team-fields">
               <div>
-                <small>{{ text('البريد', 'Email') }}</small>
-                <strong dir="ltr">
-                  <ng-icon name="lucideMail" class="size-3.5" />
-                  {{ item.email }}
-                </strong>
-              </div>
-              <div>
-                <small>{{ text('الجوال', 'Phone') }}</small>
-                <strong dir="ltr">
-                  <ng-icon name="lucidePhone" class="size-3.5" />
-                  {{ item.phone }}
+                <small>{{ text('آخر نشاط', 'Last active') }}</small>
+                <strong>
+                  {{ locale.isRtl() ? item.lastActiveAtLabel.ar : item.lastActiveAtLabel.en }}
                 </strong>
               </div>
               <div>
@@ -93,14 +136,18 @@
                   </span>
                 </strong>
               </div>
-              <div>
-                <small>{{ text('آخر نشاط', 'Last active') }}</small>
-                <strong>{{ locale.isRtl() ? item.lastActiveAtLabel.ar : item.lastActiveAtLabel.en }}</strong>
-              </div>
+              @if (item.invitedAtLabel) {
+                <div class="mm-team-fields__wide">
+                  <small>{{ text('تاريخ الدعوة', 'Invited at') }}</small>
+                  <strong>
+                    {{ locale.isRtl() ? item.invitedAtLabel.ar : item.invitedAtLabel.en }}
+                  </strong>
+                </div>
+              }
             </div>
 
             @if (!isOwner()) {
-              <label class="mm-team-field-block">
+              <label class="mm-team-field-block mm-team-field-block--spaced">
                 <span>{{ text('الدور', 'Role') }}</span>
                 <select
                   [ngModel]="item.roleId"
@@ -114,9 +161,10 @@
                 </select>
               </label>
             } @else {
-              <p class="mm-team-hint">
-                {{ text('حساب المالك لا يُعاد تعيين دوره من هنا.', 'Owner role cannot be reassigned here.') }}
-              </p>
+              <div class="mm-team-role-lock">
+                <em class="mm-team-tag">{{ text('دور نظامي', 'System role') }}</em>
+                <strong>{{ roleName(item.roleId) }}</strong>
+              </div>
             }
           </mm-ops-board>
 
@@ -129,7 +177,19 @@
             </div>
 
             @if (isOwner()) {
-              <p class="mm-team-hint">{{ text('المالك يصل لكل الفروع تلقائياً.', 'Owner always has all branches.') }}</p>
+              <div class="mm-team-scope-all">
+                <div class="mm-team-scope-all__head">
+                  <ng-icon name="lucideStore" class="size-4" />
+                  <span>{{ text('وصول لكل الفروع', 'Access to all branches') }}</span>
+                </div>
+                <div class="mm-team-chips">
+                  @for (branch of facade.data()!.branches; track branch.id) {
+                    <span class="mm-team-chip is-active is-static">
+                      {{ locale.isRtl() ? branch.name.ar : branch.name.en }}
+                    </span>
+                  }
+                </div>
+              </div>
             } @else {
               <label class="mm-team-toggle-field">
                 <span>{{ text('كل الفروع', 'All branches') }}</span>
@@ -153,6 +213,14 @@
                     </button>
                   }
                 </div>
+              } @else {
+                <div class="mm-team-chips">
+                  @for (branch of facade.data()!.branches; track branch.id) {
+                    <span class="mm-team-chip is-active is-static">
+                      {{ locale.isRtl() ? branch.name.ar : branch.name.en }}
+                    </span>
+                  }
+                </div>
               }
 
               <div class="mm-team-form__actions">
@@ -169,51 +237,60 @@
             <div>
               <h2>
                 <ng-icon name="lucideKeyRound" class="size-4" />
-                {{ text('صلاحيات فعّالة', 'Effective permissions') }}
+                {{ text('صلاحيات الإدارات', 'Department access') }}
               </h2>
               <p>
                 {{
                   text(
-                    'من الدور مع أي استثناءات فردية',
-                    'From role plus any individual overrides'
+                    'الصلاحية الفعلية لكل إدارة — من الدور أو باستثناء فردي',
+                    'Effective access per department — from role or an override'
                   )
                 }}
               </p>
             </div>
             <a routerLink="/restaurant/team/permissions" class="mm-team-link">
-              {{ text('تعديل الأدوار', 'Edit roles') }}
+              {{ text('مصفوفة الأدوار', 'Roles matrix') }}
             </a>
           </div>
 
           <div class="mm-team-perm-grid">
             @for (mod of facade.data()!.modules; track mod.key) {
-              <div class="mm-team-perm-row">
-                <div>
-                  <strong>{{ moduleLabel(mod.key) }}</strong>
+              <div class="mm-team-perm-row" [attr.data-level]="effective(item, mod.key)">
+                <div class="mm-team-perm-row__copy">
+                  <strong>{{ shortDeptLabel(mod.key) }}</strong>
                   <span>{{ locale.isRtl() ? mod.detail.ar : mod.detail.en }}</span>
                 </div>
+
                 @if (isOwner()) {
-                  <em class="mm-team-status" data-status="active">{{ text('إدارة', 'Manage') }}</em>
+                  <em class="mm-team-perm-badge" data-level="manage">
+                    {{ text('إدارة', 'Manage') }}
+                  </em>
                 } @else {
-                  <select
-                    [ngModel]="item.permissionOverrides?.[mod.key] ?? ''"
-                    (ngModelChange)="
-                      facade.setStaffOverride(
-                        item.id,
-                        mod.key,
-                        $event === '' ? null : $event
-                      )
-                    "
-                  >
-                    <option value="">
-                      {{ text('حسب الدور', 'From role') }} ({{ levelLabel(effective(item, mod.key)) }})
-                    </option>
-                    @for (level of levels; track level.id) {
-                      <option [value]="level.id">
-                        {{ locale.isRtl() ? level.labelAr : level.labelEn }}
-                      </option>
+                  <div class="mm-team-perm-row__control">
+                    @if (hasOverride(item, mod.key)) {
+                      <em class="mm-team-tag">{{ text('استثناء', 'Override') }}</em>
                     }
-                  </select>
+                    <select
+                      [ngModel]="item.permissionOverrides?.[mod.key] ?? ''"
+                      (ngModelChange)="
+                        facade.setStaffOverride(
+                          item.id,
+                          mod.key,
+                          $event === '' ? null : $event
+                        )
+                      "
+                    >
+                      <option value="">
+                        {{ text('حسب الدور', 'From role') }}
+                        ({{ levelLabel(roleLevel(item, mod.key)) }})
+                      </option>
+                      @for (level of levels; track level.id) {
+                        <option [value]="level.id">
+                          {{ locale.isRtl() ? level.labelAr : level.labelEn }}
+                        </option>
+                      }
+                    </select>
+                  </div>
                 }
               </div>
             }

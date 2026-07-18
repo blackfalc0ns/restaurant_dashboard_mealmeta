@@ -18,6 +18,9 @@ import {
   lucideKeyRound,
   lucideMail,
   lucidePhone,
+  lucideShield,
+  lucideShieldCheck,
+  lucideStore,
   lucideUserRound,
 } from '@ng-icons/lucide';
 import { map } from 'rxjs';
@@ -62,6 +65,9 @@ import { TeamSkeletonComponent } from '../team-skeleton.component';
       lucideKeyRound,
       lucideMail,
       lucidePhone,
+      lucideShield,
+      lucideShieldCheck,
+      lucideStore,
       lucideUserRound,
     }),
   ],
@@ -122,6 +128,10 @@ export class StaffDetailPageComponent implements OnInit {
     return pickLocale(member.fullName, this.locale.locale());
   }
 
+  heroSubtitle(member: RestaurantStaffMember): string {
+    return `${this.roleName(member.roleId)} · ${this.statusLabel(member.status)}`;
+  }
+
   roleName(roleId: TeamRoleId): string {
     const role = this.facade.data()?.roles.find((r) => r.id === roleId);
     return role ? pickLocale(role.name, this.locale.locale()) : roleId;
@@ -130,6 +140,23 @@ export class StaffDetailPageComponent implements OnInit {
   moduleLabel(key: ModuleKey): string {
     const mod = this.facade.data()?.modules.find((m) => m.key === key);
     return mod ? pickLocale(mod.label, this.locale.locale()) : key;
+  }
+
+  shortDeptLabel(key: ModuleKey): string {
+    const full = this.moduleLabel(key);
+    if (this.locale.isRtl()) {
+      return full.replace(/^إدارة\s+/, '');
+    }
+    return full.replace(/\s+dept$/i, '');
+  }
+
+  branchScopeLabel(member: RestaurantStaffMember): string {
+    if (member.roleId === 'owner' || member.allBranches) {
+      const total = this.facade.data()?.branches.length ?? 0;
+      return this.text(`كل الفروع (${total})`, `All branches (${total})`);
+    }
+    const count = member.branchIds.length;
+    return this.text(`${count} فرع`, `${count} branches`);
   }
 
   levelLabel(level: PermissionLevel): string {
@@ -152,6 +179,15 @@ export class StaffDetailPageComponent implements OnInit {
       default:
         return status;
     }
+  }
+
+  hasOverride(member: RestaurantStaffMember, module: ModuleKey): boolean {
+    return member.permissionOverrides?.[module] != null;
+  }
+
+  roleLevel(member: RestaurantStaffMember, module: ModuleKey): PermissionLevel {
+    const role = this.facade.data()?.roles.find((r) => r.id === member.roleId);
+    return role?.permissions[module] ?? 'none';
   }
 
   toggleBranch(branchId: string): void {

@@ -42,6 +42,8 @@ export interface RestaurantBranch {
   status: BranchStatus;
   isPrimary: boolean;
   staffCount: number;
+  /** Assigned branch manager staff id. */
+  managerId?: string | null;
   notes?: LocalizedText;
 }
 
@@ -68,6 +70,7 @@ export interface RestaurantStaffMember {
   permissionOverrides?: Partial<Record<ModuleKey, PermissionLevel>>;
 }
 
+/** Dashboard department (module) shown in the permissions matrix. */
 export interface TeamModuleMeta {
   key: ModuleKey;
   label: LocalizedText;
@@ -86,6 +89,8 @@ export interface RestaurantTeamData {
   modules: TeamModuleMeta[];
 }
 
+export type BranchManagerMode = 'none' | 'existing' | 'invite';
+
 export interface BranchDraft {
   nameAr: string;
   nameEn: string;
@@ -98,6 +103,12 @@ export interface BranchDraft {
   status: BranchStatus;
   notesAr: string;
   notesEn: string;
+  managerMode: BranchManagerMode;
+  managerId: string;
+  inviteNameAr: string;
+  inviteNameEn: string;
+  inviteEmail: string;
+  invitePhone: string;
 }
 
 export interface StaffInviteDraft {

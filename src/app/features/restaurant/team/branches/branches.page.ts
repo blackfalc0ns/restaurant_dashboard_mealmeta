@@ -34,6 +34,7 @@ import { pickLocale } from '../../overview/overview-i18n';
 import { TeamFacade } from '../data/team.facade';
 import { BranchFilter, RestaurantBranch } from '../models/team.model';
 import { TeamSkeletonComponent } from '../team-skeleton.component';
+import { BranchFormModalComponent } from './branch-form-modal.component';
 
 @Component({
   selector: 'mm-branches-page',
@@ -44,6 +45,7 @@ import { TeamSkeletonComponent } from '../team-skeleton.component';
     NgIcon,
     PageStateComponent,
     TeamSkeletonComponent,
+    BranchFormModalComponent,
     RestaurantOpsHeroComponent,
     RestaurantOpsBoardComponent,
     RestaurantOpsToolbarComponent,
@@ -142,6 +144,14 @@ export class BranchesPageComponent implements OnInit {
   statusLabel(branch: RestaurantBranch): string {
     if (branch.status === 'active') return this.text('نشط', 'Active');
     return this.text('متوقف', 'Paused');
+  }
+
+  managerName(branch: RestaurantBranch): string {
+    if (!branch.managerId) return this.text('غير معيّن', 'Unassigned');
+    const member = this.facade.staffById(branch.managerId);
+    return member
+      ? pickLocale(member.fullName, this.locale.locale())
+      : this.text('غير معيّن', 'Unassigned');
   }
 
   onSearch(value: string): void {

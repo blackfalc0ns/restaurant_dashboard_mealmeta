@@ -11,7 +11,7 @@
     />
   }
 
-  @if (facade.page().viewState === 'success' && facade.data(); as data) {
+      @if (facade.page().viewState === 'success' && facade.data(); as data) {
     <div class="mm-ops-scroll">
       <mm-ops-hero
         icon="lucideUserRound"
@@ -34,102 +34,6 @@
           }
         </ng-container>
       </mm-ops-hero>
-
-      @if (facade.inviteOpen()) {
-        <mm-ops-board>
-          <div class="mm-ops-board__head">
-            <div>
-              <h2>{{ text('دعوة جديدة', 'New invite') }}</h2>
-              <p>{{ text('يصل رابط الدخول للبريد أو الجوال', 'Login link is sent to email or phone') }}</p>
-            </div>
-          </div>
-          <div class="mm-team-form">
-            <label>
-              <span>{{ text('الاسم (عربي)', 'Name (AR)') }}</span>
-              <input
-                type="text"
-                [ngModel]="facade.inviteDraft().fullNameAr"
-                (ngModelChange)="facade.patchInviteDraft({ fullNameAr: $event })"
-              />
-            </label>
-            <label>
-              <span>{{ text('الاسم (EN)', 'Name (EN)') }}</span>
-              <input
-                type="text"
-                dir="ltr"
-                [ngModel]="facade.inviteDraft().fullNameEn"
-                (ngModelChange)="facade.patchInviteDraft({ fullNameEn: $event })"
-              />
-            </label>
-            <label>
-              <span>{{ text('البريد', 'Email') }}</span>
-              <input
-                type="email"
-                dir="ltr"
-                [ngModel]="facade.inviteDraft().email"
-                (ngModelChange)="facade.patchInviteDraft({ email: $event })"
-              />
-            </label>
-            <label>
-              <span>{{ text('الجوال', 'Phone') }}</span>
-              <input
-                type="tel"
-                dir="ltr"
-                [ngModel]="facade.inviteDraft().phone"
-                (ngModelChange)="facade.patchInviteDraft({ phone: $event })"
-              />
-            </label>
-            <label>
-              <span>{{ text('الدور', 'Role') }}</span>
-              <select
-                [ngModel]="facade.inviteDraft().roleId"
-                (ngModelChange)="facade.patchInviteDraft({ roleId: $event })"
-              >
-                @for (role of roles; track role.id) {
-                  <option [value]="role.id">{{ filterLabel(role) }}</option>
-                }
-              </select>
-            </label>
-            <label class="mm-team-toggle-field">
-              <span>{{ text('كل الفروع', 'All branches') }}</span>
-              <input
-                type="checkbox"
-                [checked]="facade.inviteDraft().allBranches"
-                (change)="facade.patchInviteDraft({ allBranches: $any($event.target).checked, branchIds: [] })"
-              />
-            </label>
-          </div>
-
-          @if (!facade.inviteDraft().allBranches) {
-            <div class="mm-team-chips">
-              @for (branch of data.branches; track branch.id) {
-                <button
-                  type="button"
-                  class="mm-team-chip"
-                  [class.is-active]="facade.inviteDraft().branchIds.includes(branch.id)"
-                  (click)="facade.toggleInviteBranch(branch.id)"
-                >
-                  {{ locale.isRtl() ? branch.name.ar : branch.name.en }}
-                </button>
-              }
-            </div>
-          }
-
-          <div class="mm-team-form__actions">
-            <button type="button" class="mm-team-btn is-ghost" (click)="facade.closeInviteForm()">
-              {{ text('إلغاء', 'Cancel') }}
-            </button>
-            <button
-              type="button"
-              class="mm-team-btn"
-              [disabled]="facade.saving()"
-              (click)="facade.sendInvite()"
-            >
-              {{ text('إرسال الدعوة', 'Send invite') }}
-            </button>
-          </div>
-        </mm-ops-board>
-      }
 
       <mm-ops-board>
         <div class="mm-ops-board__head">
@@ -185,11 +89,11 @@
               >
                 <div class="mm-team-cell">
                   <strong>{{ memberName(member) }}</strong>
-                  <span class="mm-team-cell__meta" dir="ltr">
+                  <span class="mm-team-cell__meta mm-team-cell__meta--icon" dir="ltr">
                     <ng-icon name="lucideMail" class="size-3 shrink-0" />
                     {{ member.email }}
                   </span>
-                  <span class="mm-team-cell__meta" dir="ltr">
+                  <span class="mm-team-cell__meta mm-team-cell__meta--icon" dir="ltr">
                     <ng-icon name="lucidePhone" class="size-3 shrink-0" />
                     {{ member.phone }}
                   </span>
@@ -234,5 +138,9 @@
         </p>
       </mm-ops-board>
     </div>
+  }
+
+  @if (facade.inviteOpen()) {
+    <mm-staff-invite-modal (closed)="facade.closeInviteForm()" />
   }
 </div>
