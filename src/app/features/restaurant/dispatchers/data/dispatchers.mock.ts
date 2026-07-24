@@ -4,14 +4,14 @@ import {
 } from '../models/dispatcher.model';
 
 export const DISPATCHERS_MOCK: RestaurantDispatchersData = {
-  title: { ar: 'مسئولو التوصيل', en: 'Dispatch officers' },
+  title: { ar: 'مسؤولين التوصيل', en: 'Dispatch officers' },
   subtitle: {
-    ar: 'المطعم ينشئ حسابات مسئولي التوصيل من اللوحة. إنشاء الرحلات يتم من الويب — ليس من تطبيق موبايل منفصل.',
+    ar: 'المطعم ينشئ حسابات مسؤولي التوصيل من اللوحة. إنشاء الرحلات يتم من الويب — ليس من تطبيق موبايل منفصل.',
     en: 'The restaurant creates dispatch officer accounts from the dashboard. Trips are created on the web — not a separate mobile app.',
   },
   dateLabel: { ar: 'التوصيل والجودة', en: 'Delivery & quality' },
   note: {
-    ar: 'مسئول التوصيل يجمّع البوكسات في رحلة ويع يّن السائق من لوحة المطعم.',
+    ar: 'مسؤول التوصيل يجمّع البوكسات في رحلة ويع يّن السائق من لوحة المطعم.',
     en: 'The dispatch officer groups boxes into a trip and assigns the driver from the restaurant dashboard.',
   },
   summaries: [

@@ -19,14 +19,14 @@
         [title]="title()"
         [subtitle]="subtitle()"
       >
-        <div opsActions>
-          <a [routerLink]="ingredientsRoute()" class="mm-mn-ingredients mm-mn-ingredients--ghost">
-            <ng-icon name="lucideCookingPot" class="size-4" />
-            {{ ingredientsLinkLabel() }}
-          </a>
+        <div opsActions class="contents">
           <a routerLink="/restaurant/operations/menu/create" class="mm-mn-create mm-ops-cta">
             <ng-icon name="lucidePlus" class="size-4" />
             {{ createLabel() }}
+          </a>
+          <a [routerLink]="ingredientsRoute()" class="mm-mn-ingredients mm-mn-ingredients--ghost">
+            <ng-icon name="lucideCookingPot" class="size-4" />
+            {{ ingredientsLinkLabel() }}
           </a>
         </div>
         <ng-container opsMetrics>

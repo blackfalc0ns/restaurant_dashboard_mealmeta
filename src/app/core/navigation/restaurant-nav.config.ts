@@ -156,7 +156,7 @@ export const RESTAURANT_NAV_SECTIONS: RestaurantNavSection[] = [
     items: [
       {
         id: 'dispatch',
-        labelAr: 'مسئولو التوصيل',
+        labelAr: 'مسؤولين التوصيل',
         labelEn: 'Dispatch officers',
         route: '/restaurant/delivery/dispatch',
         icon: 'lucideClipboardList',

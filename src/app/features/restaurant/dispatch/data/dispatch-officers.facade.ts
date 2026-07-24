@@ -190,8 +190,8 @@ export class DispatchOfficersFacade {
               id: `evt-${Date.now()}`,
               title: {
                 ar: enabling
-                  ? 'المطعم فعّل حساب مسئول التوصيل'
-                  : 'المطعم عطّل حساب مسئول التوصيل',
+                  ? 'المطعم فعّل حساب مسؤول التوصيل'
+                  : 'المطعم عطّل حساب مسؤول التوصيل',
                 en: enabling
                   ? 'Restaurant enabled the dispatch account'
                   : 'Restaurant disabled the dispatch account',
@@ -252,7 +252,7 @@ export class DispatchOfficersFacade {
         updatedAtLabel: { ar: 'دُعي للتو', en: 'Invited just now' },
         joinedAtLabel: { ar: 'أُنشئ الآن', en: 'Created just now' },
         note: {
-          ar: 'بانتظار أول دخول لتطبيق مسئول التوصيل.',
+          ar: 'بانتظار أول دخول لتطبيق مسؤول التوصيل.',
           en: 'Awaiting first login to the dispatch mobile app.',
         },
         timeline: [

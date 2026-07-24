@@ -14,8 +14,8 @@ export const UPCOMING_24H_MOCK: Upcoming24hData = {
     en: 'Saturday, 11 Jul 2026',
   },
   windowHint: {
-    ar: 'نافذة −24 ساعة',
-    en: '−24h window',
+    ar: 'نافذة 24 ساعة',
+    en: '24h window',
   },
   printLabel: {
     ar: 'طباعة الملصقات',

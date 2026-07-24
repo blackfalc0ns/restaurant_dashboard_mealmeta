@@ -19,15 +19,16 @@
         [title]="title()"
         [subtitle]="subtitle()"
       >
-        <button
-          opsAside
-          type="button"
-          class="mm-dsp-create"
-          (click)="openCreate()"
-        >
-          <ng-icon name="lucidePlus" class="size-4" />
-          {{ locale.isRtl() ? 'إضافة مسئول توصيل' : 'Add dispatch officer' }}
-        </button>
+        <div opsActions class="contents">
+          <button
+            type="button"
+            class="mm-dsp-create mm-ops-cta"
+            (click)="openCreate()"
+          >
+            <ng-icon name="lucidePlus" class="size-4" />
+            {{ locale.isRtl() ? 'إضافة مسؤول توصيل' : 'Add dispatch officer' }}
+          </button>
+        </div>
 
         <ng-container opsMetrics>
           @for (card of data.summaries; track card.id) {
@@ -44,7 +45,7 @@
         <p>
           {{
             locale.isRtl()
-              ? 'إنشاء الرحلات وتعيين السائقين يتم من تطبيق الموبايل الخاص بمسئول التوصيل — اللوحة هنا لإدارة الحسابات فقط.'
+              ? 'إنشاء الرحلات وتعيين السائقين يتم من تطبيق الموبايل الخاص بمسؤول التوصيل — اللوحة هنا لإدارة الحسابات فقط.'
               : 'Trips and driver assignment happen in the dispatch mobile app — this dashboard only manages accounts.'
           }}
         </p>
@@ -54,7 +55,7 @@
         <div class="mm-ops-board__head">
           <div>
             <h2>
-              {{ locale.isRtl() ? 'حسابات مسئولي التوصيل' : 'Dispatch officer accounts' }}
+              {{ locale.isRtl() ? 'حسابات مسؤولي التوصيل' : 'Dispatch officer accounts' }}
             </h2>
             <p>
               {{
@@ -96,7 +97,7 @@
         } @else {
           <div class="mm-dsp-table" role="table">
             <div class="mm-dsp-table__head" role="row">
-              <span>{{ locale.isRtl() ? 'المسئول' : 'Officer' }}</span>
+              <span>{{ locale.isRtl() ? 'المسؤول' : 'Officer' }}</span>
               <span>{{ locale.isRtl() ? 'التواصل' : 'Contact' }}</span>
               <span>{{ locale.isRtl() ? 'الرحلات (تطبيق)' : 'Trips (app)' }}</span>
               <span>{{ locale.isRtl() ? 'الحالة' : 'Status' }}</span>

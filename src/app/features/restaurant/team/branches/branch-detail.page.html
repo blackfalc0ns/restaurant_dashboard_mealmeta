@@ -29,16 +29,16 @@
             {{ statusLabel(item.status) }}
           </span>
 
-          <div opsActions>
+          <div opsActions class="contents">
+            <button type="button" class="mm-team-btn mm-ops-cta" (click)="startEdit(item)">
+              {{ text('تعديل', 'Edit') }}
+            </button>
             @if (!item.isPrimary) {
               <button type="button" class="mm-team-btn is-ghost" (click)="setPrimary(item)">
                 <ng-icon name="lucideStar" class="size-4" />
                 {{ text('تعيين كرئيسي', 'Make primary') }}
               </button>
             }
-            <button type="button" class="mm-team-btn" (click)="startEdit(item)">
-              {{ text('تعديل', 'Edit') }}
-            </button>
           </div>
 
           <div opsStats class="contents">

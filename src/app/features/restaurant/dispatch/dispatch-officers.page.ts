@@ -124,7 +124,7 @@ export class DispatchOfficersPageComponent implements OnInit {
 
   readonly emptyLabel = computed(() =>
     this.locale.isRtl()
-      ? 'لا يوجد مسئولو توصيل مطابقون.'
+      ? 'لا يوجد مسؤولين توصيل مطابقون.'
       : 'No matching dispatch officers.',
   );
 

@@ -14,10 +14,12 @@
   @if (facade.page().viewState === 'success' && facade.data(); as data) {
     <div class="mm-ops-scroll">
       <mm-ops-hero icon="lucideClipboardList" [eyebrow]="dateLabel()" [title]="title()" [subtitle]="subtitle()">
-        <span opsAside class="mm-pc-header__hint">
-          <ng-icon name="lucideTimer" class="size-3.5" />
-          {{ windowHint() }}
-        </span>
+        <div opsActions class="contents">
+          <span class="mm-pc-header__hint">
+            <ng-icon name="lucideTimer" class="size-3.5" />
+            {{ windowHint() }}
+          </span>
+        </div>
         <ng-container opsMetrics>
           @for (card of data.summaries; track card.id; let i = $index) {
             @if (i < 3) {

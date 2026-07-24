@@ -29,22 +29,22 @@
             {{ statusLabel(item.status) }}
           </span>
 
-          <div opsActions>
+          <div opsActions class="contents">
             @if (!isOwner()) {
               @if (item.status === 'invited') {
+                <button
+                  type="button"
+                  class="mm-team-btn mm-ops-cta"
+                  (click)="facade.setStaffStatus(item.id, 'active')"
+                >
+                  {{ text('تفعيل', 'Activate') }}
+                </button>
                 <button
                   type="button"
                   class="mm-team-btn is-ghost"
                   (click)="facade.setStaffStatus(item.id, 'invited')"
                 >
                   {{ text('إعادة الدعوة', 'Resend invite') }}
-                </button>
-                <button
-                  type="button"
-                  class="mm-team-btn"
-                  (click)="facade.setStaffStatus(item.id, 'active')"
-                >
-                  {{ text('تفعيل', 'Activate') }}
                 </button>
               } @else if (item.status === 'active') {
                 <button
@@ -57,7 +57,7 @@
               } @else {
                 <button
                   type="button"
-                  class="mm-team-btn"
+                  class="mm-team-btn mm-ops-cta"
                   (click)="facade.setStaffStatus(item.id, 'active')"
                 >
                   {{ text('إعادة التفعيل', 'Re-enable') }}

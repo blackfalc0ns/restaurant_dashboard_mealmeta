@@ -3396,11 +3396,11 @@
   }
 
   .mm-do-archive {
-    @apply inline-flex items-center gap-2 rounded-xl border border-[#d9ebe1] bg-[#edf8f1] px-3.5 py-2.5 text-[0.75rem] font-extrabold text-mm-primary transition hover:border-mm-primary/35 hover:bg-[#e3f5ea];
+    @apply inline-flex h-10 min-h-10 items-center gap-2 rounded-xl border border-[#d9ebe1] bg-[#edf8f1] px-4 py-2 text-[0.75rem] font-extrabold leading-none text-mm-primary transition hover:border-mm-primary/35 hover:bg-[#e3f5ea];
   }
 
   .mm-do-print {
-    @apply inline-flex items-center gap-2 rounded-xl bg-mm-primary px-3.5 py-2.5 text-[0.75rem] font-extrabold text-white transition hover:bg-mm-secondary;
+    @apply inline-flex h-10 min-h-10 items-center gap-2 rounded-xl bg-mm-primary px-4 py-2 text-[0.75rem] font-extrabold leading-none text-white transition hover:bg-mm-secondary;
   }
 
   .mm-do-summary {
@@ -3616,7 +3616,6 @@
     @apply border-mm-primary bg-mm-primary text-white;
   }
 
-  [dir='rtl'] .mm-do-print ng-icon,
   [dir='rtl'] .mm-do-row__action a ng-icon {
     @apply -scale-x-100;
   }
@@ -3698,7 +3697,12 @@
   }
 
   .mm-pc-header__hint {
-    @apply inline-flex items-center gap-2 rounded-xl border border-[#d9ebe1] bg-[#edf8f1] px-3.5 py-2.5 text-[0.75rem] font-extrabold text-mm-primary;
+    @apply inline-flex h-10 min-h-10 items-center gap-2 rounded-xl border border-[#d9ebe1] bg-[#edf8f1] px-4 py-2 text-[0.75rem] font-extrabold leading-none text-mm-primary;
+  }
+
+  .mm-pc-header__hint > ng-icon,
+  .mm-pc-header__hint > .ng-icon {
+    @apply size-3.5 shrink-0;
   }
 
   .mm-pc-summary {
@@ -4023,11 +4027,21 @@
   }
 
   .mm-u24-header__hint {
-    @apply inline-flex items-center gap-2 rounded-xl border border-[#d9ebe1] bg-[#edf8f1] px-3.5 py-2.5 text-[0.75rem] font-extrabold text-mm-primary;
+    @apply inline-flex h-10 min-h-10 items-center gap-2 rounded-xl border border-[#d9ebe1] bg-[#edf8f1] px-4 py-2 text-[0.75rem] font-extrabold leading-none text-mm-primary;
+  }
+
+  .mm-u24-header__hint > ng-icon,
+  .mm-u24-header__hint > .ng-icon {
+    @apply size-3.5 shrink-0;
   }
 
   .mm-u24-print {
-    @apply inline-flex items-center gap-2 rounded-xl bg-mm-primary px-3.5 py-2.5 text-[0.75rem] font-extrabold text-white transition hover:bg-mm-secondary;
+    @apply inline-flex h-10 min-h-10 items-center gap-2 rounded-xl bg-mm-primary px-4 py-2 text-[0.75rem] font-extrabold leading-none text-white transition hover:bg-mm-secondary;
+  }
+
+  .mm-u24-print > ng-icon,
+  .mm-u24-print > .ng-icon {
+    @apply size-4 shrink-0;
   }
 
   .mm-u24-summary {
@@ -4355,7 +4369,12 @@
   }
 
   .mm-lb-print-all {
-    @apply inline-flex items-center gap-2 rounded-xl bg-mm-primary px-3.5 py-2.5 text-[0.75rem] font-extrabold text-white transition hover:bg-mm-secondary disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex h-10 min-h-10 items-center gap-2 rounded-xl bg-mm-primary px-4 py-2 text-[0.75rem] font-extrabold leading-none text-white transition hover:bg-mm-secondary disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .mm-lb-print-all > ng-icon,
+  .mm-lb-print-all > .ng-icon {
+    @apply size-4 shrink-0;
   }
 
   .mm-lb-summary {
@@ -4883,11 +4902,16 @@
   }
 
   .mm-ho-header__hint {
-    @apply inline-flex items-center gap-2 rounded-xl border border-[#d9ebe1] bg-[#edf8f1] px-3.5 py-2.5 text-[0.75rem] font-extrabold text-mm-primary;
+    @apply inline-flex h-10 min-h-10 items-center gap-2 rounded-xl border border-[#d9ebe1] bg-[#edf8f1] px-4 py-2 text-[0.75rem] font-extrabold leading-none text-mm-primary;
+  }
+
+  .mm-ho-header__hint > ng-icon,
+  .mm-ho-header__hint > .ng-icon {
+    @apply size-3.5 shrink-0;
   }
 
   .mm-ho-archive {
-    @apply inline-flex items-center gap-2 rounded-xl bg-mm-primary px-3.5 py-2.5 text-[0.75rem] font-extrabold text-white transition hover:bg-mm-secondary;
+    @apply inline-flex h-10 min-h-10 items-center gap-2 rounded-xl bg-mm-primary px-4 py-2 text-[0.75rem] font-extrabold leading-none text-white transition hover:bg-mm-secondary;
   }
 
   .mm-ho-summary {
@@ -5887,11 +5911,11 @@
   }
 
   .mm-mn-ingredients {
-    @apply inline-flex items-center gap-2 rounded-xl bg-mm-primary px-3.5 py-2.5 text-[0.75rem] font-extrabold text-white transition hover:bg-mm-secondary;
+    @apply inline-flex h-10 min-h-10 items-center gap-2 rounded-xl bg-mm-primary px-4 py-2 text-[0.75rem] font-extrabold leading-none text-white transition hover:bg-mm-secondary;
   }
 
   .mm-mn-header__actions {
-    @apply flex flex-wrap items-center gap-2;
+    @apply flex flex-wrap items-center gap-2.5;
   }
 
   .mm-mn-ingredients--ghost {
@@ -5899,7 +5923,7 @@
   }
 
   .mm-mn-create {
-    @apply inline-flex items-center gap-2 rounded-xl bg-mm-primary px-3.5 py-2.5 text-[0.75rem] font-extrabold text-white transition hover:bg-mm-secondary;
+    @apply inline-flex h-10 min-h-10 items-center gap-2 rounded-xl bg-mm-primary px-4 py-2 text-[0.75rem] font-extrabold leading-none text-white transition hover:bg-mm-secondary;
   }
 
   .mm-mn-open {
@@ -6258,11 +6282,11 @@
   }
 
   .mm-ig-menu-link {
-    @apply inline-flex items-center gap-2 rounded-xl border border-[#d9ebe1] bg-white px-3.5 py-2.5 text-[0.75rem] font-extrabold text-mm-primary transition hover:border-mm-primary/35 hover:bg-[#edf8f1] hover:text-mm-secondary;
+    @apply inline-flex h-10 min-h-10 items-center gap-2 rounded-xl border border-[#d9ebe1] bg-white px-4 py-2 text-[0.75rem] font-extrabold leading-none text-mm-primary transition hover:border-mm-primary/35 hover:bg-[#edf8f1] hover:text-mm-secondary;
   }
 
   .mm-ig-create {
-    @apply inline-flex items-center gap-2 rounded-xl bg-mm-primary px-3.5 py-2.5 text-[0.75rem] font-extrabold text-white transition hover:bg-mm-secondary;
+    @apply inline-flex h-10 min-h-10 items-center gap-2 rounded-xl bg-mm-primary px-4 py-2 text-[0.75rem] font-extrabold leading-none text-white transition hover:bg-mm-secondary;
   }
 
   .mm-ig-summary {
@@ -7719,11 +7743,16 @@
   }
 
   .mm-px-menu-link {
-    @apply inline-flex items-center gap-2 rounded-xl bg-white px-3.5 py-2.5 text-[0.75rem] font-extrabold text-[#026637] shadow-lg shadow-black/10 transition hover:-translate-y-0.5 hover:bg-emerald-50;
+    @apply inline-flex h-10 min-h-10 items-center gap-2 rounded-xl border border-mm-primary bg-mm-primary px-4 py-2 text-[0.75rem] font-extrabold leading-none text-white shadow-sm transition hover:border-mm-secondary hover:bg-mm-secondary;
   }
 
   .mm-px-hero__rule {
-    @apply inline-flex items-center gap-1.5 text-[0.6875rem] font-bold text-emerald-100/80;
+    @apply inline-flex h-10 min-h-10 items-center gap-2 rounded-xl border border-[#d9ebe1] bg-[#edf8f1] px-4 py-2 text-[0.75rem] font-extrabold leading-none text-mm-primary;
+  }
+
+  .mm-px-hero__rule > ng-icon,
+  .mm-px-hero__rule > .ng-icon {
+    @apply size-3.5 shrink-0;
   }
 
   .mm-px-readiness {
@@ -10046,11 +10075,16 @@
   }
 
   .mm-ops-hero__actions {
-    @apply mt-4 flex flex-wrap items-center gap-2;
+    @apply mt-4 flex flex-wrap items-center gap-2.5;
   }
 
   .mm-ops-hero__actions :where(a, button) {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-[#d9ebe1] bg-white px-3.5 py-2.5 text-[0.75rem] font-extrabold text-mm-primary shadow-sm transition hover:border-mm-primary/35 hover:bg-[#edf8f1] hover:text-mm-secondary;
+    @apply inline-flex h-10 min-h-10 items-center justify-center gap-2 rounded-xl border border-[#d9ebe1] bg-white px-4 py-2 text-[0.75rem] font-extrabold leading-none text-mm-primary shadow-sm transition hover:border-mm-primary/35 hover:bg-[#edf8f1] hover:text-mm-secondary;
+  }
+
+  .mm-ops-hero__actions :where(a, button) > ng-icon,
+  .mm-ops-hero__actions :where(a, button) > .ng-icon {
+    @apply size-4 shrink-0;
   }
 
   .mm-ops-hero__actions :where(a, button).is-primary,
@@ -10272,7 +10306,19 @@
 
   .mm-ops-detail-hero__title-row,
   .mm-sr-detail-hero__title-row {
-    @apply flex flex-wrap items-center justify-between gap-3;
+    @apply flex flex-wrap items-center justify-between gap-2.5;
+  }
+
+  .mm-ops-detail-hero__title-row > :where(a, button),
+  .mm-sr-detail-hero__title-row > :where(a, button) {
+    @apply inline-flex h-10 min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 text-[0.75rem] font-extrabold leading-none;
+  }
+
+  .mm-ops-detail-hero__title-row > :where(a, button) > ng-icon,
+  .mm-ops-detail-hero__title-row > :where(a, button) > .ng-icon,
+  .mm-sr-detail-hero__title-row > :where(a, button) > ng-icon,
+  .mm-sr-detail-hero__title-row > :where(a, button) > .ng-icon {
+    @apply size-4 shrink-0;
   }
 
   .mm-ops-detail-hero__identity,
@@ -10328,7 +10374,14 @@
 
   .mm-ops-cta,
   .mm-sr-cta {
-    @apply inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-mm-primary px-3.5 py-2.5 text-[0.75rem] font-extrabold text-white transition hover:bg-mm-secondary;
+    @apply inline-flex h-10 min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-mm-primary px-4 py-2 text-[0.75rem] font-extrabold leading-none text-white transition hover:bg-mm-secondary;
+  }
+
+  .mm-ops-cta > ng-icon,
+  .mm-ops-cta > .ng-icon,
+  .mm-sr-cta > ng-icon,
+  .mm-sr-cta > .ng-icon {
+    @apply size-4 shrink-0;
   }
 
   .mm-ops-cta--warn,
@@ -12551,7 +12604,12 @@
   }
 
   .mm-dsp-create {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-mm-primary bg-mm-primary px-4 py-2.5 text-[0.75rem] font-extrabold text-white shadow-[0_8px_18px_-12px_rgba(4,153,78,0.8)] transition hover:border-mm-secondary hover:bg-mm-secondary;
+    @apply inline-flex h-10 min-h-10 items-center justify-center gap-2 rounded-xl border border-mm-primary bg-mm-primary px-4 py-2 text-[0.75rem] font-extrabold leading-none text-white shadow-[0_8px_18px_-12px_rgba(4,153,78,0.8)] transition hover:border-mm-secondary hover:bg-mm-secondary;
+  }
+
+  .mm-dsp-create > ng-icon,
+  .mm-dsp-create > .ng-icon {
+    @apply size-4 shrink-0;
   }
 
   .mm-dsp-modal {
@@ -14985,7 +15043,12 @@
   }
 
   .mm-team-btn {
-    @apply inline-flex items-center justify-center gap-1.5 rounded-xl bg-mm-primary px-3.5 py-2 text-[0.75rem] font-extrabold text-white shadow-sm transition duration-150 hover:brightness-95 active:scale-[0.98] disabled:opacity-50;
+    @apply inline-flex h-10 min-h-10 items-center justify-center gap-2 rounded-xl bg-mm-primary px-4 py-2 text-[0.75rem] font-extrabold leading-none text-white shadow-sm transition duration-150 hover:brightness-95 active:scale-[0.98] disabled:opacity-50;
+  }
+
+  .mm-team-btn > ng-icon,
+  .mm-team-btn > .ng-icon {
+    @apply size-4 shrink-0;
   }
 
   .mm-team-btn.is-ghost {
@@ -14993,7 +15056,7 @@
   }
 
   .mm-team-btn.is-compact {
-    @apply px-2.5 py-1.5 text-[0.6875rem];
+    @apply h-auto min-h-0 px-2.5 py-1.5 text-[0.6875rem];
   }
 
   .mm-team-link {

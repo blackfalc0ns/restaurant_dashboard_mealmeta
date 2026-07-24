@@ -19,14 +19,14 @@
         [title]="title()"
         [subtitle]="subtitle()"
       >
-        <div opsActions>
-          <a routerLink="/restaurant/orders/archive" class="mm-do-archive">
-            <ng-icon name="lucideArchive" class="size-4" />
-            {{ archiveLabel() }}
-          </a>
+        <div opsActions class="contents">
           <a routerLink="/restaurant/orders/labels" class="mm-do-print mm-ops-cta">
             <ng-icon name="lucidePrinter" class="size-4" />
             {{ printLabel() }}
+          </a>
+          <a routerLink="/restaurant/orders/archive" class="mm-do-archive">
+            <ng-icon name="lucideArchive" class="size-4" />
+            {{ archiveLabel() }}
           </a>
         </div>
         <ng-container opsMetrics>

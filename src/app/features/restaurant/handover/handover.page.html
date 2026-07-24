@@ -19,15 +19,15 @@
         [title]="title()"
         [subtitle]="subtitle()"
       >
-        <div opsActions>
-          <span class="mm-ho-header__hint">
-            <ng-icon name="lucideScanBarcode" class="size-3.5" />
-            {{ windowHint() }}
-          </span>
+        <div opsActions class="contents">
           <a routerLink="/restaurant/orders/archive" class="mm-ho-archive mm-ops-cta">
             <ng-icon name="lucideArchive" class="size-4" />
             {{ archiveLabel() }}
           </a>
+          <span class="mm-ho-header__hint">
+            <ng-icon name="lucideScanBarcode" class="size-3.5" />
+            {{ windowHint() }}
+          </span>
         </div>
         <ng-container opsMetrics>
           @for (card of data.summaries; track card.id; let i = $index) {

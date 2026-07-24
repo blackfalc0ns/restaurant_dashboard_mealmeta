@@ -17,14 +17,14 @@ function officer(partial: DispatchOfficer): DispatchOfficer {
 }
 
 export const DISPATCH_OFFICERS_MOCK: DispatchOfficersData = {
-  title: { ar: 'مسئولو التوصيل', en: 'Dispatch officers' },
+  title: { ar: 'مسؤولين التوصيل', en: 'Dispatch officers' },
   subtitle: {
-    ar: 'المطعم ينشئ حسابات مسئولي التوصيل. إنشاء الرحلات يتم من تطبيق الموبايل الخاص بهم.',
+    ar: 'المطعم ينشئ حسابات مسؤولي التوصيل. إنشاء الرحلات يتم من تطبيق الموبايل الخاص بهم.',
     en: 'The restaurant creates dispatch officer accounts. Trips are created in their mobile app.',
   },
   dateLabel: { ar: 'التوصيل والجودة', en: 'Delivery & quality' },
   note: {
-    ar: 'مسئول التوصيل يستخدم تطبيقًا منفصلًا لتجميع البوكسات وإنشاء الرحلات وتعيين السائقين. من اللوحة هنا تُدار الحسابات فقط.',
+    ar: 'مسؤول التوصيل يستخدم تطبيقًا منفصلًا لتجميع البوكسات وإنشاء الرحلات وتعيين السائقين. من اللوحة هنا تُدار الحسابات فقط.',
     en: 'Dispatch officers use a separate mobile app to group boxes, create trips, and assign drivers. This dashboard only manages their accounts.',
   },
   summaries: [
@@ -47,7 +47,7 @@ export const DISPATCH_OFFICERS_MOCK: DispatchOfficersData = {
         {
           id: 't1',
           title: {
-            ar: 'دخل تطبيق مسئول التوصيل',
+            ar: 'دخل تطبيق مسؤول التوصيل',
             en: 'Signed into the dispatch mobile app',
           },
           timeLabel: { ar: 'منذ 20 دقيقة', en: '20m ago' },
@@ -133,7 +133,7 @@ export const DISPATCH_OFFICERS_MOCK: DispatchOfficersData = {
       updatedAtLabel: { ar: 'دُعيت أمس', en: 'Invited yesterday' },
       joinedAtLabel: { ar: 'أُنشئ أمس', en: 'Created yesterday' },
       note: {
-        ar: 'بانتظار أول دخول لتطبيق مسئول التوصيل.',
+        ar: 'بانتظار أول دخول لتطبيق مسؤول التوصيل.',
         en: 'Awaiting first login to the dispatch mobile app.',
       },
       timeline: timeline([

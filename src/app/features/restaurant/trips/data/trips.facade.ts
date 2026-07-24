@@ -334,7 +334,7 @@ export class TripsFacade {
         driverCode: driverCodeOf(driver),
         dispatcherId: 'dsp-01',
         dispatcherName: {
-          ar: 'أنت — مسئول التوصيل',
+          ar: 'أنت — مسؤول التوصيل',
           en: 'You — dispatch',
         },
         stops,
