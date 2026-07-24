@@ -105,7 +105,7 @@
                   step="1"
                   inputmode="numeric"
                   [ngModel]="facade.draftLimit()"
-                  (ngModelChange)="onDraftChange($event == null ? '' : '' + $event)"
+                  (ngModelChange)="onDraftChange($event === null ? '' : '' + $event)"
                   [attr.aria-label]="locale.isRtl() ? 'حد البوكسات اليومي' : 'Daily box limit'"
                 />
                 <span>{{ locale.isRtl() ? 'بوكس' : 'boxes' }}</span>

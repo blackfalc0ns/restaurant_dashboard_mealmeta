@@ -142,7 +142,7 @@
                         min="0"
                         step="0.1"
                         [ngModel]="facade.draftValue(base.id)"
-                        (ngModelChange)="onPriceInput(base.id, $event == null ? '' : '' + $event)"
+                        (ngModelChange)="onPriceInput(base.id, $event === null ? '' : '' + $event)"
                         [attr.aria-label]="locale.isRtl() ? 'سعر البوكس الشهري بالدينار' : 'Monthly box price in KD'"
                         placeholder="117"
                       />
