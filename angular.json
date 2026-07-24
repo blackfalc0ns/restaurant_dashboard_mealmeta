@@ -58,7 +58,8 @@
               "buildTarget": "mealmate-restaurant-dashboard:build:production"
             },
             "development": {
-              "buildTarget": "mealmate-restaurant-dashboard:build:development"
+              "buildTarget": "mealmate-restaurant-dashboard:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

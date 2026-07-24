@@ -23,19 +23,21 @@ export class RestaurantAuthFacade {
       next: (response) => {
         this.authStore.setSession({
           accessToken: response.accessToken,
+          refreshToken: response.refreshToken,
           expiresAt: response.expiresAt,
           restaurantId: response.restaurantId,
           isApproved: response.isApproved,
           hasApprovedMenu: response.hasApprovedMenu,
           hasServiceArea: response.hasServiceArea,
+          rememberSession: request.rememberSession,
         });
         this.viewState.set('idle');
-        
-        // التوجيه الذكي للمطعم حسب جهوزية المطبخ والاعتماد
+
         if (response.isApproved && response.hasApprovedMenu && response.hasServiceArea) {
           void this.router.navigateByUrl('/restaurant/orders/pending-confirmation', { replaceUrl: true });
+        } else if (!response.isApproved) {
+          void this.router.navigateByUrl('/restaurant/under-review', { replaceUrl: true });
         } else {
-          // إذا كان المطعم ينقصه شيء، يتم توجيهه لصفحة الدعم والتهيئة
           void this.router.navigateByUrl('/restaurant/setup-wizard', { replaceUrl: true });
         }
       },
@@ -47,6 +49,14 @@ export class RestaurantAuthFacade {
   }
 
   logout(): void {
+    const refresh = this.authStore.refreshToken();
+    this.api.logout(refresh).subscribe({
+      next: () => this.finishLogout(),
+      error: () => this.finishLogout(),
+    });
+  }
+
+  private finishLogout(): void {
     this.authStore.clearSession();
     void this.router.navigateByUrl('/restaurant/login', { replaceUrl: true });
   }

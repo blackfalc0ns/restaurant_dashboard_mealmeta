@@ -1,6 +1,7 @@
 import { CanMatchFn, Routes } from '@angular/router';
 
 import { RestaurantAuthLocaleService } from './features/auth/state/auth-locale.service';
+import { restaurantAuthGuard } from './core/auth/restaurant-auth.guard';
 
 const RESTAURANT_AUTH_PATHS = new Set(['login', 'forgot-password', 'verify-otp', 'register']);
 
@@ -40,6 +41,7 @@ export const APP_ROUTES: Routes = [
   },
   {
     path: 'restaurant',
+    canActivate: [restaurantAuthGuard],
     loadComponent: () =>
       import('./core/layout/restaurant-shell/restaurant-shell.component').then(
         (m) => m.RestaurantShellComponent

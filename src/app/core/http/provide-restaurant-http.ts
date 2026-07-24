@@ -1,5 +1,6 @@
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { restaurantAuthInterceptor } from './interceptors/auth.interceptor';
 
 export function provideRestaurantHttp() {
-  return provideHttpClient(withInterceptorsFromDi());
+  return provideHttpClient(withInterceptors([restaurantAuthInterceptor]));
 }

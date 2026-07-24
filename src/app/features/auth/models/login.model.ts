@@ -8,6 +8,7 @@ export interface RestaurantLoginRequest {
 
 export interface RestaurantLoginResponse {
   accessToken: string;
+  refreshToken?: string;
   expiresAt: string;
   restaurantId: string;
   isApproved: boolean;

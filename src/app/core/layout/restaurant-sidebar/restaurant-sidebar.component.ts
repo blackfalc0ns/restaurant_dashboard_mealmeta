@@ -59,6 +59,7 @@ import {
   RESTAURANT_SETTINGS_ITEM,
 } from '@/core/navigation/restaurant-nav.config';
 import { RestaurantNavItem, RestaurantNavSection } from '@/core/navigation/restaurant-nav.model';
+import { RestaurantAuthFacade } from '@/features/auth/state/auth.facade';
 
 @Component({
   selector: 'mm-restaurant-sidebar',
@@ -116,6 +117,7 @@ import { RestaurantNavItem, RestaurantNavSection } from '@/core/navigation/resta
 export class RestaurantSidebarComponent {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly authFacade = inject(RestaurantAuthFacade);
   readonly locale = inject(AppLocaleService);
   readonly layout = inject(RestaurantShellLayoutService);
 
@@ -217,7 +219,7 @@ export class RestaurantSidebarComponent {
   }
 
   logout(): void {
-    void this.router.navigate(['/restaurant/login']);
+    this.authFacade.logout();
   }
 
   sectionLinks(section: RestaurantNavSection): RestaurantNavItem[] {
